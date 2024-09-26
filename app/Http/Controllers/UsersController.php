@@ -49,45 +49,112 @@ class UsersController extends Controller
         return response()->json(['message' => 'Registration successful!', 'user' => $user], 201);
     }
 
-public function registerChef(Request $request)
-{
-    $apiKey = $request->header('X-API-Key');
-    $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+    public function registerChef(Request $request)
+    {
+        // Check for API key
+        $apiKey = $request->header('X-API-Key');
+        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
 
-    if ($apiKey !== $expectedApiKey) {
-        return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        if ($apiKey !== $expectedApiKey) {
+            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        }
+
+        try {
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'full_name' => 'required|string',
+                'email' => 'required|email|unique:users,email',
+                'username' => 'required|string|unique:users,username',
+                'password' => 'required|string|min:6',
+                'experience_level' => 'required|in:Beginner,Intermediate,Professional',
+                'location' => 'required|string',
+                'profile_picture' => 'nullable|string', // Optional
+                'cuisine_type' => 'nullable|string', // Optional
+                'certification' => 'nullable|string', // Optional
+                'bio' => 'nullable|string', // Optional
+                'payment_status' => 'nullable|string', // Optional
+                'social_media_links' => 'nullable|array', // Optional (array of links)
+                'social_media_links.*' => 'nullable|url', // Ensure each link is a valid URL
+                'events_participated' => 'nullable|array', // Optional (array of event IDs)
+                'events_participated.*' => 'nullable|integer|exists:events,id', // Ensure each event exists
+            ]);
+
+            // Return validation errors if any
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 400);
+            }
+
+            // Create new Chef
+            $chef = new User();
+            $chef->name = $request->full_name;
+            $chef->email = $request->email;
+            $chef->username = $request->username;
+            $chef->password = Hash::make($request->password);
+            $chef->experience_level = $request->experience_level;
+            $chef->location = $request->location;
+            $chef->profile_picture = $request->profile_picture; // Optional
+            $chef->cuisine_type = $request->cuisine_type; // Optional
+            $chef->certification = $request->certification; // Optional
+            $chef->bio = $request->bio; // Optional
+            $chef->payment_status = $request->payment_status; // Optional
+            $chef->social_media_links = json_encode($request->social_media_links); // Optional, store as JSON
+            $chef->role = 'chef'; // default role
+            $chef->status = 'active'; // default status
+            $chef->approval_status = 'pending'; // default approval status
+            $chef->recipes_count = 0; // default value for recipes count
+
+            // Save the new chef to the database
+            $chef->save();
+
+            // If the user participated in any events, save the participation
+            if ($request->has('events_participated')) {
+                foreach ($request->events_participated as $eventId) {
+                    $chef->events()->attach($eventId); // Assuming there's a pivot table for user events
+                }
+            }
+
+            // Return the registered data as a response
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Chef registered successfully!',
+                'chef' => [
+                    'name' => $chef->name,
+                    'email' => $chef->email,
+                    'username' => $chef->username,
+                    'experience_level' => $chef->experience_level,
+                    'location' => $chef->location,
+                    'profile_picture' => $chef->profile_picture,
+                    'cuisine_type' => $chef->cuisine_type,
+                    'certification' => $chef->certification,
+                    'bio' => $chef->bio,
+                    'payment_status' => $chef->payment_status,
+                    'social_media_links' => json_decode($chef->social_media_links, true), // Return as array
+                    'events_participated' => $chef->events()->pluck('events.id'), // Return event IDs
+                ]
+            ], 201);
+
+        } catch (\Illuminate\Database\QueryException $ex) {
+            // Catch database-related errors (e.g., duplicate entry, foreign key constraint failures)
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Database error',
+                'details' => $ex->getMessage(),
+            ], 500);
+
+        } catch (\Exception $ex) {
+            // Catch any general errors
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Something went wrong',
+                'details' => $ex->getMessage(),
+            ], 500);
+        }
     }
 
-    $validator = Validator::make($request->all(), [
-        'full_name' => 'required|string',
-        'email' => 'required|email|unique:users,email',
-        'username' => 'required|string|unique:users,username',
-        'password' => 'required|string|min:6',
-        'experience_level' => 'required|in:Beginner,Intermediate,Professional',
-        'location' => 'required|string',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json($validator->errors(), 400);
-    }
-
-
-    $chef = new User();
-    $chef->name = $request->full_name;
-    $chef->email = $request->email;
-    $chef->username = $request->username;
-    $chef->password = Hash::make($request->password);
-    $chef->experience_level = $request->experience_level;
-    $chef->location = $request->location;
-    $chef->profile_picture = $request->profile_picture; // Optional
-    $chef->cuisine_type = $request->cuisine_type; // Optional
-    $chef->certification = $request->certification; // Optional
-    $chef->role ='chef'; // default
-
-    $chef->save();
-
-    return response()->json(['message' => 'Chef registered successfully!'], 201);
-}
 
 
 public function loginChef(Request $request)
