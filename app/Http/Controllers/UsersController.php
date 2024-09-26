@@ -192,46 +192,75 @@ class UsersController extends Controller
 
 
     public function loginUser(Request $request)
-    {
-        // Check API Key
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+{
+    // Check API Key
+    $apiKey = $request->header('X-API-Key');
+    $expectedApiKey = 'ABDI'; // Replace with your actual unique key
 
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
-
-        // Validate the request data
-        $request->validate([
-            'username_or_email' => 'required|string',
-            'password' => 'required|string',
-        ]);
-
-        // Check if the provided username or email exists in the database
-        $user = User::where('username', $request->username_or_email)
-            ->orWhere('email', $request->username_or_email)
-            ->first();
-
-        // If user not found or password does not match
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials.'], 401);
-        }
-
-        // Create a response payload (you can modify this to include a token if needed)
-        $responsePayload = [
-            'message' => 'Login successful!',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-                'profile_picture' => $user->profile_picture,
-                // Add more fields if needed
-            ],
-        ];
-
-        return response()->json($responsePayload, 200);
+    if ($apiKey !== $expectedApiKey) {
+        return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
     }
+
+    // Validate the request data
+    $validator = Validator::make($request->all(), [
+        'username_or_email' => 'required|string',
+        'password' => 'required|string',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['message' => 'Validation failed.', 'errors' => $validator->errors()], 400);
+    }
+
+    // Check if the provided username or email exists in the database
+    $user = User::where('username', $request->username_or_email)
+        ->orWhere('email', $request->username_or_email)
+        ->first();
+
+    // If user not found or password does not match
+    if (!$user) {
+        return response()->json(['message' => 'User not found.'], 404);
+    }
+
+    if (!Hash::check($request->password, $user->password)) {
+        return response()->json(['message' => 'Invalid credentials.'], 401);
+    }
+
+    // Load additional relationships if necessary
+    $user->load('votes.recipe', 'events'); // Load votes and events relationships
+
+    // Prepare the response data, including all necessary fields
+    $responseData = [
+        'message' => 'Login successful!',
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'username' => $user->username,
+            'email' => $user->email,
+            'status' => $user->status, // Assuming there's a status column
+            'bio' => $user->bio, // Assuming there's a bio column
+            'role' => $user->role, // Role (e.g., voter)
+            'profile_picture' => $user->profile_picture, // Profile picture URL or path
+            'social_media_links' => json_decode($user->social_media_links), // Decode JSON for better readability
+            'recipes_voted_for' => $user->votes->map(function ($vote) {
+                return [
+                    'recipe_id' => $vote->recipe_id,
+                    'recipe_title' => $vote->recipe->title, // Adjust according to your Recipe model
+                    // Add other recipe details as necessary
+                ];
+            }),
+            'events_participated' => $user->events->map(function ($event) {
+                return [
+                    'event_id' => $event->id,
+                    'event_name' => $event->name, // Adjust according to your Event model
+                    // Add other event details as necessary
+                ];
+            }),
+        ],
+    ];
+
+    return response()->json($responseData, 200);
+}
+
 
 
     public function requestPasswordReset(Request $request)
