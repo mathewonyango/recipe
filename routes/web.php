@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 
 
 
-Route::get('/csrf-token', function () {
+Route::get('/api/csrf-token', function () {
     return Response::json(['csrf_token' => csrf_token()]);
 });
 
