@@ -358,7 +358,9 @@ class UsersController extends Controller
     {
         try {
             // Fetch all users with the role of 'chef'
-            $chefs = User::where('role', 'chef')->get();
+            $chefs = User::where('role', 'chef')
+                ->withCount('votes') // Get the total votes for each chef
+                ->get();
 
             // Prepare the response data
             $responseData = $chefs->map(function ($chef) {
@@ -374,11 +376,19 @@ class UsersController extends Controller
                     'bio' => $chef->bio,
                     'recipe_count' => $chef->recipes()->count(),
                     'recipe_submitted' => $chef->recipes,
-                    // Add other relevant details as necessary
+                    'total_votes' => $chef->votes_count, // The total votes retrieved by withCount
                 ];
             });
 
-            return response()->json(['chefs' => $responseData], 200);
+            // Sort chefs by total votes in descending order
+            $sortedChefs = $responseData->sortByDesc('total_votes')->values()->all();
+
+            // Assign voting positions based on sorted order
+            foreach ($sortedChefs as $index => $chef) {
+                $chef['voting_position'] = $index + 1; // Position starts from 1
+            }
+
+            return response()->json(['chefs' => $sortedChefs], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
