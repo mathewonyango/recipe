@@ -109,6 +109,7 @@ class UsersController extends Controller
             // Save the new chef to the database
             $chef->save();
 
+            $chefProfile = User::with('recipes', 'votes', 'events')->find($chef->id);
 
 
             // Return the registered data as a response
@@ -125,9 +126,15 @@ class UsersController extends Controller
                     'cuisine_type' => $chef->cuisine_type,
                     'certification' => $chef->certification,
                     'bio' => $chef->bio,
+                    'recipes' => $chefProfile->recipes,
+                    'votes' => $chefProfile->votes,
+                    'events' => $chefProfile->events,
+                    'recipe_count' => $chefProfile->recipes()->count(),
+                    'total_votes' => $chefProfile->votes()->count(),
                     'payment_status' => $chef->payment_status,
                     'social_media_links' => json_decode($chef->social_media_links, true), // Return as array
-                    'role' => $chef->role,]
+                    'role' => $chef->role,
+                    ]
             ], 201);
         } catch (\Illuminate\Database\QueryException $ex) {
             // Catch database-related errors (e.g., duplicate entry, foreign key constraint failures)
