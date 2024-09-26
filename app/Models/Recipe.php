@@ -37,6 +37,11 @@ class Recipe extends Model
     return $this->hasMany(Vote::class);
 }
 
+public function votesCount()
+{
+    return $this->votes()->count(); // Returns the number of votes for the recipe
+}
+
 public function events()
 {
     return $this->belongsToMany(Event::class, 'event_recipe', 'recipe_id', 'event_id');

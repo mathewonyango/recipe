@@ -97,7 +97,7 @@ class RecipesController extends Controller
                             'name' => $recipe->user->name,
                             'profile_picture' => $recipe->user->profile_picture,
                         ],
-                        'total_votes' => $recipe->votes->count(), // Count of votes for the recipe
+                        'total_votes' => $recipe->votesCount(), // Count of votes for the recipe
                     ];
                 });
 
