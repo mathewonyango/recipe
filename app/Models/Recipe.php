@@ -18,6 +18,7 @@ class Recipe extends Model
         'total_time',
         'ingredients',
         'instructions',
+        'user_id',
         'status',
     ];
 
