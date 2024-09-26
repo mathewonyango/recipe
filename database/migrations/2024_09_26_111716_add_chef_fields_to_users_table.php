@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('username')->unique()->default(DB::raw('NEWID()'))->after('email'); // Generate a unique default value
+            $table->string('username')->unique()->nullable()->default(null)->change(); // Change default to NULL and make it nullable
             $table->text('profile_picture')->nullable()->after('password');
             $table->enum('experience_level', ['Beginner', 'Intermediate', 'Professional'])->default('Beginner')->after('profile_picture');
             $table->string('cuisine_type')->nullable()->after('experience_level');
