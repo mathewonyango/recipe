@@ -14,7 +14,14 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('username')->unique()->nullable()->default(null)->change(); // Change default to NULL and make it nullable
+            // First, check if the username column exists before attempting to modify it
+            if (!Schema::hasColumn('users', 'username')) {
+                $table->string('username')->unique()->nullable()->default(null); // Add the username column
+            } else {
+                $table->string('username')->unique()->nullable()->default(null)->change(); // Modify the existing username column
+            }
+
+            // Adding other columns
             $table->text('profile_picture')->nullable()->after('password');
             $table->enum('experience_level', ['Beginner', 'Intermediate', 'Professional'])->default('Beginner')->after('profile_picture');
             $table->string('cuisine_type')->nullable()->after('experience_level');
@@ -23,15 +30,12 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
+            // Drop the added columns
             $table->dropColumn(['username', 'profile_picture', 'experience_level', 'cuisine_type', 'location', 'certification']);
         });
     }
+
 };
