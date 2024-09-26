@@ -105,7 +105,7 @@ class UsersController extends Controller
             $chef->status = 'active'; // default status
             $chef->approval_status = 'pending'; // default approval status
             $chef->recipes_count = 0; // default value for recipes count
-
+            $chef->payment_status='unpaid';
             // Save the new chef to the database
             $chef->save();
 
