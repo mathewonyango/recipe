@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Recipe;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 
 
 class RecipesController extends Controller
@@ -23,6 +23,52 @@ class RecipesController extends Controller
         return view('Recipe.index', compact('recipes'));
     }
 
+
+
+
+    public function submitRecipe(Request $request)
+    {
+        // Validation rules
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'topic_id' => 'required|integer|exists:topics,id',
+            'servings' => 'required|integer',
+            'prep_time' => 'required|integer',
+            'cook_time' => 'required|integer',
+            'total_time' => 'required|integer',
+            'ingredients' => 'required|string',
+            'instructions' => 'required|string',
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            // Return a custom error response
+            return response()->json([
+                'message' => 'Please fill all the required fields.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        // Create a new recipe with the 'draft' status by default
+        $recipe = Recipe::create([
+            'title' => $request->title,
+            'topic_id' => $request->topic_id,
+            'servings' => $request->servings,
+            'prep_time' => $request->prep_time,
+            'cook_time' => $request->cook_time,
+            'total_time' => $request->total_time,
+            'ingredients' => $request->ingredients,
+            'instructions' => $request->instructions,
+            'user_id' => $request->user_id,
+            'status' => 'draft', // default status
+        ]);
+
+        // Return success response
+        return response()->json([
+            'message' => 'Recipe submitted successfully!',
+            'recipe' => $recipe,
+        ], 201);
+    }
 
     public function getAllRecipes(Request $request)
     {
