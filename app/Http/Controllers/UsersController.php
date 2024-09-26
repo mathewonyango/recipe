@@ -376,8 +376,10 @@ class UsersController extends Controller
                     'bio' => $chef->bio,
                     'recipe_count' => $chef->recipes()->count(),
                     'recipe_submitted' => $chef->recipes,
-                    'total_votes' => $chef->votes->count(), // The total votes retrieved by withCount
+                    'total_votes' => $chef->recipes->votesCount(), // The total votes retrieved by withCount
                 ];
+
+
             });
 
             // Sort chefs by total votes in descending order
