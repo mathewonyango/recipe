@@ -63,4 +63,31 @@ class TopicsController extends Controller
         // Return a view with the single topic (or JSON)
         return view('Topic.create');
     }
+
+    public function getAllTopics(Request $request)
+    {
+        try {
+            // Fetch all topics with their related recipes
+            $topics = Topic::with('recipes')->get();
+
+            // Prepare the response data
+            $responseData = $topics->map(function ($topic) {
+                return [
+                    'id' => $topic->id,
+                    'name' => $topic->name,
+                    'description' => $topic->description,
+                    'start_date' => $topic->start_date,
+                    'end_date' => $topic->end_date,
+                    'status' => $topic->status,
+                    'recipe_count' => $topic->recipeCount(),
+                    'latest_recipe' => $topic->recipeSummary(), // Include the latest recipe summary if needed
+                    'recipes' => $topic->recipes, // Include related recipes
+                ];
+            });
+
+            return response()->json(['topics' => $responseData], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
 }
