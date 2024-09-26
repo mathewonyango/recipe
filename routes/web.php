@@ -89,8 +89,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/api/register-chef', [UsersController::class, 'registerChef']);
 Route::post('/api/register', [UsersController::class, 'register']);
 
-Route::post('/api/chefs/login', [UsersController::class, 'loginChef']);
-Route::post('/api/users/login', [UsersController::class, 'loginUser']);
+// Route::post('/api/chefs/login', [UsersController::class, 'loginChef']);
+Route::post('/api/login', [UsersController::class, 'loginUser']);
 
 // Request Password Reset
 Route::post('/api/users/password/reset/request', [UsersController::class, 'requestPasswordReset']);
