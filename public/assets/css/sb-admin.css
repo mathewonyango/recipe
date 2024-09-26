@@ -1,0 +1,100 @@
+/**Multipart form - start*/
+.add-fees-and-commissions #feesAndCommissions {
+    /*background-color: #ffffff;*/
+    /*margin: 100px auto;*/
+    /*padding: 40px;*/
+    /*width: 100%;*/
+    /*min-width: 200px;*/
+}
+
+.add-fees-and-commissions input {
+    /*padding: 10px;*/
+    /*width: 100%;*/
+    /*font-size: 17px;*/
+    /*font-family: Raleway;*/
+    /*border: 1px solid #aaaaaa;*/
+    /*margin-bottom: 2%;*/
+}
+
+.add-fees-and-commissions input.invalid {
+    background-color: 	#D3D3D3;
+}
+
+.add-fees-and-commissions .tab {
+    display: none;
+}
+
+.add-fees-and-commissions .tabModal {
+    display: none;
+}
+
+.add-fees-and-commissions .step {
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    /*background-color: #bbbbbb;*/
+    border: none;
+    /*  border-radius: 50%;*/
+    display: inline-block;
+    opacity: 0.5;
+}
+
+.add-fees-and-commissions .stepModal {
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    /*background-color: #bbbbbb;*/
+    border: none;
+    /*  border-radius: 50%;*/
+    display: inline-block;
+    opacity: 0.5;
+}
+
+.add-fees-and-commissions .step.active{
+    opacity: 1;
+}
+.add-fees-and-commissions .stepModal.active {
+    opacity: 1;
+}
+
+.add-fees-and-commissions .step.finish {
+    background-color: #148CCC;
+}
+
+.add-fees-and-commissions .stepModal.finish {
+    background-color: #148CCC;
+}
+
+.nav-buttons-multipart-form {
+    margin-left: -5%;
+}
+
+.nav-buttons-multipart-form button{
+    width: 100px;
+}
+
+/**Multipart form - stop*/
+
+/* Make circles that indicate the steps of the form: */
+.step {
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+    margin: 0 2px;
+    color: #fff;
+    background-color: #bbbbbb;
+    border: none;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.8;
+    padding: 5px
+}
+
+.step.active {
+    opacity: 1;
+    background-color: #617CE7;
+}
+
+.step.finish {
+    background-color: #617CE7;
+}
