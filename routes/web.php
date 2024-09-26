@@ -97,7 +97,7 @@ Route::post('/api/users/password/reset/request', [UsersController::class, 'reque
 
 // Reset Password
 Route::post('/api/users/password/reset', [UsersController::class, 'resetPassword']);
-Auth::routes();
+//Auth::routes();
 
 
 Route::get('/api/chefs/{id}', [UsersController::class, 'getChefProfile']);
