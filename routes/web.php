@@ -112,3 +112,6 @@ Route::post('/api/chefs/{id}', [UsersController::class, 'updateProfile']);
 Route::get('/api/topics', [TopicsController::class, 'getAllTopics']);
 
 Route::get('/api/recipes', [RecipesController::class, 'getAllRecipes']);
+
+
+Route::post('/vote/recipes/{recipeId}', [VotesController::class, 'vote']);
