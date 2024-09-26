@@ -354,52 +354,34 @@ class UsersController extends Controller
 
 
 
-    public function fetchUserProfile(Request $request, $id)
+    public function getChefs(Request $request)
     {
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+        try {
+            // Fetch all users with the role of 'chef'
+            $chefs = User::where('role', 'chef')->get();
 
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            // Prepare the response data
+            $responseData = $chefs->map(function ($chef) {
+                return [
+                    'id' => $chef->id,
+                    'name' => $chef->name,
+                    'email' => $chef->email,
+                    'profile_picture' => $chef->profile_picture,
+                    'cuisine_type' => $chef->cuisine_type,
+                    'location' => $chef->location,
+                    'experience_level' => $chef->experience_level,
+                    'certification' => $chef->certification,
+                    'bio' => $chef->bio,
+                    'recipe_count' => $chef->recipes()->count(),
+                    // Add other relevant details as necessary
+                ];
+            });
+
+            return response()->json(['chefs' => $responseData], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
-
-        // Get the authenticated user
-        $user = User::find($id); // Assuming you're using Laravel's built-in authentication
-
-        // Load additional relationships if necessary
-        $user->load('votes.recipe', 'events'); // Load votes and events relationships
-
-        // Prepare the response data
-        $responseData = [
-            'id' => $user->id,
-            'name' => $user->name,
-            'username' => $user->username,
-            'email' => $user->email,
-            'status' => $user->status, // Assuming there's a status column
-            'bio' => $user->bio, // Assuming there's a bio column
-            'role' => $user->role, // Role (e.g., voter)
-            'profile_picture' => $user->profile_picture, // Profile picture URL or path
-            'social_media_links' => $user->social_media_links, // Assuming there's a field for social media links
-            'recipes_voted_for' => $user->votes->map(function ($vote) {
-                return [
-                    'recipe_id' => $vote->recipe_id,
-                    'recipe_title' => $vote->recipe->title, // Adjust according to your Recipe model
-                    // Add other recipe details as necessary
-                ];
-            }),
-            'events_participated' => $user->events->map(function ($event) {
-                return [
-                    'event_id' => $event->id,
-                    'event_name' => $event->name, // Adjust according to your Event model
-                    // Add other event details as necessary
-                ];
-            }),
-        ];
-
-        // Return the user's profile data
-        return response()->json($responseData);
     }
-
 
 
     // Update Chef Profile Data
