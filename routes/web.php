@@ -105,6 +105,8 @@ Route::post('/api/chefs/{id}', [UsersController::class, 'updateProfile']);
 //Route::get(uri: '/api/user/profile/{id}', [UsersController::class, 'fetchUserProfile']);
 
 
+
+
 //Topics:
 
 Route::get('/api/topics', [TopicsController::class, 'getAllTopics']);

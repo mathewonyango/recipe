@@ -373,6 +373,7 @@ class UsersController extends Controller
                     'certification' => $chef->certification,
                     'bio' => $chef->bio,
                     'recipe_count' => $chef->recipes()->count(),
+                    'recipe_submitted' => $chef->recipes,
                     // Add other relevant details as necessary
                 ];
             });
