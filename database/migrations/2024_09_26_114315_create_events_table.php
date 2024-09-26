@@ -9,13 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
+        Schema::dropIfExists('events'); // Drop the table if it exists
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
