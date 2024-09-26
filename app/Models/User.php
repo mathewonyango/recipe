@@ -77,6 +77,12 @@ class User extends Authenticatable
           return $this->hasManyThrough(Event::class, Topic::class, 'user_id', 'topic_id', 'id', 'id');
       }
 
+      public function totalVotes()
+      {
+          // Sum all votes from the user's recipes
+          return $this->recipes()->withCount('votes')->get()->sum('vote');
+      }
+
       // Method to fetch all relevant data of the chef
       public function fetchChefData()
       {
