@@ -27,48 +27,57 @@ class RecipesController extends Controller
 
 
     public function submitRecipe(Request $request)
-    {
-        // Validation rules
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'topic_id' => 'required|integer|exists:topics,id',
-            'servings' => 'required|integer',
-            'prep_time' => 'required|integer',
-            'cook_time' => 'required|integer',
-            'total_time' => 'required|integer',
-            'ingredients' => 'required|string',
-            'instructions' => 'required|string',
-        ]);
+{
+    // Validation rules
+    $validator = Validator::make($request->all(), [
+        'title' => 'required|string|max:255',
+        'topic_id' => 'required|integer|exists:topics,id',
+        'servings' => 'required|integer',
+        'prep_time' => 'required|integer',
+        'cook_time' => 'required|integer',
+        'total_time' => 'required|integer',
+        'ingredients' => 'required|string',
+        'instructions' => 'required|string',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
+        'tags' => 'nullable|string', // Tags should be a string
+        'difficulty_level' => 'required|string|in:easy,medium,hard', // Difficulty level validation
+        'nutritional_information' => 'nullable|string', // Optional nutritional info
+    ]);
 
-        // Check if validation fails
-        if ($validator->fails()) {
-            // Return a custom error response
-            return response()->json([
-                'message' => 'Please fill all the required fields.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        // Create a new recipe with the 'draft' status by default
-        $recipe = Recipe::create([
-            'title' => $request->title,
-            'topic_id' => $request->topic_id,
-            'servings' => $request->servings,
-            'prep_time' => $request->prep_time,
-            'cook_time' => $request->cook_time,
-            'total_time' => $request->total_time,
-            'ingredients' => $request->ingredients,
-            'instructions' => $request->instructions,
-            'user_id' => $request->user_id,
-            'status' => 'draft', // default status
-        ]);
-
-        // Return success response
+    // Check if validation fails
+    if ($validator->fails()) {
+        // Return a custom error response
         return response()->json([
-            'message' => 'Recipe submitted successfully!',
-            'recipe' => $recipe,
-        ], 201);
+            'message' => 'Please fill all the required fields.',
+            'errors' => $validator->errors(),
+        ], 422);
     }
+
+    // Create a new recipe with the 'draft' status by default
+    $recipe = Recipe::create([
+        'title' => $request->title,
+        'topic_id' => $request->topic_id,
+        'servings' => $request->servings,
+        'prep_time' => $request->prep_time,
+        'cook_time' => $request->cook_time,
+        'total_time' => $request->total_time,
+        'ingredients' => $request->ingredients,
+        'instructions' => $request->instructions,
+        'user_id' => $request->user()->id, // Assumes user is authenticated
+        'status' => 'draft', // default status
+        'image' => $request->file('image')->store('recipes/images', 'public'), // Store image
+        'tags' => $request->tags,
+        'difficulty_level' => $request->difficulty_level,
+        'nutritional_information' => $request->nutritional_information,
+    ]);
+
+    // Return success response
+    return response()->json([
+        'message' => 'Recipe submitted successfully!',
+        'recipe' => $recipe,
+    ], 201);
+}
+
 
     public function getAllRecipes(Request $request)
     {

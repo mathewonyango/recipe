@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
+
 class Recipe extends Model
 {
     use HasFactory;
@@ -20,6 +22,10 @@ class Recipe extends Model
         'instructions',
         'user_id',
         'status',
+        'image', // New field
+        'tags', // New field
+        'difficulty_level', // New field
+        'nutritional_information', // New field (optional)
     ];
 
     // Relationships with Topic
