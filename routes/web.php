@@ -110,3 +110,5 @@ Route::post('/api/chefs/{id}', [UsersController::class, 'updateProfile']);
 //Topics:
 
 Route::get('/api/topics', [TopicsController::class, 'getAllTopics']);
+
+Route::get('/api/recipes', [RecipesController::class, 'getAllRecipes']);

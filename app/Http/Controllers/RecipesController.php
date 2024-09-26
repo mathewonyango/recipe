@@ -26,26 +26,30 @@ class RecipesController extends Controller
 
     public function getAllRecipes(Request $request)
     {
-        // Check for the unique header
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
-
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
-
         try {
-            $recipes = Recipe::all();
-            return response()->json([
-                'status' => 'success',
-                'data' => $recipes
-            ], 200);
+            // Fetch all recipes with relevant relationships
+            $recipes = Recipe::with(['user', 'votes']) // Load user and votes relationships
+                ->get()
+                ->map(function ($recipe) {
+                    return [
+                        'id' => $recipe->id,
+                        'title' => $recipe->title,
+                        'description' => $recipe->description,
+                        'ingredients' => $recipe->ingredients,
+                        'instructions' => $recipe->instructions,
+                        'cooking_time' => $recipe->cooking_time,
+                        'chef' => [  // Renamed 'user' to 'chef'
+                            'id' => $recipe->user->id,
+                            'name' => $recipe->user->name,
+                            'profile_picture' => $recipe->user->profile_picture,
+                        ],
+                        'total_votes' => $recipe->votes->count(), // Count of votes for the recipe
+                    ];
+                });
+
+            return response()->json(['recipes' => $recipes], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'An error occurred while fetching recipes.',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
     public function approve($id)
