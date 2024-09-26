@@ -5,6 +5,7 @@ use App\Models\Vote;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 use App\Models\Recipe;
 
@@ -12,7 +13,7 @@ class VotesController extends Controller
 {
     public function vote(Request $request, $recipeId)
     {
-        $user = Auth::user();
+        $user =User::find($request->user_id);
 
         // Check if the user is a voter
         if ($user->role !== 'user') {
