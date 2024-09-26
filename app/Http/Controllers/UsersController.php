@@ -164,31 +164,50 @@ class UsersController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Check if the provided username or email exists in the database
-        $user = User::where('username', $request->username_or_email)
-            ->orWhere('email', $request->username_or_email)
-            ->first();
+        try {
+            // Check if the provided username or email exists in the database
+            $user = User::where('username', $request->username_or_email)
+                ->orWhere('email', $request->username_or_email)
+                ->first();
 
-        // If user not found or password does not match
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials.'], 401);
+            // If user not found or password does not match
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                return response()->json(['message' => 'Invalid credentials.'], 401);
+            }
+
+            // Fetch the chef's profile data with related data
+            $chefProfile = User::with('recipes', 'votes', 'events')->find($user->id);
+
+            if (!$chefProfile) {
+                return response()->json(['message' => 'Chef profile not found.'], 404);
+            }
+
+            // Prepare the response data
+            $responsePayload = [
+                'message' => 'Login successful!',
+                'user' => [
+                    'id' => $chefProfile->id,
+                    'name' => $chefProfile->name,
+                    'bio' => $chefProfile->bio,
+                    'payment_status' => $chefProfile->payment_status,
+                    'social_media_links' => $chefProfile->social_media_links,
+                    'role' => $chefProfile->role,
+                    'profile_picture' => $chefProfile->profile_picture,
+                    'recipes' => $chefProfile->recipes,
+                    'votes' => $chefProfile->votes,
+                    'events' => $chefProfile->events,
+                    'recipe_count' => $chefProfile->recipes()->count(),
+                    'total_votes' => $chefProfile->votes()->count(),
+                ],
+            ];
+
+            return response()->json($responsePayload, 200);
+        } catch (\Exception $e) {
+            // Handle any unexpected errors
+            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
-
-        // Create a response payload (you can modify this to include a token if needed)
-        $responsePayload = [
-            'message' => 'Login successful!',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-                'profile_picture' => $user->profile_picture,
-                // Add more fields if needed
-            ],
-        ];
-
-        return response()->json($responsePayload, 200);
     }
+
 
 
     public function loginUser(Request $request)
@@ -303,42 +322,7 @@ class UsersController extends Controller
     }
 
     // Fetch Chef Profile Data
-    public function getChefProfile($id, Request $request)
-    {
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
 
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
-
-        // Fetch the chef's profile data
-        $chef = User::with('recipes', 'votes', 'events')->find($id);
-
-        if (!$chef) {
-            return response()->json(['message' => 'Chef not found.'], 404);
-        }
-
-        // Prepare the response data
-        $profileData = [
-            'profile' => [
-                'id' => $chef->id,
-                'name' => $chef->name,
-                'bio' => $chef->bio,
-                'payment_status' => $chef->payment_status,
-                'social_media_links' => $chef->social_media_links,
-                'role' => $chef->role,
-                'profile_picture' => $chef->profile_picture,
-            ],
-            'recipes' => $chef->recipes,
-            'votes' => $chef->votes,
-            'events' => $chef->events,
-            'recipe_count' => $chef->recipes()->count(),
-            'total_votes' => $chef->votes()->count(),
-        ];
-
-        return response()->json($profileData);
-    }
 
 
     public function fetchUserProfile(Request $request, $id)
