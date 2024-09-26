@@ -27,6 +27,14 @@ class RecipesController extends Controller
     public function getAllRecipes(Request $request)
     {
         try {
+
+            $apiKey = $request->header('X-API-Key');
+            $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+
+            if ($apiKey !== $expectedApiKey) {
+                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            }
+
             // Fetch all recipes with relevant relationships
             $recipes = Recipe::with(['user', 'votes']) // Load user and votes relationships
                 ->get()

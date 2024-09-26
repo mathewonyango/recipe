@@ -67,6 +67,13 @@ class TopicsController extends Controller
     public function getAllTopics(Request $request)
     {
         try {
+
+            $apiKey = $request->header('X-API-Key');
+            $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+
+            if ($apiKey !== $expectedApiKey) {
+                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            }
             // Fetch all topics with their related recipes
             $topics = Topic::with('recipes')->get();
 
