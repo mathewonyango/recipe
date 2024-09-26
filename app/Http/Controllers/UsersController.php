@@ -278,7 +278,7 @@ class UsersController extends Controller
 
                 if ($chefProfile) {
                     $responsePayload['user']['recipes'] = $chefProfile->recipes;
-                    $responsePayload['user']['votes'] = $chefProfile->votes;
+                    $responsePayload['user']['recipe_voted_for'] = $chefProfile->votes;
                     $responsePayload['user']['events'] = $chefProfile->events;
                     $responsePayload['user']['recipe_count'] = $chefProfile->recipes()->count();
                     $responsePayload['user']['total_votes'] = $chefProfile->votes()->count();
