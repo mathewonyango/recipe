@@ -111,62 +111,63 @@ class RecipesController extends Controller
 }
 
 
-    public function getAllRecipes(Request $request)
-    {
-        try {
+public function getAllRecipes(Request $request)
+{
+    try {
+        $apiKey = $request->header('X-API-Key');
+        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
 
-            $apiKey = $request->header('X-API-Key');
-            $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+        if ($apiKey !== $expectedApiKey) {
+            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        }
 
-            if ($apiKey !== $expectedApiKey) {
-                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-            }
+        // Fetch all recipes with relevant relationships
+        $recipes = Recipe::with(['comments.user', 'chef', 'votes']) // Load user, chef, and votes relationships
+            ->withCount('votes') // Count the number of votes for each recipe
+            ->get()
+            ->map(function ($recipe) {
+                // Calculate average rating from comments
+                $averageRating = $recipe->comments->avg('rating');
 
-            // Fetch all recipes with relevant relationships
-            $recipes = Recipe::with(['comments', 'chef'])->get();
-
-            $recipes = Recipe::with(['user', 'votes']) // Load user and votes relationships
-                ->withCount('votes') // Count the number of votes for each recipe
-                ->get()
-                ->map(function ($recipe) {
-                    $recipeEngagement = $recipe->comments;
-                     // Calculate average rating
-                    $averageRating = $recipe->comments->avg('rating');
-                    $commentsWithUserDetails = $recipe->comments->map(function ($comment) {
-                        return [
-                            'id' => $comment->id,
-                            'body' => $comment->body,
-                            'user' => [
-                                'id' => $comment->user->id,
-                                'name' => $comment->user->name,
-                                'profile_picture' => $comment->user->profile_picture,
-                            ],
-                        ];
-                    });
-        return [
-            'id' => $recipe->id,
-            'title' => $recipe->title,
-            'description' => $recipe->description,
-            'ingredients' => $recipe->ingredients,
-            'instructions' => $recipe->instructions,
-            'cooking_time' => $recipe->cooking_time,
-            'chef' => [
-                'id' => $recipe->chef->id,
-                'name' => $recipe->chef->name,
-                'profile_picture' => $recipe->chef->profile_picture,
-            ],
-            // 'comments' => $commentsWithUserDetails, // Key for comments
-            'average_rating' => $averageRating, // Key for average rating
-            'comments_count' => $recipe->comments->count(),
-            'total_votes' => $recipe->votes_count,
-        ];
+                // Prepare comments with user details
+                $commentsWithUserDetails = $recipe->comments->map(function ($comment) {
+                    return [
+                        'id' => $comment->id,
+                        'body' => $comment->body,
+                        'user' => [
+                            'id' => $comment->user->id,
+                            'name' => $comment->user->name,
+                            'profile_picture' => $comment->user->profile_picture,
+                        ],
+                        'rating' => $comment->rating, // Include rating if needed
+                    ];
                 });
 
-            return response()->json(['recipes' => $recipes], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
-        }
+                return [
+                    'id' => $recipe->id,
+                    'title' => $recipe->title,
+                    'description' => $recipe->description,
+                    'ingredients' => $recipe->ingredients,
+                    'instructions' => $recipe->instructions,
+                    'cooking_time' => $recipe->cooking_time,
+                    'chef' => [
+                        'id' => $recipe->chef->id,
+                        'name' => $recipe->chef->name,
+                        'profile_picture' => $recipe->chef->profile_picture,
+                    ],
+                    'comments' => $commentsWithUserDetails, // Key for comments
+                    'average_rating' => $averageRating, // Key for average rating
+                    'comments_count' => $recipe->comments->count(),
+                    'total_votes' => $recipe->votes_count,
+                ];
+            });
+
+        return response()->json(['recipes' => $recipes], 200);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
     }
+}
+
     public function approve($id)
     {
         $recipe = Recipe::findOrFail($id);
