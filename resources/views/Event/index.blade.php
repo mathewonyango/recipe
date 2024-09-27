@@ -43,8 +43,13 @@
                         @foreach ($events as $event)
                         <tr>
                             <td>{{ $event->location }}</td>
-                            <td>{{ $event->topics->name }}</td>
-                            <td>{{ $event->day_of_event }}</td>
+                            <td>
+                                {{ $event->topic->name }}
+                                <span class="badge bg-{{ $event->topic->status == 'open' ? 'success' : 'danger' }}">
+                                    {{ ucfirst($event->topic->status) }}
+                                </span>
+                            </td>
+                                    <td>{{ $event->day_of_event }}</td>
                             <td>{{ $event->time }}</td>
                             <td>{{ $event->charges }} KES</td>
                             <td>{{ $event->contact_number }}</td>

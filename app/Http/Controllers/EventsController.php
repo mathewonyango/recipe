@@ -16,7 +16,7 @@ class EventsController extends Controller
     public function index()
     {
         //
-        $events = Event::all(); // Fetch all events from the database
+        $events = Event::with('topic')->get(); // Fetch all events with their related topics
         return view('Event.index', compact('events'));
     }
 
