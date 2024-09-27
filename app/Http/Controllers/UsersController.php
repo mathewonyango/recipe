@@ -346,7 +346,6 @@ class UsersController extends Controller
            'name' => $user->name,
            'email' => $user->email,
 
-
        ], 200);
    }
 
