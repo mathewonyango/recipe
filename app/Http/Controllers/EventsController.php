@@ -208,7 +208,7 @@ $events = Event::with([
                     'chefs_who_are_participating' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
                     'contact_number' => $event->contact_number,
                     'comments'=>$event->comments,
-                    'total_votes_casted' => $event->recipes->getTotalVotesAttribute,  // Pluck titles from the loaded relationship
+                    // 'total_votes_casted' => $event->recipes->getTotalVotesAttribute,  // Pluck titles from the loaded relationship
                     'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
 
                 ];
@@ -223,7 +223,7 @@ $events = Event::with([
                     'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
                     'comments'=>$event->comments,
-                    'total_votes_casted' => $event->recipes->getTotalVotesAttribute,  // Pluck titles from the loaded relationship
+                    // 'total_votes_casted' => $event->recipes->getTotalVotesAttribute,  // Pluck titles from the loaded relationship
                     'chefs_who_participated' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
                     'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
 
