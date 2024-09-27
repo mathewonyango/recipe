@@ -44,7 +44,7 @@
                         <tr>
                             <td>{{ $event->location }}</td>
                             <td>{{ $event->topic }}</td>
-                            <td>{{ $event->event_date->format('d-m-Y') }}</td>
+                            <td>{{ $event->day_of_event->format('d-m-Y') }}</td>
                             <td>{{ $event->time }}</td>
                             <td>{{ $event->charges }} KES</td>
                             <td>{{ $event->contact_number }}</td>
