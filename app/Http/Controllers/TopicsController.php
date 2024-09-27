@@ -67,15 +67,34 @@ class TopicsController extends Controller
     public function getAllTopics(Request $request)
     {
         try {
-
             $apiKey = $request->header('X-API-Key');
             $expectedApiKey = 'ABDI'; // Replace with your actual unique key
 
             if ($apiKey !== $expectedApiKey) {
                 return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
             }
-            // Fetch all topics with their related recipes
-            $topics = Topic::with('recipes')->get();
+
+            // Initialize the query builder
+            $query = Topic::with('recipes');
+
+            // Filter by status if provided
+            if ($request->has('status')) {
+                $query->where('status', $request->input('status'));
+            }
+
+            // Fetch the latest topics if 'latest' is passed
+            if ($request->has('latest')) {
+                // You can define what "latest" means, e.g., the last added or modified topics
+                $query->orderBy('created_at', 'desc')->take(5); // Adjust the number as needed
+            }
+
+            // Filter by date range if 'start_date' and 'end_date' are provided
+            if ($request->has('start_date') && $request->has('end_date')) {
+                $query->whereBetween('start_date', [$request->input('start_date'), $request->input('end_date')]);
+            }
+
+            // Fetch the filtered topics
+            $topics = $query->get();
 
             // Prepare the response data
             $responseData = $topics->map(function ($topic) {
@@ -87,8 +106,8 @@ class TopicsController extends Controller
                     'end_date' => $topic->end_date,
                     'status' => $topic->status,
                     'recipe_count' => $topic->recipeCount(),
-                    'latest_recipe' => $topic->recipeSummary(), // Include the latest recipe summary if needed
-                    'recipes' => $topic->recipes, // Include related recipes
+                    'latest_recipe' => $topic->recipeSummary(),
+                    'recipes' => $topic->recipes,
                 ];
             });
 
@@ -97,4 +116,5 @@ class TopicsController extends Controller
             return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
+
 }
