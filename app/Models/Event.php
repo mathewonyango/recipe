@@ -16,6 +16,7 @@ class Event extends Model
     // Specify the fields that can be mass assigned
     protected $fillable = [
         'location',
+        'name',
         'day_of_event',
         'time',
         'charges',

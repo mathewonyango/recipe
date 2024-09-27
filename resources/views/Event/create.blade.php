@@ -17,6 +17,11 @@
 
     <form action="{{ route('events.store') }}" method="POST">
         @csrf
+
+        <div class="form-group">
+            <label for="location">Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ old('location') }}" required>
+        </div>
         <div class="form-group">
             <label for="location">Location</label>
             <input type="text" class="form-control" id="location" name="location" value="{{ old('location') }}" required>
@@ -29,7 +34,7 @@
 
         <div class="form-group">
             <label for="topic">Topic</label>
-            <select class="form-control" id="topic" name="topic" required>
+            <select class="form-control" id="topic_id" name="topic_id" required>
                 <option value="" disabled selected>Select a Topic</option>
                 @foreach ($topics as $topic)
                     <option value="{{ $topic->id }}">{{ $topic->name }} <span class="badge badge-{{ $topic->status == 'closed' ? 'danger' : 'success' }}">{{ ucfirst($topic->status) }}</span></option>

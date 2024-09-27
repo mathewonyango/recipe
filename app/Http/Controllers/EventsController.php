@@ -38,15 +38,17 @@ class EventsController extends Controller
    {
        // Validate the request data
        $request->validate([
+        'name'=>'required',
         'location' => 'required|string|max:255',
         'event_time' => 'required|date_format:H:i',
-        'topic' => 'required|exists:topics,id',
+        'topic_id' => 'required|exists:topics,id',
         'event_date' => 'required|date',
         'charges' => 'required|numeric',
         'contact_number' => 'required|string|max:15', // Adjust the max length as needed
     ]);
        // Create the new event
        $event = Event::create([
+            'name'=>$request->name,
            'location' => $request->location,
            'time' => $request->event_time,
            'topic_id' => $request->topic,
