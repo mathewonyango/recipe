@@ -21,6 +21,7 @@ class Event extends Model
         'time',
         'charges',
         'contact_number',
+        'topic_id',
     ];
 
     // Cast fields to specific data types

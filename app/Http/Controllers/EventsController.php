@@ -41,7 +41,7 @@ class EventsController extends Controller
         'name'=>'required',
         'location' => 'required|string|max:255',
         'event_time' => 'required|date_format:H:i',
-        'topic_id' => 'required|exists:topics,id',
+        'topic_id' => 'required',
         'event_date' => 'required|date',
         'charges' => 'required|numeric',
         'contact_number' => 'required|string|max:15', // Adjust the max length as needed
