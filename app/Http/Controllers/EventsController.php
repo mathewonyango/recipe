@@ -174,7 +174,7 @@ class EventsController extends Controller
     public function getAllEvents()
     {
         // Fetch all events along with their related chefs and recipes
-        $events = Event::with(['chefs', 'recipes'])->get();
+        $events = Event::all();
 
         // Separate ongoing and past events based on the event date
         $ongoingEvents = $events->filter(function ($event) {
