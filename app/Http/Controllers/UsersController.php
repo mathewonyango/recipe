@@ -494,6 +494,7 @@ class UsersController extends Controller
                 ->withCount('votes') // Get the total votes for each chef
                 ->get();
 
+
             // Prepare the response data
             $responseData = $user->map(function ($user) {
                 return [
@@ -501,7 +502,9 @@ class UsersController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'profile_picture' => $user->profile_picture,
+                    'notification_preferences' => $user->notification_preferences,
                     // 'cuisine_type' => $user->cuisine_type,
+                    'push_notification'=>$user->push_notification,
                     'location' => $user->location,
                     // 'experience_level' => $user->experience_level,
                     // 'certification' => $user->certification,

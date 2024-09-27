@@ -113,6 +113,7 @@ class RecipesController extends Controller
     {
         try {
 
+
             $apiKey = $request->header('X-API-Key');
             $expectedApiKey = env('API_KEY'); // Fetch from environment
 

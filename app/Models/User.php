@@ -38,6 +38,7 @@ class User extends Authenticatable
         'social_media_links',
         'events_participated',
         'push_notification',
+        'notification_preferences',
     ];
 
     /**
