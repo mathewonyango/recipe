@@ -31,45 +31,6 @@
             Deployment completed successfully!
         </div>
         <div id="results" class="mt-4"></div>
-
-        <!-- Pending Commits -->
-        {{-- <div class="mt-8">
-            <h2 class="text-2xl font-bold mb-4">Pending Commits</h2>
-            <div id="pendingCommits">
-                @foreach($pendingCommits as $commit)
-                    <div class="bg-white p-4 rounded shadow mb-4">
-                        <h3 class="font-bold">{{ $commit['message'] }}</h3>
-                        <p>Author: {{ $commit['author'] }}</p>
-                        <p>Hash: {{ $commit['hash'] }}</p>
-                        <h4 class="font-bold mt-2">Affected Files:</h4>
-                        <ul>
-                            @foreach($commit['files'] as $file)
-                                <li>{{ $file }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endforeach
-            </div>
-        </div> --}}
-
-        <!-- System Health -->
-        <div class="mt-8">
-            <h2 class="text-2xl font-bold mb-4">System Health</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                @foreach($systemHealth as $metric => $value)
-                    <div class="bg-white p-4 rounded shadow">
-                        <h3 class="font-bold mb-2">{{ ucwords(str_replace('_', ' ', $metric)) }}</h3>
-                        <div class="text-2xl">{{ $value }}%</div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ $value }}%"></div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-
-
         <!-- Git Commit History -->
         <div class="mt-8">
             <h2 class="text-2xl font-bold mb-4">Recent Git Commits</h2>
@@ -79,12 +40,6 @@
                 @endforeach
             </ul>
         </div>
-
-        <!-- Deployment Duration Graph -->
-        {{-- <div class="mt-8">
-            <h2 class="text-2xl font-bold mb-4">Deployment Durations</h2>
-            <canvas id="deploymentDurationChart"></canvas>
-        </div> --}}
     </div>
 
     <script>

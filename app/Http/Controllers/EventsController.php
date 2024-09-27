@@ -176,14 +176,11 @@ class EventsController extends Controller
     public function getAllEvents()
     {
         // Fetch all events along with their related chefs and recipes
-        // $events = Event::with(['topic', 'recipes'])->get();
-            $events = Event::with([
+        $events = Event::with([
             'topic',           // Fetch the topic related to the event
             'recipes.chef',    // Fetch the chef associated with each recipe
-            'recipes.comments' // Fetch the comments related to each recipe
+            'recipes.comments'  // Fetch the comments related to each recipe
         ])->get();
-
-
 
         // Separate ongoing and past events based on the event date
         $ongoingEvents = $events->filter(function ($event) {
@@ -198,37 +195,35 @@ class EventsController extends Controller
         return [
             'Active_events' => $ongoingEvents->map(function ($event) {
                 return [
-                    'Active Events:',
-                    'Event_name'=>$event->name,
+                    'Event_name' => $event->name,
                     'location' => $event->location,
                     'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
-                    'event_day'=>$event->day_of_event,
-                    'time' =>$event->time,
+                    'event_day' => $event->day_of_event,
+                    'time' => $event->time,
                     'charges' => $event->charges,
                     'contact_number' => $event->contact_number,
                     'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
-                    'comments'=>$event->comments,
-                    'chefs_who_wil_participate' => $event->recipes->pluck('chef.name')->unique(),
-
+                    'comments' => $event->comments,
+                    'chefs_who_will_participate' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
                 ];
             }),
 
             'past_events' => $pastEvents->map(function ($event) {
                 return [
-                    'Past Events:',
-                    'Event_name'=>$event->name,
+                    'Event_name' => $event->name,
                     'location' => $event->location,
                     'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
-                    'event_day'=>$event->day_of_event,
-                    'time' =>$event->time,
+                    'event_day' => $event->day_of_event,
+                    'time' => $event->time,
                     'charges' => $event->charges,
                     'contact_number' => $event->contact_number,
                     'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
-                    'comments'=>$event->comments,
+                    'comments' => $event->comments,
                     'chefs_who_participated' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
                 ];
             }),
         ];
     }
+
 
 }
