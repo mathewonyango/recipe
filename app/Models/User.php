@@ -37,6 +37,7 @@ class User extends Authenticatable
         'payment_status',
         'social_media_links',
         'events_participated',
+        'push_notification',
     ];
 
     /**
