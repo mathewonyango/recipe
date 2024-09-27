@@ -200,6 +200,8 @@ class EventsController extends Controller
                     // Assuming $event->chefs returns a collection of users (chefs) with their role as 'chef'
                     // 'recipes' => $event->recipes->pluck('title'),  // Assuming recipes have a 'title' field
                     'charges' => $event->charges,
+                    'chefs_who_are_participating' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
+
                     'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
                     'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
@@ -214,6 +216,7 @@ class EventsController extends Controller
                     'charges' => $event->charges,
                     'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
+                    'chefs_who_participated' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
                     'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
 
                 ];
