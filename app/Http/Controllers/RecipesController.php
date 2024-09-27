@@ -142,7 +142,7 @@ class RecipesController extends Controller
                         ],
                         'comments' => $recipeEngagement, // Renamed 'comments' to 'comment,
                         // 'rating' => $recipeEngagement['rating'],
-                        'commenters'=>User::find($recipeEngagement->user_id)->value('name'),
+                        // 'commenters'=>User::find($recipeEngagement[0]->user_id)->value('name'),
                         'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
                         'total_votes' => $recipe->votes_count, // Count of votes for the recipe
                     ];
