@@ -184,13 +184,14 @@ class EventsController extends Controller
             return Carbon::parse($event->event_date)->isPast();
         });
 
+
         // Return formatted events
         return [
             'ongoing_events' => $ongoingEvents->map(function ($event) {
                 return [
                     'location' => $event->location,
                     'time' => 'Whole day',
-                    'chefs' => $event->chefs->pluck('name'),
+                    'chefs' => $event->chefs,
                     'recipes' => $event->recipes->pluck('title'),
                     'charges' => $event->charges,
                     'event_date' => $event->event_date,
@@ -201,7 +202,7 @@ class EventsController extends Controller
                 return [
                     'location' => $event->location,
                     'time' => 'Whole day',
-                    'chefs' => $event->chefs->pluck('name'),
+                    'chefs' => $event->chefs,
                     'recipes' => $event->recipes->pluck('title'),
                     'charges' => $event->charges,
                     'event_date' => $event->event_date,

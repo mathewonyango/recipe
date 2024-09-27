@@ -84,8 +84,14 @@ class User extends Authenticatable
       // Relationship to Events through Topics
       public function events()
       {
-          return $this->hasManyThrough(Event::class, Topic::class, 'user_id', 'topic_id', 'id', 'id');
+          return $this->hasManyThrough(Event::class, Topic::class, 'topic_id', 'event_id', 'id', 'id');
       }
+
+      public function attendants()
+    {
+        return $this->hasMany(User::class, 'event_participated', 'id');
+        // Here 'event_participated' is the foreign key in User, and 'id' is the primary key of Event
+    }
 
       public function totalVotes()
       {
@@ -105,5 +111,17 @@ class User extends Authenticatable
               'total_votes' => $this->votes()->count(), // Count of votes
           ];
       }
+      public function chefEvents()
+      {
+          return $this->belongsToMany(Event::class, 'event_chef', 'user_id', 'event_id')
+                      ->where('role', 'chef');
+      }
+
+      // A user can attend many events (many-to-many)
+      public function attendedEvents()
+      {
+          return $this->belongsToMany(Event::class, 'event_user', 'user_id', 'event_id');
+      }
+
 
 }
