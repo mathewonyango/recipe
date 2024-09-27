@@ -450,7 +450,7 @@ class UsersController extends Controller
             return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
-    public function getUsers(Request $request)
+    public function Users(Request $request)
     {
         try {
             // Fetch all users with the role of 'chef'
