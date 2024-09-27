@@ -43,7 +43,7 @@
                         @foreach ($events as $event)
                         <tr>
                             <td>{{ $event->location }}</td>
-                            <td>{{ $event->topic }}</td>
+                            <td>{{ $event->topics->name }}</td>
                             <td>{{ $event->day_of_event }}</td>
                             <td>{{ $event->time }}</td>
                             <td>{{ $event->charges }} KES</td>
