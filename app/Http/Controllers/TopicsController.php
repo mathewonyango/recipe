@@ -100,15 +100,13 @@ class TopicsController extends Controller
             // Prepare the response data
             $responseData = $topics->map(function ($topic) {
                 return [
-                    'id' => $topic->id,
-                    'name' => $topic->name,
-                    'description' => $topic->description,
-                    'start_date' => $topic->start_date,
-                    'end_date' => $topic->end_date,
-                    'status' => $topic->status,
-                    'recipe_count' => $topic->recipeCount(),
-                    'latest_recipe' => $topic->recipeSummary(),
-                    'recipes' => $topic->recipes,
+                        'total_votes' => $topic->totalVotes(),
+                        'total_chefs' => $topic->totalChefs(),
+                        'total_comments' => $topic->totalComments(),
+                        'comments' => $topic->comments,
+                        'average_rating' => $topic->averageRatings(),
+                        'winner' => $topic->winner(),
+                        'chef_rankings' => $topic->chefRankings(),
                 ];
             });
 
