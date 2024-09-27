@@ -38,15 +38,18 @@ class EventsController extends Controller
    {
        // Validate the request data
        $request->validate([
-           'location' => 'required|string|max:255',
-           'event_time' => 'required|date_format:H:i',
-           'topic' => 'required|string|max:255',
-           'event_date' => 'required|date|after_or_equal:today',
-           'chefs' => 'nullable|string', // Optional field
-           'recipes' => 'nullable|string', // Optional field
-           'charges' => 'required|numeric',
-           'contact_number' => 'required|string|max:15', // Adjust as necessary
-       ]);
+        'location' => 'required|string|max:255',
+        'event_time' => 'required|date_format:H:i',
+        'topic' => 'required|exists:topics,id',
+        'event_date' => 'required|date',
+        'charges' => 'required|numeric',
+        'contact_number' => 'required|string|max:15', // Adjust the max length as needed
+    ]);
+
+
+
+
+
 
        // Create the new event
        $event = Event::create([
@@ -54,8 +57,8 @@ class EventsController extends Controller
            'time' => $request->event_time,
            'topic' => $request->topic,
            'event_date' => $request->event_date,
-           'chefs' => $request->chefs ? explode(',', $request->chefs) : [], // Convert to array if provided
-           'recipes' => $request->recipes ? explode(',', $request->recipes) : [], // Convert to array if provided
+        //    'chefs' => $request->chefs ? explode(',', $request->chefs) : [], // Convert to array if provided
+        //    'recipes' => $request->recipes ? explode(',', $request->recipes) : [], // Convert to array if provided
            'charges' => $request->charges,
            'contact_number' => $request->contact_number,
        ]);
