@@ -47,10 +47,10 @@ class EventsController extends Controller
     ]);
        // Create the new event
        $event = Event::create([
-           'event_location' => $request->location,
-           'event_time' => $request->event_time,
-           'topic' => $request->topic,
-           'event_day' => $request->event_date,
+           'location' => $request->location,
+           'time' => $request->event_time,
+           'topic_id' => $request->topic,
+           'day_of_event' => $request->event_date,
         //    'chefs' => $request->chefs ? explode(',', $request->chefs) : [], // Convert to array if provided
         //    'recipes' => $request->recipes ? explode(',', $request->recipes) : [], // Convert to array if provided
            'charges' => $request->charges,

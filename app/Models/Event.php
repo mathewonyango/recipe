@@ -15,20 +15,18 @@ class Event extends Model
 
     // Specify the fields that can be mass assigned
     protected $fillable = [
-        'event_location',
-        'event_day',
-        'event_time',
-        'participating_chefs',
-        'event_recipes',
+        'location',
+        'day_of_event',
+        'time',
         'charges',
         'contact_number',
     ];
 
     // Cast fields to specific data types
-    protected $casts = [
-        'participating_chefs' => 'array',
-        'event_recipes' => 'array',
-    ];
+    // protected $casts = [
+    //     'participating_chefs' => 'array',
+    //     'event_recipes' => 'array',
+    // ];
 
     /**
      * Get the participating chefs for the event.
