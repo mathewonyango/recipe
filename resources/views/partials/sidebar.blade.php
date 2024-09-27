@@ -108,6 +108,22 @@
                         </li>
                     </ul>
                 </li>
+                <li>
+                    <a href="javascript: void(0);" style="display: block; padding: 10px 10px; font-weight: bold;">
+                        <i data-feather="calendar"></i>
+                        <span> Event Management </span>
+                        <span data-feather="chevron-down"></span>
+                    </a>
+                    <ul class="nav-second-level" aria-expanded="false">
+                        <li>
+                            <a href="{{ route('events.index') }}"><i data-feather="list"></i> View Events</a>
+                        </li>
+                        {{-- <li>
+                            <a href="{{ route('events.create') }}"><i data-feather="plus-circle"></i> Add Event</a>
+                        </li> --}}
+                    </ul>
+                </li>
+
 
                 <li>
                     <a href="javascript: void(0);" style="display: block; padding: 10px 10px; font-weight: bold;">

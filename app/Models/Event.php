@@ -50,4 +50,5 @@ class Event extends Model
     {
         return $this->hasManyThrough(User::class, Topic::class, 'event_id', 'topic_id', 'id', 'user_id');
     }
+
 }

@@ -61,6 +61,7 @@ class UsersController extends Controller
             ]);
 
 
+
             return response()->json(['message' => 'Registration successful!', 'user' => $user], 201);
 
         } catch (\Exception $e) {
