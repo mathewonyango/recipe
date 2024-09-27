@@ -140,7 +140,7 @@ class RecipesController extends Controller
                         ],
                         'comments' => $recipe->comments,
                         'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
-                        'total_votes' => $recipe->votes_count, // Count of votes for the recipe
+                        'total_votes' => $recipe->total_votes, // Count of votes for the recipe
                     ];
                 });
 

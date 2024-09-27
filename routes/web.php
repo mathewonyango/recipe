@@ -104,9 +104,9 @@ Route::post('/api/users/password/reset', [UsersController::class, 'resetPassword
 Route::get('/api/chefs', [UsersController::class, 'getChefs']);
 Route::get('/api/chefs/{id}', [UsersController::class, 'getChefProfile']);
 Route::post('/api/chefs/{id}', [UsersController::class, 'updateProfile']);
-//Route::get(uri: '/api/user/profile/{id}', [UsersController::class, 'fetchUserProfile']);
+// Route::get(uri: '/api/users', [UsersController::class, 'getAllUsers']);
 
-
+Route::get('/api/users', [UsersController::class, 'getAllUsers']);
 
 
 //Topics:

@@ -450,6 +450,44 @@ class UsersController extends Controller
             return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
+    public function getUsers(Request $request)
+    {
+        try {
+            // Fetch all users with the role of 'chef'
+            $user = User::where('role', 'user')
+                ->withCount('votes') // Get the total votes for each chef
+                ->get();
+
+            // Prepare the response data
+            $responseData = $user->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'profile_picture' => $user->profile_picture,
+                    // 'cuisine_type' => $user->cuisine_type,
+                    'location' => $user->location,
+                    // 'experience_level' => $user->experience_level,
+                    // 'certification' => $user->certification,
+                    'bio' => $user->bio,
+                    // 'recipe_count' => $user->recipes()->count(),
+                    // 'recipe_submitted' => $user->recipes,
+                    // 'total_votes' => $user->totalVotes(), // The total votes retrieved by withCount
+                ];
+
+
+            });
+
+            // Sort chefs by total votes in descending order
+            // $sortedUsers = $responseData->sortByDesc('total_votes')->values()->all();
+
+            // Assign voting positions based on sorted order
+
+            return response()->json(['users' => $responseData], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
 
 
     // Update Chef Profile Data

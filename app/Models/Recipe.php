@@ -39,14 +39,16 @@ class Recipe extends Model
         return $this->belongsTo(User::class, 'user_id'); // Or 'chef_id' if that's the column name in recipes
     }
     public function votes()
-{
-    return $this->hasMany(Vote::class);
-}
+    {
+        return $this->hasMany(Vote::class, 'recipe_id');
+    }
 
-public function votesCount()
-{
-    return $this->votes()->count(); // Returns the number of votes for the recipe
-}
+
+    public function getTotalVotesAttribute()
+    {
+        return $this->votes()->count();
+    }
+
 
 public function events()
 {
@@ -64,5 +66,6 @@ public function comments()
 {
     return $this->hasMany(Comment::class);
 }
+
 
 }
