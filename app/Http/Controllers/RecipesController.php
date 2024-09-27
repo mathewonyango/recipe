@@ -7,6 +7,8 @@ use App\Models\Recipe;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
 
+// Topic
+use App\Models\Topic;
 
 class RecipesController extends Controller
 {
@@ -73,11 +75,27 @@ class RecipesController extends Controller
         'nutritional_information' => $request->nutritional_information,
     ]);
 
-    // Return success response
-    return response()->json([
-        'message' => 'Recipe submitted successfully!',
-        'recipe' => $recipe,
-    ], 201);
+   // Fetch the topic title using the topic_id
+   $topic = Topic::find($request->topic_id);
+
+   // Return success response with topic title
+   return response()->json([
+       'message' => 'Recipe submitted successfully!',
+       'recipe' => [
+           'title' => $recipe->title,
+           'topic_title' => $topic->title, // Return the topic title instead of ID
+           'servings' => $recipe->servings,
+           'prep_time' => $recipe->prep_time,
+           'cook_time' => $recipe->cook_time,
+           'total_time' => $recipe->total_time,
+           'ingredients' => $recipe->ingredients,
+           'instructions' => $recipe->instructions,
+           'image' => $recipe->image,
+           'tags' => $recipe->tags,
+           'difficulty_level' => $recipe->difficulty_level,
+           'nutritional_information' => $recipe->nutritional_information,
+       ]
+   ], 201);
 }
 
 
