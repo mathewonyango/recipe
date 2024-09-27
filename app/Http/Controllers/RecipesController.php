@@ -83,7 +83,7 @@ class RecipesController extends Controller
        'message' => 'Recipe submitted successfully!',
        'recipe' => [
            'title' => $recipe->title,
-           'topic_title' => $topic->title, // Return the topic title instead of ID
+           'topic_title' => $topic->name, // Return the topic title instead of ID
            'servings' => $recipe->servings,
            'prep_time' => $recipe->prep_time,
            'cook_time' => $recipe->cook_time,
