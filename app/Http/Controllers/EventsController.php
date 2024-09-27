@@ -37,13 +37,13 @@ class EventsController extends Controller
    public function store(Request $request)
    {
 
-    dd($request);
+    // dd($request);
        // Validate the request data
        $request->validate([
         'name'=>'required',
         'location' => 'required|string|max:255',
         'event_time' => 'required|date_format:H:i',
-        'topic_id' => 'required',
+        'topic' => 'required',
         'event_date' => 'required|date',
         'charges' => 'required|numeric',
         'contact_number' => 'required|string|max:15', // Adjust the max length as needed
@@ -53,7 +53,7 @@ class EventsController extends Controller
             'name'=>$request->name,
            'location' => $request->location,
            'time' => $request->event_time,
-           'topic_id' => $request->topic_id,
+           'topic_id' => $request->topic,
            'day_of_event' => $request->event_date,
         //    'chefs' => $request->chefs ? explode(',', $request->chefs) : [], // Convert to array if provided
         //    'recipes' => $request->recipes ? explode(',', $request->recipes) : [], // Convert to array if provided
