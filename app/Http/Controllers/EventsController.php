@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Event;
 //  Topic
 use App\Models\Topic;
+//Carbon
+use Illuminate\Support\Carbon; // For handling time and token expiration
 
 class EventsController extends Controller
 {
@@ -124,46 +126,88 @@ class EventsController extends Controller
     }
 
 
-    public function fetchEvents(Request $request, $topic)
+    public function getEventsForTopic($id)
     {
-        // Check API Key from request header
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = env('API_KEY'); // Fetch from environment
+        // Fetch all events for the specified topic with related data
+        $events = Event::where('topic_id', $id)
+            ->with(['chefs', 'recipes']) // Assuming these are relationships in your Event model
+            ->get();
 
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
+        // Split events into ongoing and past based on the event date
+        $ongoingEvents = $events->filter(function ($event) {
+            return Carbon::parse($event->event_date)->isFuture();
+        });
 
-        try {
-            // Fetch ongoing and past events based on the specific topic
-            $events = Event::where('topic', $topic)
-                ->where(function ($query) {
-                    $query->where('event_date', '>=', now()) // Ongoing events
-                          ->orWhere('event_date', '<', now()); // Past events
-                })
-                ->with(['chefs', 'recipes']) // Assuming relationships are defined
-                ->get();
+        $pastEvents = $events->filter(function ($event) {
+            return Carbon::parse($event->event_date)->isPast();
+        });
 
-            // Prepare the response data
-            $responseData = $events->map(function ($event) {
-                // Determine the status based on the event date
-                $status = $event->event_date >= now() ? 'open' : 'closed';
-
+        // Format the response data
+        $data = [
+            'ongoing_events' => $ongoingEvents->map(function ($event) {
                 return [
-                    'event_location' => $event->location,
-                    'event_time' => $event->time,
-                    'chefs' => $event->chefs, // Assuming chefs is a relation
-                    'recipes' => $event->recipes, // Assuming recipes is a relation
+                    'location' => $event->location,
+                    'time' => 'Whole day', // Assuming time is fixed as 'Whole day'
+                    'chefs' => $event->chefs->pluck('name'), // Assuming `chefs` is a relationship
+                    'recipes' => $event->recipes->pluck('title'), // Assuming `recipes` is a relationship
                     'charges' => $event->charges,
-                    'event_date' => $event->event_date->format('Y-m-d'), // Format date for readability
+                    'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
-                    'status' => $status, // Include the status of the event
                 ];
-            });
+            }),
+            'past_events' => $pastEvents->map(function ($event) {
+                return [
+                    'location' => $event->location,
+                    'time' => 'Whole day',
+                    'chefs' => $event->chefs->pluck('name'),
+                    'recipes' => $event->recipes->pluck('title'),
+                    'charges' => $event->charges,
+                    'event_date' => $event->event_date,
+                    'contact_number' => $event->contact_number,
+                ];
+            }),
+        ];
 
-            return response()->json(['events' => $responseData], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
-        }
+        return response()->json($data);
+    }
+
+    public function getAllEvents()
+    {
+        $events = Event::with(['chefs', 'recipes'])->get();
+
+        // Separate ongoing and past events based on the event date
+        $ongoingEvents = $events->filter(function ($event) {
+            return Carbon::parse($event->event_date)->isFuture();
+        });
+
+        $pastEvents = $events->filter(function ($event) {
+            return Carbon::parse($event->event_date)->isPast();
+        });
+
+        // Return formatted events
+        return [
+            'ongoing_events' => $ongoingEvents->map(function ($event) {
+                return [
+                    'location' => $event->location,
+                    'time' => 'Whole day',
+                    'chefs' => $event->chefs->pluck('name'),
+                    'recipes' => $event->recipes->pluck('title'),
+                    'charges' => $event->charges,
+                    'event_date' => $event->event_date,
+                    'contact_number' => $event->contact_number,
+                ];
+            }),
+            'past_events' => $pastEvents->map(function ($event) {
+                return [
+                    'location' => $event->location,
+                    'time' => 'Whole day',
+                    'chefs' => $event->chefs->pluck('name'),
+                    'recipes' => $event->recipes->pluck('title'),
+                    'charges' => $event->charges,
+                    'event_date' => $event->event_date,
+                    'contact_number' => $event->contact_number,
+                ];
+            }),
+        ];
     }
 }

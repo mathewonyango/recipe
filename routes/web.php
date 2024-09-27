@@ -127,6 +127,9 @@ Route::get('/events/{event}/edit', [EventsController::class, 'edit'])->name('eve
 Route::put('/events/{event}', [EventsController::class, 'update'])->name('events.update');
 Route::delete('/events/{event}', [EventsController::class, 'destroy'])->name('events.destroy');
 //Topics:
+Route::get('/api/topics/events/{id}', [EventsController::class, 'getEventsForTopic']);
+Route::get('/api/events', [EventsController::class, 'getAllEvents']);
+
 
 Route::get('/api/topics', [TopicsController::class, 'getAllTopics']);
 Route::get('/api/recipes', [RecipesController::class, 'getAllRecipes']);
