@@ -85,7 +85,7 @@ class TopicsController extends Controller
             // Fetch the latest topics if 'latest' is passed
             if ($request->has('latest')) {
                 // You can define what "latest" means, e.g., the last added or modified topics
-                $query->orderBy('created_at', 'desc')->take(2); // Adjust the number as needed
+                $query->orderBy('created_at', 'desc')->take(1); // Adjust the number as needed
             }
 
             // Filter by date range if 'start_date' and 'end_date' are provided
