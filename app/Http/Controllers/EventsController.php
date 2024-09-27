@@ -177,7 +177,7 @@ class EventsController extends Controller
     {
         // Fetch all events along with their related chefs and recipes
         // $events = Event::with(['topic', 'recipes'])->get();
-$events = Event::with([
+            $events = Event::with([
             'topic',           // Fetch the topic related to the event
             'recipes.chef',    // Fetch the chef associated with each recipe
             'recipes.comments' // Fetch the comments related to each recipe
@@ -198,6 +198,7 @@ $events = Event::with([
         return [
             'Active_events' => $ongoingEvents->map(function ($event) {
                 return [
+                    'Active Events:',
                     'Event_name'=>$event->name,
                     'location' => $event->location,
                     'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
@@ -211,8 +212,10 @@ $events = Event::with([
 
                 ];
             }),
+
             'past_events' => $pastEvents->map(function ($event) {
                 return [
+                    'Past Events:',
                     'Event_name'=>$event->name,
                     'location' => $event->location,
                     'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
