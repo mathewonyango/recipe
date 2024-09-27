@@ -45,13 +45,12 @@ class EventsController extends Controller
         'charges' => 'required|numeric',
         'contact_number' => 'required|string|max:15', // Adjust the max length as needed
     ]);
-
        // Create the new event
        $event = Event::create([
-           'location' => $request->location,
-           'time' => $request->event_time,
+           'event_location' => $request->location,
+           'event_time' => $request->event_time,
            'topic' => $request->topic,
-           'event_date' => $request->event_date,
+           'event_day' => $request->event_date,
         //    'chefs' => $request->chefs ? explode(',', $request->chefs) : [], // Convert to array if provided
         //    'recipes' => $request->recipes ? explode(',', $request->recipes) : [], // Convert to array if provided
            'charges' => $request->charges,
