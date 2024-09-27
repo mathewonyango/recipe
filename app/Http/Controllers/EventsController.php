@@ -128,49 +128,39 @@ class EventsController extends Controller
     }
 
 
-    public function getEventsForTopic($id)
+    public function getEventsByTopic($topicId)
     {
-        // Fetch all events for the specified topic with related data
-        $events = Event::where('topic_id', $id)
-            ->with(['chefs', 'recipes']) // Assuming these are relationships in your Event model
-            ->get();
+        // Fetch events that belong to the specified topic
+        $events = Event::with([
+            'topic',
+            'recipes.chef',
+            'recipes.comments'
+        ])
+        ->where('topic_id', $topicId) // Adjust the field name as per your database schema
+        ->get();
 
-        // Split events into ongoing and past based on the event date
-        $ongoingEvents = $events->filter(function ($event) {
-            return Carbon::parse($event->event_date)->isFuture();
-        });
+        // Check if any events were found
+        if ($events->isEmpty()) {
+            return response()->json([
+                'message' => 'No events found for this topic'
+            ], 404);
+        }
 
-        $pastEvents = $events->filter(function ($event) {
-            return Carbon::parse($event->event_date)->isPast();
-        });
-
-        // Format the response data
-        $data = [
-            'ongoing_events' => $ongoingEvents->map(function ($event) {
-                return [
-                    'location' => $event->location,
-                    'time' => 'Whole day', // Assuming time is fixed as 'Whole day'
-                    'chefs' => $event->chefs->pluck('name'), // Assuming `chefs` is a relationship
-                    'recipes' => $event->recipes->pluck('title'), // Assuming `recipes` is a relationship
-                    'charges' => $event->charges,
-                    'event_date' => $event->event_date,
-                    'contact_number' => $event->contact_number,
-                ];
-            }),
-            'past_events' => $pastEvents->map(function ($event) {
-                return [
-                    'location' => $event->location,
-                    'time' => 'Whole day',
-                    'chefs' => $event->chefs->pluck('name'),
-                    'recipes' => $event->recipes->pluck('title'),
-                    'charges' => $event->charges,
-                    'event_date' => $event->event_date,
-                    'contact_number' => $event->contact_number,
-                ];
-            }),
-        ];
-
-        return response()->json($data);
+        // Return the events details
+        return response()->json($events->map(function ($event) {
+            return [
+                'Event_name' => $event->name,
+                'location' => $event->location,
+                'topic' => $event->topic ? $event->topic->name : 'No Topic',
+                'event_day' => $event->day_of_event,
+                'time' => $event->time,
+                'charges' => $event->charges,
+                'contact_number' => $event->contact_number,
+                'recipes' => $event->recipes->pluck('title'),
+                'comments' => $event->comments,
+                'chefs_who_participated' => $event->recipes->pluck('chef.name')->unique(),
+            ];
+        }));
     }
 
     public function getAllEvents()
@@ -233,4 +223,34 @@ class EventsController extends Controller
 
 
 
+    public function getEventById($id)
+    {
+        // Fetch the event by ID along with its related chefs and recipes
+        $event = Event::with([
+            'topic',
+            'recipes.chef',
+            'recipes.comments'
+        ])->find($id);
+
+        // Check if the event exists
+        if (!$event) {
+            return response()->json([
+                'message' => 'Event not found'
+            ], 404);
+        }
+
+        // Return the event details
+        return response()->json([
+            'Event_name' => $event->name,
+            'location' => $event->location,
+            'topic' => $event->topic ? $event->topic->name : 'No Topic',
+            'event_day' => $event->day_of_event,
+            'time' => $event->time,
+            'charges' => $event->charges,
+            'contact_number' => $event->contact_number,
+            'recipes' => $event->recipes->pluck('title'),
+            'comments' => $event->comments,
+            'chefs_who_participated' => $event->recipes->pluck('chef.name')->unique(),
+        ]);
+    }
 }
