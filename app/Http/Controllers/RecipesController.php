@@ -114,7 +114,7 @@ class RecipesController extends Controller
         try {
 
             $apiKey = $request->header('X-API-Key');
-            $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+            $expectedApiKey = env('API_KEY'); // Fetch from environment
 
             if ($apiKey !== $expectedApiKey) {
                 return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
@@ -181,13 +181,12 @@ class RecipesController extends Controller
 
     public function getRecipeById($id, Request $request)
     {
-        // Check for the unique header
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+            $apiKey = $request->header('X-API-Key');
+            $expectedApiKey = env('API_KEY'); // Fetch from environment
 
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
+            if ($apiKey !== $expectedApiKey) {
+                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            }
 
         try {
             $recipe = Recipe::findOrFail($id);
@@ -213,12 +212,11 @@ class RecipesController extends Controller
     {
         // Check for the unique header
         $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+        $expectedApiKey = env('API_KEY'); // Fetch from environment
 
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
         }
-
 
         // Validate the incoming request
         $request->validate([
@@ -241,6 +239,15 @@ class RecipesController extends Controller
 
     public function submitComment(Request $request)
 {
+
+    $apiKey = $request->header('X-API-Key');
+    $expectedApiKey = env('API_KEY'); // Fetch from environment
+
+    if ($apiKey !== $expectedApiKey) {
+        return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+    }
+
+
     // Validate the request
     $validator = Validator::make($request->all(), [
         'recipe_id' => 'required|exists:recipes,id',

@@ -19,44 +19,64 @@ use App\Models\User; // For the User model
 class UsersController extends Controller
 {
 
+
     public function register(Request $request)
     {
-        // Check API Key
+        // Check API Key from environment variable
         $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+        $expectedApiKey = env('API_KEY'); // Fetch from environment
 
         if ($apiKey !== $expectedApiKey) {
             return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         // Validate the request data
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'full_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'username' => 'required|string|max:255|unique:users',
-            'password' => 'required|string|min:8', // Minimum length can be adjusted
+            'push_notification' => 'required|in:allow,deny',
+            'password' => 'required|string|min:6', // Minimum length can be adjusted
+            'notification_preferences' => 'nullable|array', // Expecting an array for notification preferences
         ]);
 
+        // If validation fails, return error messages
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         // Create the new user
-        $user = User::create([
-            'name' => $request->full_name,
-            'email' => $request->email,
-            'username' => $request->username,
-            'password' => Hash::make($request->password), // Hashing the password
-            'notification_preferences' => json_encode($request->notification_preferences), // Convert array to JSON
-            'role' => 'user', // Default role for general users
+        try {
+            $user = User::create([
+                'name' => $request->full_name,
+                'email' => $request->email,
+                'username' => $request->username,
+                'push_notification' => $request->push_notification,
+                'password' => Hash::make($request->password), // Hash the password
+                'notification_preferences' => $request->notification_preferences ? json_encode($request->notification_preferences) : null, // Encode if present
+                'role' => 'user', // Default role for general users
+            ]);
 
-        ]);
+            return response()->json(['message' => 'Registration successful!', 'user' => $user], 201);
 
-        return response()->json(['message' => 'Registration successful!', 'user' => $user], 201);
+        } catch (\Exception $e) {
+            // Return a detailed error message in case of failure
+            return response()->json([
+                'message' => 'Registration failed. Please try again.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
+
 
     public function registerChef(Request $request)
     {
         // Check for API key
         $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+        $expectedApiKey = env('API_KEY'); // Fetch from environment
 
         if ($apiKey !== $expectedApiKey) {
             return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
@@ -162,11 +182,11 @@ class UsersController extends Controller
     {
         // Check API Key
         $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+            $expectedApiKey = env('API_KEY'); // Fetch from environment
 
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
+            if ($apiKey !== $expectedApiKey) {
+                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            }
 
         // Validate the request data
         $request->validate([
@@ -225,7 +245,7 @@ class UsersController extends Controller
     {
         // Check API Key
         $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+        $expectedApiKey = env('API_KEY'); // Fetch from environment
 
         if ($apiKey !== $expectedApiKey) {
             return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
@@ -411,6 +431,14 @@ class UsersController extends Controller
 
     public function getChefs(Request $request)
     {
+
+        $apiKey = $request->header('X-API-Key');
+        $expectedApiKey = env('API_KEY'); // Fetch from environment
+
+        if ($apiKey !== $expectedApiKey) {
+            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        }
+
         try {
             // Fetch all users with the role of 'chef'
             $chefs = User::where('role', 'chef')
@@ -452,6 +480,14 @@ class UsersController extends Controller
     }
     public function Users(Request $request)
     {
+
+        $apiKey = $request->header('X-API-Key');
+        $expectedApiKey = env('API_KEY'); // Fetch from environment
+
+        if ($apiKey !== $expectedApiKey) {
+            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        }
+
         try {
             // Fetch all users with the role of 'chef'
             $user = User::where('role', 'user')
@@ -538,10 +574,10 @@ class UsersController extends Controller
     {
         // Check for the unique header
         $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+        $expectedApiKey = env('API_KEY'); // Fetch from environment
 
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         // Validate the incoming request

@@ -34,6 +34,13 @@ class TopicsController extends Controller
     public function addTopic(Request $request)
     {
         try {
+
+            $apiKey = $request->header('X-API-Key');
+            $expectedApiKey = env('API_KEY'); // Fetch from environment
+
+            if ($apiKey !== $expectedApiKey) {
+                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            }
             // Validate the incoming request data
             $request->validate([
                 'name' => 'required|string|max:255|unique:topics,name',
@@ -68,7 +75,7 @@ class TopicsController extends Controller
     {
         try {
             $apiKey = $request->header('X-API-Key');
-            $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+            $expectedApiKey = env('API_KEY'); // Fetch from environment
 
             if ($apiKey !== $expectedApiKey) {
                 return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
