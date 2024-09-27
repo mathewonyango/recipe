@@ -28,6 +28,7 @@ class RecipesController extends Controller
 
     public function submitRecipe(Request $request)
 {
+
     // Validation rules
     $validator = Validator::make($request->all(), [
         'title' => 'required|string|max:255',
@@ -38,6 +39,7 @@ class RecipesController extends Controller
         'total_time' => 'required|integer',
         'ingredients' => 'required|string',
         'instructions' => 'required|string',
+        'user_id' => 'required|integer',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
         'tags' => 'nullable|string', // Tags should be a string
         'difficulty_level' => 'required|string|in:easy,medium,hard', // Difficulty level validation
@@ -63,7 +65,7 @@ class RecipesController extends Controller
         'total_time' => $request->total_time,
         'ingredients' => $request->ingredients,
         'instructions' => $request->instructions,
-        'user_id' => $request->user()->id, // Assumes user is authenticated
+        'user_id' => $request->user_id, // Assumes user is authenticated
         'status' => 'draft', // default status
         'image' => $request->file('image')->store('recipes/images', 'public'), // Store image
         'tags' => $request->tags,
