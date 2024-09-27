@@ -56,9 +56,10 @@ class UsersController extends Controller
                 'username' => $request->username,
                 'push_notification' => $request->push_notification,
                 'password' => Hash::make($request->password), // Hash the password
-                'notification_preferences' => $request->notification_preferences ? json_encode($request->notification_preferences) : null, // Encode if present
+                'notification_preferences' => json_encode($request->notification_preferences), // Optional, store as JSON
                 'role' => 'user', // Default role for general users
             ]);
+
 
             return response()->json(['message' => 'Registration successful!', 'user' => $user], 201);
 

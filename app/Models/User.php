@@ -39,6 +39,7 @@ class User extends Authenticatable
         'events_participated',
         'push_notification',
         'notification_preferences',
+        ''
     ];
 
     /**
