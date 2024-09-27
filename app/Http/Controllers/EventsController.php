@@ -198,33 +198,31 @@ $events = Event::with([
         return [
             'Active_events' => $ongoingEvents->map(function ($event) {
                 return [
+                    'Event_name'=>$event->name,
                     'location' => $event->location,
-                    'event_date' => $event->event_date,
-                    'time' =>$event->time,
-                    'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
-                    // Assuming $event->chefs returns a collection of users (chefs) with their role as 'chef'
-                    // 'recipes' => $event->recipes->pluck('title'),  // Assuming recipes have a 'title' field
-                    'charges' => $event->charges,
-                    'chefs_who_are_participating' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
-                    'contact_number' => $event->contact_number,
-                    'comments'=>$event->comments,
                     'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
+                    'event_day'=>$event->day_of_event,
+                    'time' =>$event->time,
+                    'charges' => $event->charges,
+                    'contact_number' => $event->contact_number,
+                    'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
+                    'comments'=>$event->comments,
+                    'chefs_who_wil_participate' => $event->recipes->pluck('chef.name')->unique(),
 
                 ];
             }),
             'past_events' => $pastEvents->map(function ($event) {
                 return [
+                    'Event_name'=>$event->name,
                     'location' => $event->location,
+                    'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
                     'event_day'=>$event->day_of_event,
                     'time' =>$event->time,
-                    'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
                     'charges' => $event->charges,
-                    'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
+                    'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
                     'comments'=>$event->comments,
                     'chefs_who_participated' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
-                    'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
-
                 ];
             }),
         ];
