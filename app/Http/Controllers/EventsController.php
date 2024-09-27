@@ -191,39 +191,46 @@ class EventsController extends Controller
             return Carbon::parse($event->event_date)->isPast();
         });
 
-        // Return formatted events
+        // Return formatted events with headings
         return [
-            'Active_events' => $ongoingEvents->map(function ($event) {
-                return [
-                    'Event_name' => $event->name,
-                    'location' => $event->location,
-                    'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
-                    'event_day' => $event->day_of_event,
-                    'time' => $event->time,
-                    'charges' => $event->charges,
-                    'contact_number' => $event->contact_number,
-                    'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
-                    'comments' => $event->comments,
-                    'chefs_who_will_participate' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
-                ];
-            }),
+            'Active_events' => [
+                'heading' => 'Active Events',
+                'events' => $ongoingEvents->map(function ($event) {
+                    return [
+                        'Event_name' => $event->name,
+                        'location' => $event->location,
+                        'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
+                        'event_day' => $event->day_of_event,
+                        'time' => $event->time,
+                        'charges' => $event->charges,
+                        'contact_number' => $event->contact_number,
+                        'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
+                        'comments' => $event->comments,
+                        'chefs_who_will_participate' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
+                    ];
+                })
+            ],
 
-            'past_events' => $pastEvents->map(function ($event) {
-                return [
-                    'Event_name' => $event->name,
-                    'location' => $event->location,
-                    'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
-                    'event_day' => $event->day_of_event,
-                    'time' => $event->time,
-                    'charges' => $event->charges,
-                    'contact_number' => $event->contact_number,
-                    'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
-                    'comments' => $event->comments,
-                    'chefs_who_participated' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
-                ];
-            }),
+            'past_events' => [
+                'heading' => 'Past Events',
+                'events' => $pastEvents->map(function ($event) {
+                    return [
+                        'Event_name' => $event->name,
+                        'location' => $event->location,
+                        'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
+                        'event_day' => $event->day_of_event,
+                        'time' => $event->time,
+                        'charges' => $event->charges,
+                        'contact_number' => $event->contact_number,
+                        'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
+                        'comments' => $event->comments,
+                        'chefs_who_participated' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
+                    ];
+                })
+            ],
         ];
     }
+
 
 
 }
