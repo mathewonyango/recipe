@@ -117,7 +117,7 @@ Route::post('/api/chefs/{id}', [UsersController::class, 'updateProfile']);
 Route::get('/api/users', [UsersController::class, 'Users']);
 
 
-Route::get('/api/events/{topic}', [EventsController::class, 'fetchEvents']);
+// Route::get('/api/events/{topic}', [EventsController::class, 'fetchEvents']);
 //Event
 Route::get('/events', [EventsController::class, 'index'])->name('events.index');
 Route::get('/events/create', [EventsController::class, 'create'])->name('events.create');
