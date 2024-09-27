@@ -34,9 +34,10 @@ class Event extends Model
      * Get the participating chefs for the event.
      * Assuming `Chef` is another model with a relationship.
      */
-   public function topic(){
-    return  $this->belongsTo(Topic::class);
-   }
+    public function topic()
+    {
+        return $this->belongsTo(Topic::class, 'topic_id');
+    }
 
     // Define relationship to Recipes through Topics
     public function recipes()

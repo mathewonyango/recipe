@@ -176,7 +176,7 @@ class EventsController extends Controller
     public function getAllEvents()
     {
         // Fetch all events along with their related chefs and recipes
-        $events = Event::with('recipes')->get();
+        $events = Event::with(['topic', 'recipes'])->get();
 
 
         // Separate ongoing and past events based on the event date
@@ -200,6 +200,8 @@ class EventsController extends Controller
                     'charges' => $event->charges,
                     'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
+                    'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
+
                 ];
             }),
             'past_events' => $pastEvents->map(function ($event) {
@@ -210,6 +212,8 @@ class EventsController extends Controller
                     'charges' => $event->charges,
                     'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
+                    'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
+
                 ];
             }),
         ];
