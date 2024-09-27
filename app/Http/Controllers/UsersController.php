@@ -95,6 +95,8 @@ class UsersController extends Controller
                 'cuisine_type' => 'nullable|string', // Optional
                 'certification' => 'nullable|string', // Optional
                 'bio' => 'nullable|string', // Optional
+                'push_notification'=> 'nullable|in:allow,deny',
+                'notification_preferences' => 'nullable|array', // Optional (array of preferences)
                 'payment_status' => 'nullable|string', // Optional
                 'social_media_links' => 'nullable|array', // Optional (array of links)
                 'social_media_links.*' => 'nullable|url', // Ensure each link is a valid URL
@@ -129,6 +131,8 @@ class UsersController extends Controller
             $chef->approval_status = 'pending'; // default approval status
             $chef->recipes_count = 0; // default value for recipes count
             $chef->payment_status='unpaid';
+            $chef->push_notification=$request->push_notification;
+            $chef->notification_preferences = json_encode($request->notification_preferences); // Optional, store as JSON
             // Save the new chef to the database
             $chef->save();
 
@@ -157,6 +161,9 @@ class UsersController extends Controller
                     'payment_status' => $chef->payment_status,
                     'social_media_links' => json_decode($chef->social_media_links, true), // Return as array
                     'role' => $chef->role,
+                    'status' => $chef->status,
+                    'push_notification' => $chef->push_notification,
+                    'notification_preferences'=>$chef->notification_preferences ?? ['email'],
                     ]
             ], 201);
         } catch (\Illuminate\Database\QueryException $ex) {
