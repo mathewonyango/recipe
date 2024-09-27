@@ -118,3 +118,8 @@ Route::post('/api/recipes/add', [RecipesController::class, 'submitRecipe']);
 
 
 Route::post('/api/vote/recipes/{recipeId}', [VotesController::class, 'vote']);
+
+
+
+Route::post('/api/forgot-password-token', [UsersController::class, 'forgotPassword']);
+Route::post('/api/reset-password', [UsersController::class, 'resetPassword']);

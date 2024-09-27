@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -11,6 +10,10 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Password; // Include this at the top
 
+use Illuminate\Support\Facades\DB; // For database operations
+use Illuminate\Support\Str; // For generating the random token
+use Illuminate\Support\Carbon; // For handling time and token expiration
+use App\Models\User; // For the User model
 
 
 class UsersController extends Controller
@@ -311,44 +314,90 @@ class UsersController extends Controller
     }
 
 
-    public function requestPasswordReset(Request $request)
-    {
-        // Validate the request data
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-        ]);
+   // Forgot password method to generate token
+   public function forgotPassword(Request $request)
+   {
+       // Validate the email
+       $validator = Validator::make($request->all(), [
+           'email' => 'required|email|exists:users,email'
+       ]);
 
-        // Send the password reset link to the user's email
-        $status = Password::sendResetLink($request->only('email'));
+       if ($validator->fails()) {
+           return response()->json([
+               'message' => 'Validation failed',
+               'errors' => $validator->errors(),
+           ], 422);
+       }
 
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json(['message' => 'Password reset link sent.'], 200)
-            : response()->json(['message' => 'Failed to send reset link.'], 500);
-    }
+       // Generate reset token
+       $token = Str::random(60);
 
+       // Store token in password_resets table
+       DB::table('password_resets')->updateOrInsert(
+           ['email' => $request->email],
+           ['token' => $token, 'created_at' => Carbon::now()]
+       );
 
+       // Send token back to the app (this can also be emailed)
+       return response()->json([
+           'message' => 'Password reset token generated.',
+           'token' => $token
+       ], 200);
+   }
+
+    // Reset password method
     public function resetPassword(Request $request)
     {
-        // Validate the request data
-        $request->validate([
+        // Validate the token, email, and new password
+        $validator = Validator::make($request->all(), [
             'token' => 'required',
             'email' => 'required|email|exists:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|confirmed|min:8',
         ]);
 
-        // Attempt to reset the password
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->password = Hash::make($password);
-                $user->save();
-            }
-        );
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
-        return $status === Password::PASSWORD_RESET
-            ? response()->json(['message' => 'Password has been reset successfully.'], 200)
-            : response()->json(['message' => 'Failed to reset password.'], 500);
+        // Check if the token is valid
+        $reset = DB::table('password_resets')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
+
+        if (!$reset) {
+            return response()->json([
+                'message' => 'Invalid token or email.'
+            ], 400);
+        }
+
+        // Check if the token is expired (valid for 1 hour)
+        $tokenExpired = Carbon::parse($reset->created_at)->addHour()->isPast();
+        if ($tokenExpired) {
+            return response()->json([
+                'message' => 'Token has expired.',
+            ], 400);
+        }
+
+        // Reset the user's password
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Delete the token after a successful password reset
+        DB::table('password_resets')->where('email', $request->email)->delete();
+
+        return response()->json([
+            'message' => 'Password has been reset successfully.'
+        ], 200);
     }
+
+
+
+
 
     // Fetch Chef Profile Data
 
