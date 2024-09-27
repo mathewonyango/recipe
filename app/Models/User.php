@@ -111,11 +111,11 @@ class User extends Authenticatable
               'total_votes' => $this->votes()->count(), // Count of votes
           ];
       }
-      public function chefEvents()
-      {
-          return $this->belongsToMany(Event::class, 'event_chef', 'user_id', 'event_id')
-                      ->where('role', 'chef');
-      }
+    //   public function chefEvents()
+    //   {
+    //       return $this->belongsToMany(Event::class, 'event_chef', 'user_id', 'event_id')
+    //                   ->where('role', 'chef');
+    //   }
 
       // A user can attend many events (many-to-many)
       public function attendedEvents()

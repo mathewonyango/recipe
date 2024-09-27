@@ -46,9 +46,10 @@ class Event extends Model
 
     // Define relationship to Chefs (Users) who participated
     public function chefs()
-    {
-        return $this->belongsToMany(User::class, 'event_chef', 'event_id', 'user_id')
-                    ->where('role', 'chef');
-    }
+{
+    return $this->belongsToMany(User::class, 'event_user', 'event_id', 'user_id')
+                ->wherePivot('role', 'chef');
+}
+
 
 }
