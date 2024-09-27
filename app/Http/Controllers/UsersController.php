@@ -339,9 +339,14 @@ class UsersController extends Controller
        );
 
        // Send token back to the app (this can also be emailed)
+       $user=User::where('email', $request->email)->first();
        return response()->json([
            'message' => 'Password reset token generated.',
-           'token' => $token
+           'token' => $token,
+           'name' => $user->name,
+           'email' => $user->email,
+
+
        ], 200);
    }
 
