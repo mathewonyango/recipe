@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Event;
 //  Topic
 use App\Models\Topic;
+use App\Models\Recipe;
+
 //Carbon
 use Illuminate\Support\Carbon; // For handling time and token expiration
 
@@ -174,7 +176,8 @@ class EventsController extends Controller
     public function getAllEvents()
     {
         // Fetch all events along with their related chefs and recipes
-        $events = Event::all();
+        $events = Event::with('recipes')->get();
+
 
         // Separate ongoing and past events based on the event date
         $ongoingEvents = $events->filter(function ($event) {
@@ -191,6 +194,7 @@ class EventsController extends Controller
                 return [
                     'location' => $event->location,
                     'time' => 'Whole day',
+                    'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
                     // Assuming $event->chefs returns a collection of users (chefs) with their role as 'chef'
                     // 'recipes' => $event->recipes->pluck('title'),  // Assuming recipes have a 'title' field
                     'charges' => $event->charges,
@@ -202,7 +206,7 @@ class EventsController extends Controller
                 return [
                     'location' => $event->location,
                     'time' => 'Whole day',
-                    // 'recipes' => $event->recipes->pluck('title'),
+                    'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
                     'charges' => $event->charges,
                     'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
