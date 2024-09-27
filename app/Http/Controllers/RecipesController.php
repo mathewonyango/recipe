@@ -140,8 +140,8 @@ class RecipesController extends Controller
                             'name' => $recipe->user->name,
                             'profile_picture' => $recipe->user->profile_picture,
                         ],
-                        'comments' => $recipeEngagement->comment,
-                        'rating' => $recipeEngagement->avg('rating'),
+                        'comments' => $recipeEngagement['comment'], // Renamed 'comments' to 'comment,
+                        'rating' => $recipeEngagement['rating'],
                         'commenters'=>User::find($recipeEngagement->user_id)->value('name'),
                         'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
                         'total_votes' => $recipe->votes_count, // Count of votes for the recipe
