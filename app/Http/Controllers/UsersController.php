@@ -391,7 +391,9 @@ class UsersController extends Controller
         DB::table('password_resets')->where('email', $request->email)->delete();
 
         return response()->json([
-            'message' => 'Password has been reset successfully.'
+            'message' => 'Password has been reset successfully.',
+            'user' => $user,
+            'new-password' => $request->password
         ], 200);
     }
 
