@@ -54,10 +54,16 @@
                             <td>{{ $event->charges }} KES</td>
                             <td>{{ $event->contact_number }}</td>
                             <td>
-                                <span class="badge bg-{{ $event->status == 'active' ? 'success' : 'danger' }}">
-                                    {{ ucfirst($event->status) }}
+                                @php
+                                    $currentDate = \Carbon\Carbon::now(); // Get today's date
+                                    $eventDate = \Carbon\Carbon::parse($event->day_of_event); // Parse the event date
+                                @endphp
+
+                                <span class="badge bg-{{ $eventDate->greaterThanOrEqualTo($currentDate) ? 'success' : 'danger' }}">
+                                    {{ $eventDate->greaterThanOrEqualTo($currentDate) ? 'Open' : 'Closed' }}
                                 </span>
                             </td>
+
                         </tr>
                         @endforeach
                     </tbody>
