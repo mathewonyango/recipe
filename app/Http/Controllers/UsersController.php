@@ -452,6 +452,7 @@ class UsersController extends Controller
             // Fetch all users with the role of 'chef'
             $chefs = User::where('role', 'chef')
                 ->withCount('votes') // Get the total votes for each chef
+                ->with('comments') // Get the total comments for each chef
                 ->get();
 
             // Prepare the response data
@@ -466,6 +467,7 @@ class UsersController extends Controller
                     'experience_level' => $chef->experience_level,
                     'certification' => $chef->certification,
                     'bio' => $chef->bio,
+                    'comments_and_rating'=>$chef->comments,
                     'recipe_count' => $chef->recipes()->count(),
                     'recipe_submitted' => $chef->recipes,
                     'total_votes' => $chef->totalVotes(), // The total votes retrieved by withCount

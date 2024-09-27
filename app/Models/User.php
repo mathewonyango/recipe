@@ -123,5 +123,9 @@ class User extends Authenticatable
           return $this->belongsToMany(Event::class, 'event_user', 'user_id', 'event_id');
       }
 
-
+      // A user can make many comments (one-to-many)
+      public function comments()
+      {
+          return $this->hasMany(Comment::class);
+      }
 }
