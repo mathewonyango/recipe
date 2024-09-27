@@ -63,6 +63,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected $casts = [
+        'notification_preferences' => 'array', // Cast to array so it's handled correctly
+    ];
+
       // Add the relationship method
       public function recipes()
       {

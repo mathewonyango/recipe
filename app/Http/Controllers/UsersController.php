@@ -502,7 +502,7 @@ class UsersController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'profile_picture' => $user->profile_picture,
-                    'notification_preferences' => $user->notification_preferences ?: ['email'], // Ensure defaults to ['email']
+                    'notification_preferences' => $user->notification_preferences ?? ['email'],
                     // 'cuisine_type' => $user->cuisine_type,
                     'push_notification'=>$user->push_notification,
                     'location' => $user->location,
