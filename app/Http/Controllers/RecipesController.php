@@ -123,29 +123,43 @@ class RecipesController extends Controller
             }
 
             // Fetch all recipes with relevant relationships
+            $recipes = Recipe::with(['comments', 'chef'])->get();
+
             $recipes = Recipe::with(['user', 'votes']) // Load user and votes relationships
                 ->withCount('votes') // Count the number of votes for each recipe
                 ->get()
                 ->map(function ($recipe) {
                     $recipeEngagement = $recipe->comments;
-                    return [
-                        'id' => $recipe->id,
-                        'title' => $recipe->title,
-                        'description' => $recipe->description,
-                        'ingredients' => $recipe->ingredients,
-                        'instructions' => $recipe->instructions,
-                        'cooking_time' => $recipe->cooking_time,
-                        'chef' => [  // Renamed 'user' to 'chef'
-                            'id' => $recipe->user->id,
-                            'name' => $recipe->user->name,
-                            'profile_picture' => $recipe->user->profile_picture,
-                        ],
-                        'comments' => $recipeEngagement, // Renamed 'comments' to 'comment,
-                        // 'rating' => $recipeEngagement['rating'],
-                        // 'commenters'=>User::find($recipeEngagement[0]->user_id)->value('name'),
-                        'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
-                        'total_votes' => $recipe->votes_count, // Count of votes for the recipe
-                    ];
+                     // Calculate average rating
+                    $averageRating = $recipe->comments->avg('rating');
+                    $commentsWithUserDetails = $recipe->comments->map(function ($comment) {
+                        return [
+                            'id' => $comment->id,
+                            'body' => $comment->body,
+                            'user' => [
+                                'id' => $comment->user->id,
+                                'name' => $comment->user->name,
+                                'profile_picture' => $comment->user->profile_picture,
+                            ],
+                        ];
+                    });
+        return [
+            'id' => $recipe->id,
+            'title' => $recipe->title,
+            'description' => $recipe->description,
+            'ingredients' => $recipe->ingredients,
+            'instructions' => $recipe->instructions,
+            'cooking_time' => $recipe->cooking_time,
+            'chef' => [
+                'id' => $recipe->chef->id,
+                'name' => $recipe->chef->name,
+                'profile_picture' => $recipe->chef->profile_picture,
+            ],
+            // 'comments' => $commentsWithUserDetails, // Key for comments
+            'average_rating' => $averageRating, // Key for average rating
+            'comments_count' => $recipe->comments->count(),
+            'total_votes' => $recipe->votes_count,
+        ];
                 });
 
             return response()->json(['recipes' => $recipes], 200);
