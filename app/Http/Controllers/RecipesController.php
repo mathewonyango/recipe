@@ -67,7 +67,7 @@ class RecipesController extends Controller
         'instructions' => $request->instructions,
         'user_id' => $request->user_id, // Assumes user is authenticated
         'status' => 'draft', // default status
-        'image' => $request->$request->image, // Store image
+        'image' =>$request->image, // Store image
         'tags' => $request->tags,
         'difficulty_level' => $request->difficulty_level,
         'nutritional_information' => $request->nutritional_information,
