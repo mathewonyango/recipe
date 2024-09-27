@@ -51,7 +51,7 @@ class EventsController extends Controller
             'name'=>$request->name,
            'location' => $request->location,
            'time' => $request->event_time,
-           'topic_id' => $request->topic,
+           'topic_id' => $request->topic_id,
            'day_of_event' => $request->event_date,
         //    'chefs' => $request->chefs ? explode(',', $request->chefs) : [], // Convert to array if provided
         //    'recipes' => $request->recipes ? explode(',', $request->recipes) : [], // Convert to array if provided
