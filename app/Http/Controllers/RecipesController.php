@@ -40,7 +40,7 @@ class RecipesController extends Controller
         'ingredients' => 'required|string',
         'instructions' => 'required|string',
         'user_id' => 'required|integer',
-        'image' => 'nullable', // Image validation
+        'image' => 'nullable|string', // Image validation
         'tags' => 'nullable|string', // Tags should be a string
         'difficulty_level' => 'required|string|in:easy,medium,hard', // Difficulty level validation
         'nutritional_information' => 'nullable|string', // Optional nutritional info
