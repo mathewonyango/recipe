@@ -31,6 +31,14 @@ class RecipesController extends Controller
     public function submitRecipe(Request $request)
 {
 
+          // Check for API key
+          $apiKey = $request->header('X-API-Key');
+          $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+
+          if ($apiKey !== $expectedApiKey) {
+              return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+          }
+
     // Validation rules
     $validator = Validator::make($request->all(), [
         'title' => 'required|string|max:255',
