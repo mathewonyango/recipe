@@ -46,11 +46,6 @@ class EventsController extends Controller
         'contact_number' => 'required|string|max:15', // Adjust the max length as needed
     ]);
 
-
-
-
-
-
        // Create the new event
        $event = Event::create([
            'location' => $request->location,
@@ -63,7 +58,7 @@ class EventsController extends Controller
            'contact_number' => $request->contact_number,
        ]);
 
-       return redirect()->route('Event.index')->with('success', 'Event created successfully!');
+       return redirect()->route('events.index')->with('success', 'Event created successfully!');
    }
 
     /**
@@ -114,7 +109,7 @@ class EventsController extends Controller
        $event->save();
 
        // Redirect to the events list or show page with a success message
-       return redirect()->route('Event.index')->with('success', 'Event updated successfully.');
+       return redirect()->route(route: 'events.index')->with('success', 'Event updated successfully.');
    }
 
     /**
