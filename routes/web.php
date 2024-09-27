@@ -116,6 +116,9 @@ Route::get('/api/topics', [TopicsController::class, 'getAllTopics']);
 Route::get('/api/recipes', [RecipesController::class, 'getAllRecipes']);
 Route::post('/api/recipes/add', [RecipesController::class, 'submitRecipe']);
 
+Route::post('/api/comment', [RecipesController::class, 'submitComment']);
+
+
 
 Route::post('/api/vote/recipes/{recipeId}', [VotesController::class, 'vote']);
 

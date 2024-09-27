@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 // Topic
 use App\Models\Topic;
+//comment
+use App\Models\Comment;
 
 class RecipesController extends Controller
 {
@@ -233,5 +235,37 @@ class RecipesController extends Controller
             'message' => 'Recipe created successfully.'
         ], 201);
     }
+
+    public function submitComment(Request $request)
+{
+    // Validate the request
+    $validator = Validator::make($request->all(), [
+        'recipe_id' => 'required|exists:recipes,id',
+        'comment' => 'required|string',
+        'rating' => 'nullable|integer|between:1,5', // Rating must be between 1 and 5
+    ]);
+
+    // Check for validation errors
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors(),
+        ], 422);
+    }
+
+    // Create the comment
+    $comment = Comment::create([
+        'recipe_id' => $request->recipe_id,
+        'user_id' => $request->user_id, // Assuming user is authenticated
+        'comment' => $request->comment,
+        'rating' => $request->rating,
+    ]);
+
+    return response()->json([
+        'message' => 'Comment submitted successfully',
+        'comment' => $comment,
+    ], 201);
+}
+
 
 }

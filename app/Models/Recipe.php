@@ -60,5 +60,9 @@ public function user()
 {
     return $this->belongsTo(User::class, 'user_id'); // Recipe belongs to a chef
 }
+public function comments()
+{
+    return $this->hasMany(Comment::class);
+}
 
 }
