@@ -15,6 +15,9 @@ use App\Http\Controllers\ChefsController;
 use App\Http\Controllers\VotesController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Auth;
+// LogViewerController
+use App\Http\Controllers\LogViewerController;
+use App\Http\Controllers\DeploymentController;
 use OpenApi\Annotations as OA;
 
 
@@ -25,6 +28,12 @@ Route::get('/api/csrf-token', function () {
     return Response::json(['csrf_token' => csrf_token()]);
 });
 
+Route::get('/console', [LogViewerController::class, 'index']);
+Route::get('/console/{fileName}', [LogViewerController::class, 'show']);
+// In routes/web.php
+Route::get('/deploy', [DeploymentController::class, 'index'])->name('deploy.index');
+Route::post('/deploy', [DeploymentController::class, 'deploy'])->name('deploy.start');
+Route::post('/revert', [DeploymentController::class, 'revert'])->name('deploy.revert');
 
 
 
