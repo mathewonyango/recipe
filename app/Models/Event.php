@@ -45,6 +45,11 @@ class Event extends Model
     return $this->hasMany(Recipe::class, 'topic_id', 'topic_id'); // Link recipes by topic_id
 }
 
+public function comments()
+{
+    return $this->hasManyThrough(Comment::class, Recipe::class, 'topic_id', 'recipe_id', 'topic_id', 'id');
+}
+
     // Define relationship to Chefs (Users) who participated
     public function chefs()
 {

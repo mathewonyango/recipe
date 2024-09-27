@@ -177,7 +177,11 @@ class EventsController extends Controller
     {
         // Fetch all events along with their related chefs and recipes
         // $events = Event::with(['topic', 'recipes'])->get();
-        $events = Event::with(['topic', 'recipes.chef'])->get();
+$events = Event::with([
+            'topic',           // Fetch the topic related to the event
+            'recipes.chef',    // Fetch the chef associated with each recipe
+            'recipes.comments' // Fetch the comments related to each recipe
+        ])->get();
 
 
 
@@ -192,18 +196,19 @@ class EventsController extends Controller
 
         // Return formatted events
         return [
-            'ongoing_events' => $ongoingEvents->map(function ($event) {
+            'Active_events' => $ongoingEvents->map(function ($event) {
                 return [
                     'location' => $event->location,
-                    'time' => 'Whole day',
+                    'event_date' => $event->event_date,
+                    'time' =>$event->time,
                     'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
                     // Assuming $event->chefs returns a collection of users (chefs) with their role as 'chef'
                     // 'recipes' => $event->recipes->pluck('title'),  // Assuming recipes have a 'title' field
                     'charges' => $event->charges,
                     'chefs_who_are_participating' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
-
-                    'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
+                    'comments'=>$event->comments->comment,
+                    'total_votes_casted' => $event->recipes->getTotalVotesAttribute,  // Pluck titles from the loaded relationship
                     'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
 
                 ];
@@ -211,11 +216,14 @@ class EventsController extends Controller
             'past_events' => $pastEvents->map(function ($event) {
                 return [
                     'location' => $event->location,
-                    'time' => 'Whole day',
+                    'event_day'=>$event->day_of_event,
+                    'time' =>$event->time,
                     'recipes' => $event->recipes->pluck('title'),  // Pluck titles from the loaded relationship
                     'charges' => $event->charges,
                     'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
+                    'comments'=>$event->comments->comment,
+                    'total_votes_casted' => $event->recipes->getTotalVotesAttribute,  // Pluck titles from the loaded relationship
                     'chefs_who_participated' => $event->recipes->pluck('chef.name')->unique(),  // Collect chef names
                     'topic' => $event->topic ? $event->topic->name : 'No Topic',  // Access topic name
 
