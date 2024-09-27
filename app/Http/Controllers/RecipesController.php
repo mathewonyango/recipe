@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Topic;
 //comment
 use App\Models\Comment;
+//user
+use App\Models\User;
 
 class RecipesController extends Controller
 {
@@ -125,6 +127,7 @@ class RecipesController extends Controller
                 ->withCount('votes') // Count the number of votes for each recipe
                 ->get()
                 ->map(function ($recipe) {
+                    $recipeEngagement = $recipe->comments;
                     return [
                         'id' => $recipe->id,
                         'title' => $recipe->title,
@@ -137,7 +140,9 @@ class RecipesController extends Controller
                             'name' => $recipe->user->name,
                             'profile_picture' => $recipe->user->profile_picture,
                         ],
-                        'comments' => $recipe->comments,
+                        'comments' => $recipeEngagement->comment,
+                        'rating' => $recipeEngagement->avg('rating'),
+                        'commenters'=>User::find($recipeEngagement->user_id)->value('name'),
                         'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
                         'total_votes' => $recipe->votes_count, // Count of votes for the recipe
                     ];
