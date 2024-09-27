@@ -192,7 +192,7 @@ class EventsController extends Controller
                     'location' => $event->location,
                     'time' => 'Whole day',
                     // Assuming $event->chefs returns a collection of users (chefs) with their role as 'chef'
-                    'recipes' => $event->recipes->pluck('title'),  // Assuming recipes have a 'title' field
+                    // 'recipes' => $event->recipes->pluck('title'),  // Assuming recipes have a 'title' field
                     'charges' => $event->charges,
                     'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
@@ -202,7 +202,7 @@ class EventsController extends Controller
                 return [
                     'location' => $event->location,
                     'time' => 'Whole day',
-                    'recipes' => $event->recipes->pluck('title'),
+                    // 'recipes' => $event->recipes->pluck('title'),
                     'charges' => $event->charges,
                     'event_date' => $event->event_date,
                     'contact_number' => $event->contact_number,
