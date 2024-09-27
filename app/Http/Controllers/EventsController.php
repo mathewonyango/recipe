@@ -36,6 +36,8 @@ class EventsController extends Controller
    // Store the newly created event
    public function store(Request $request)
    {
+
+    dd($request);
        // Validate the request data
        $request->validate([
         'name'=>'required',
