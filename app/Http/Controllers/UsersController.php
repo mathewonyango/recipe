@@ -188,70 +188,9 @@ class UsersController extends Controller
 
 
 
-    public function loginChef(Request $request)
-    {
-        // Check API Key
-        $apiKey = $request->header('X-API-Key');
-            $expectedApiKey = env('API_KEY'); // Fetch from environment
-
-            if ($apiKey !== $expectedApiKey) {
-                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-            }
-
-        // Validate the request data
-        $request->validate([
-            'username_or_email' => 'required|string',
-            'password' => 'required|string',
-        ]);
-
-        try {
-            // Check if the provided username or email exists in the database
-            $user = User::where('username', $request->username_or_email)
-                ->orWhere('email', $request->username_or_email)
-                ->first();
-
-            // If user not found or password does not match
-            if (!$user || !Hash::check($request->password, $user->password)) {
-                return response()->json(['message' => 'Invalid credentials.'], 401);
-            }
-
-            // Fetch the chef's profile data with related data
-            $chefProfile = User::with('recipes', 'votes', 'events')->find($user->id);
-
-            if (!$chefProfile) {
-                return response()->json(['message' => 'Chef profile not found.'], 404);
-            }
-
-            // Prepare the response data
-            $responsePayload = [
-                'message' => 'Login successful!',
-                'user' => [
-                    'id' => $chefProfile->id,
-                    'name' => $chefProfile->name,
-                    'bio' => $chefProfile->bio,
-                    'payment_status' => $chefProfile->payment_status,
-                    'social_media_links' => $chefProfile->social_media_links,
-                    'role' => $chefProfile->role,
-                    'profile_picture' => $chefProfile->profile_picture,
-                    'recipes' => $chefProfile->recipes,
-                    'votes' => $chefProfile->votes,
-                    'events' => $chefProfile->events,
-                    'recipe_count' => $chefProfile->recipes()->count(),
-                    'total_votes' => $chefProfile->votes()->count(),
-                ],
-            ];
-
-            return response()->json($responsePayload, 200);
-        } catch (\Exception $e) {
-            // Handle any unexpected errors
-            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
-        }
-    }
 
 
-
-
-    public function loginUser(Request $request)
+    public function login(Request $request)
     {
         // Check API Key
         $apiKey = $request->header('X-API-Key');
