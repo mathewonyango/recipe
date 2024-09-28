@@ -53,8 +53,15 @@ public function comments()
     // Define relationship to Chefs (Users) who participated
     public function chefs()
 {
-    return $this->belongsToMany(User::class, 'event_user', 'event_id', 'user_id')
+    return $this->belongsToMany(User::class, 'user_id')
                 ->wherePivot('role', 'chef');
+}
+
+
+public function users()
+{
+    return $this->belongsToMany(User::class, 'event_participated', 'event_id', 'user_id')
+                ->withTimestamps(); // Automatically manage created_at and updated_at
 }
 
 
