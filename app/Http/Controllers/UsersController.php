@@ -246,11 +246,15 @@ class UsersController extends Controller
                 // Loop through recipes to build the response
                 foreach ($recipes as $recipe) {
                     $totalViews = $recipe->comments->sum('views'); // Total views from comments
+                    $averageRating = $recipe->comments->count() > 0
+                        ? $recipe->comments->avg('rating')
+                        : 0; // Calculate average rating
 
                     $responsePayload['user']['recipes'][] = [
                         'id' => $recipe->id,
                         'title' => $recipe->title,
                         'total_views' => $totalViews,
+                        'average_rating' => $averageRating, // Include average rating
                         'comments' => $recipe->comments->map(function ($comment) {
                             return [
                                 'id' => $comment->id,
@@ -263,12 +267,7 @@ class UsersController extends Controller
                                 'rating' => $comment->rating,
                             ];
                         }),
-                        'views' => $recipe->comments->map(function ($comment) {
-                            return [
-                                'id' => $comment->id,
-                                'views' => $comment->views,
-                            ];
-                        }),
+
                     ];
 
                     // Accumulate total views for the user
