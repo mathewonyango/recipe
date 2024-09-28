@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use App\Models\Topic;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 
 
 class TopicsController extends Controller
@@ -106,6 +108,9 @@ class TopicsController extends Controller
 
             // Prepare the response data
             $responseData = $topics->map(function ($topic) {
+
+                $currentDate = Carbon::now();
+                $status = $topic->end_date > $currentDate ? 'open' : 'closed'; //
                 return [
                         'total_votes' => $topic->totalVotes(),
                         'total_chefs' => $topic->totalChefs(),
@@ -114,6 +119,7 @@ class TopicsController extends Controller
                         'average_rating' => $topic->averageRatings(),
                         'winner' => $topic->winner(),
                         'chef_rankings' => $topic->chefRankings(),
+                        'Event_status'=>$status,
                 ];
             });
 
