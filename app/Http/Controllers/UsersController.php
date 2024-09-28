@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\DB; // For database operations
 use Illuminate\Support\Str; // For generating the random token
 use Illuminate\Support\Carbon; // For handling time and token expiration
 use App\Models\User; // For the User model
-
+//Comment
+use App\models\Comment;
 
 class UsersController extends Controller
 {
@@ -314,13 +315,18 @@ class UsersController extends Controller
                     $responsePayload['user']['events'] = $chefProfile->events;
                     $responsePayload['user']['recipe_count'] = $chefProfile->recipes()->count();
                     $responsePayload['user']['total_votes'] = $chefProfile->votes()->count();
+
                 }
+
             } else {
                 // Additional data for normal users
                 $responsePayload['user']['recipes_voted_for'] = $user->votes->map(function ($vote) {
                     return [
                         'recipe_id' => $vote->recipe_id,
-                        'recipe_title' => $vote->recipe->title, // Adjust according to your Recipe model
+                        'recipe_title' => $vote->recipe->title,
+                        'Engagements' =>Comment::where('recipe_id', $vote->recipe->id)->get(),
+
+                        // Adjust according to your Recipe model
                         // Add other recipe details as necessary
                     ];
                 });
