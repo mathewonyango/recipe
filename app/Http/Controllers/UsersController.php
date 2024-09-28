@@ -157,9 +157,9 @@ class UsersController extends Controller
                     'bio' => $chef->bio,
                     'recipes' => $chefProfile->recipes,
                     'votes' => $chefProfile->votes,
-                    'events' => $chefProfile->events,
-                    // 'recipe_count' => $chefProfile->recipes()->count(),
-                    // 'total_votes' => $chefProfile->votes()->count(),
+                    // 'events' => $chefProfile->events,
+                    'recipe_count' => $chefProfile->recipes()->count(),
+                    'total_votes' => $chefProfile->votes()->count(),
                     'payment_status' => $chef->payment_status,
                     'social_media_links' => json_decode($chef->social_media_links, true), // Return as array
                     'role' => $chef->role,
