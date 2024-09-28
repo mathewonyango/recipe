@@ -132,7 +132,7 @@ Route::delete('/events/{event}', [EventsController::class, 'destroy'])->name('ev
 //Event
 Route::get('/api/events/topic/{topicId}', [EventsController::class, 'getEventsByTopic']);
 Route::get('/api/events', [EventsController::class, 'getAllEvents']);
-Route::get('/api/events/{id}', [EventsController::class, 'getEventById']);
+Route::get('/api/events', [EventsController::class, 'getEventById']);
 
 Route::get('/api/topics', [TopicsController::class, 'getAllTopics']);
 //Recipe

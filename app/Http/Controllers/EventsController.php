@@ -223,14 +223,14 @@ class EventsController extends Controller
 
 
 
-    public function getEventById($id)
+    public function getEventById(Request $request)
     {
         // Fetch the event by ID along with its related chefs and recipes
         $event = Event::with([
             'topic',
             'recipes.chef',
             'recipes.comments'
-        ])->find($id);
+        ])->find($request->id);
 
         // Check if the event exists
         if (!$event) {
