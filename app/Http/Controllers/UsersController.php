@@ -211,24 +211,17 @@ class UsersController extends Controller
         }
 
         try {
-            // Check if the provided username or email exists in the database
+            // Check if the user exists in the database
             $user = User::where('username', $request->username_or_email)
                 ->orWhere('email', $request->username_or_email)
                 ->first();
 
             // If user not found or password does not match
-            if (!$user) {
-                return response()->json(['message' => 'User not found.'], 404);
-            }
-
-            if (!Hash::check($request->password, $user->password)) {
+            if (!$user || !Hash::check($request->password, $user->password)) {
                 return response()->json(['message' => 'Invalid credentials.'], 401);
             }
 
-            // Load additional relationships
-            $user->load('votes.recipe', 'events');
-
-            // Prepare the response data based on the user's role
+            // Prepare the response data
             $responsePayload = [
                 'message' => 'Login successful!',
                 'user' => [
@@ -236,55 +229,42 @@ class UsersController extends Controller
                     'name' => $user->name,
                     'username' => $user->username,
                     'email' => $user->email,
-                    'status' => $user->status, // Assuming there's a status column
-                    'bio' => $user->bio, // Assuming there's a bio column
-                    'role' => $user->role, // Role (e.g., voter, chef)
-                    'profile_picture' => $user->profile_picture,
-                    'social_media_links' => json_decode($user->social_media_links), // Decode JSON for better readability
+                    'role' => $user->role,
                 ],
             ];
 
-            // Check if the logged-in user is a chef
+            // Add additional user data based on role
             if ($user->role === 'chef') {
-                $chefProfile = User::with('recipes', 'votes', 'events')->find($user->id);
+                $totalViews = Comment::whereIn('recipe_id', $user->recipes()->pluck('id'))->sum('views');
+                $responsePayload['user']['total_views'] = $totalViews;
 
-                if ($chefProfile) {
-                    // Get all recipe IDs associated with the chef
-                    $recipeIds = $chefProfile->recipes->pluck('id');
+                // Include comments and ratings for the chef's recipes
+                $recipes = $user->recipes()->with(['comments' => function ($query) {
+                    $query->select('id', 'recipe_id', 'comment', 'rating', 'views')
+                          ->where('comment', '!=', ''); // Exclude empty comments
+                }])->get();
 
-                    // Calculate total views for the chef's recipes
-                    $totalViews = Comment::whereIn('recipe_id', $recipeIds)->sum('views');
-
-                    // Add total views to the response payload
-                    $responsePayload['total_views'] = $totalViews;
-
-                    $responsePayload['user']['recipes'] = $chefProfile->recipes;
-                    $responsePayload['user']['recipe_voted_for'] = $chefProfile->votes;
-                    $responsePayload['user']['events'] = $chefProfile->events;
-                    $responsePayload['user']['recipe_count'] = $chefProfile->recipes()->count();
-                    $responsePayload['user']['total_votes'] = $chefProfile->votes()->count();
-
-                    // Get engagements for all recipes of the chef
-                    $responsePayload['user']['Engagements'] = [];
-                    foreach ($chefProfile->recipes as $recipe) {
-                        $engagements = Comment::where('recipe_id', $recipe->id)->get();
-                        $responsePayload['user']['Engagements'][$recipe->id] = $engagements;
-                    }
-                }
+                $responsePayload['user']['recipes'] = $recipes->map(function ($recipe) {
+                    return [
+                        'id' => $recipe->id,
+                        'title' => $recipe->title,
+                        'total_views' => $recipe->comments->sum('views'), // Total views from comments
+                        'comments' => $recipe->comments->map(function ($comment) {
+                            return [
+                                'id' => $comment->id,
+                                'comment' => $comment->comment,
+                                'rating' => $comment->rating,
+                                'views' => $comment->views,
+                            ];
+                        }),
+                    ];
+                });
             } else {
-                // Additional data for normal users
+                // Include normal user details
                 $responsePayload['user']['recipes_voted_for'] = $user->votes->map(function ($vote) {
                     return [
                         'recipe_id' => $vote->recipe_id,
                         'recipe_title' => $vote->recipe->title,
-                    ];
-                });
-
-                // Optionally include events for normal users as well
-                $responsePayload['user']['events_participated'] = $user->events->map(function ($event) {
-                    return [
-                        'event_id' => $event->id,
-                        'event_name' => $event->name,
                     ];
                 });
             }
@@ -292,7 +272,7 @@ class UsersController extends Controller
             return response()->json($responsePayload, 200);
         } catch (\Exception $e) {
             // Handle any unexpected errors
-            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'An error occurred.'], 500);
         }
     }
 
