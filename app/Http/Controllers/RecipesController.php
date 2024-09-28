@@ -318,18 +318,19 @@ class RecipesController extends Controller
         return response()->json([
             'message' => 'Rating submitted successfully',
             'rating' => $rating,
+
         ], 201);
     }
 
     public function RecordView(Request $request)
     {
           // Increment the view count for the recipe by 1
-    $recipe = Recipe::findOrFail($request->recipe_id);
-    $recipe->increment('views'); // Increments the view count by 1
+    $view = Comment::findOrFail($request->recipe_id);
+    $view->increment('views'); // Increments the view count by 1
 
         return response()->json([
             'message' => 'View logged successfully',
-            'views' => $recipe->views,
+            // 'views' => $recipe->views,
         ], 200);
     }
 
