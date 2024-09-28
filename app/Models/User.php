@@ -66,8 +66,10 @@ class User extends Authenticatable
     }
 
     protected $casts = [
+        'events_participated' => 'array',  // Automatically casts the field to an array
         'notification_preferences' => 'array', // Cast to array so it's handled correctly
     ];
+
 
       // Add the relationship method
       public function recipes()
@@ -83,9 +85,9 @@ class User extends Authenticatable
 
       // Relationship to Events through Topics
       public function events()
-      {
-          return $this->hasManyThrough(Event::class, Topic::class, 'topic_id', 'event_id', 'id', 'id');
-      }
+    {
+        return $this->hasMany(Event::class, 'id', 'events_participated');
+    }
 
       public function attendants()
     {
