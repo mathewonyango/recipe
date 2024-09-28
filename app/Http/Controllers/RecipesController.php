@@ -139,7 +139,7 @@ class RecipesController extends Controller
                             'name' => $recipe->user->name,
                             'profile_picture' => $recipe->user->profile_picture,
                         ],
-                        'comments' => $recipe->comments,
+                        'Engaments' => $recipe->comments,
                         'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
                         'total_votes' => $recipe->total_votes, // Count of votes for the recipe
                     ];
