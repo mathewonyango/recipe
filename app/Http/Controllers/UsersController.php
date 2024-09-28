@@ -247,28 +247,39 @@ class UsersController extends Controller
                 foreach ($recipes as $recipe) {
                     $totalViews = $recipe->comments->sum('views'); // Total views from comments
                     $averageRating = $recipe->comments->count() > 0
-                        ? $recipe->comments->avg('rating')
-                        : 0; // Calculate average rating
+                        ? round($recipe->comments->avg('rating')) // Round the average rating
+                        : 0; // Set to 0 if there are no comments
 
-                    $responsePayload['user']['recipes'][] = [
+                    $recipeData = [
                         'id' => $recipe->id,
                         'title' => $recipe->title,
                         'total_views' => $totalViews,
                         'average_rating' => $averageRating, // Include average rating
-                        'comments' => $recipe->comments->map(function ($comment) {
+                    ];
+
+                    // Add comments if they exist
+                    if ($recipe->comments->count() > 0) {
+                        $recipeData['comments'] = $recipe->comments->map(function ($comment) {
                             return [
                                 'id' => $comment->id,
                                 'comment' => $comment->comment,
                             ];
-                        }),
-                        'ratings' => $recipe->comments->map(function ($comment) {
+                        });
+                        $recipeData['ratings'] = $recipe->comments->map(function ($comment) {
                             return [
                                 'id' => $comment->id,
                                 'rating' => $comment->rating,
                             ];
-                        }),
+                        });
 
-                    ];
+                    } else {
+                        // Ensure empty arrays are not returned
+                        $recipeData['comments'] = null;
+                        $recipeData['ratings'] = null;
+                        // $recipeData['views'] = null;
+                    }
+
+                    $responsePayload['user']['recipes'][] = $recipeData;
 
                     // Accumulate total views for the user
                     $responsePayload['user']['total_views'] += $totalViews;
