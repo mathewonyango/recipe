@@ -126,6 +126,7 @@ class RecipesController extends Controller
                 ->withCount('votes') // Count the number of votes for each recipe
                 ->get()
                 ->map(function ($recipe) {
+
                         // Get all interactions for a recipe
                         $views = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'view')->get();
                         $ratings = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'rate')->get();
