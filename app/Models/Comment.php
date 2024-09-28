@@ -14,6 +14,7 @@ class Comment extends Model
         'recipe_id',
         'comment',
         'rating',
+        'views'
     ];
 
     // Relationship to User
