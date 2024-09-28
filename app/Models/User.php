@@ -84,9 +84,7 @@ class User extends Authenticatable
       // Relationship to Events through Topics
       public function events()
       {
-          return $this->belongsToMany(Event::class, 'event_participated', 'user_id', 'event_id')
-                      ->withPivot('event_day') // Include any additional pivot fields if needed
-                      ->withTimestamps(); // Automatically manage created_at and updated_at
+          return $this->hasManyThrough(Event::class, Topic::class, 'topic_id', 'event_id', 'id', 'id');
       }
 
       public function attendants()
