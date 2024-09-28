@@ -280,6 +280,7 @@ class RecipesController extends Controller
         // Validation
         $validator = Validator::make($request->all(), [
             'recipe_id' => 'required|exists:recipes,id',
+            'user_id' => 'required|exists:users,id', // Ensure user_id is required and valid
             'rating' => 'required|integer|between:1,5',
         ]);
 
@@ -302,14 +303,15 @@ class RecipesController extends Controller
             ], 409); // Conflict
         }
 
-        $this->incrementRecipeViews($$request->recipe_id);
+        // Increment views for the recipe, if required
+        $this->incrementRecipeViews($request->recipe_id);
 
         // Store the rating as an interaction
         $rating = Comment::create([
             'recipe_id' => $request->recipe_id,
             'user_id' => $request->user_id,
             'rating' => $request->rating,
-            'comment'=>"",
+            'comment' => "", // Default empty comment
             'interaction_type' => 'rate', // Explicitly set interaction type
         ]);
 
@@ -318,6 +320,7 @@ class RecipesController extends Controller
             'rating' => $rating,
         ], 201);
     }
+
     public function RecordView(Request $request)
     {
           // Increment the view count for the recipe by 1
