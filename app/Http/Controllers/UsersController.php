@@ -231,13 +231,15 @@ class UsersController extends Controller
                     'email' => $user->email,
                     'role' => $user->role,
                     'total_views' => 0, // Initialize total views for the user
+                    'total_recipes' => 0, // Initialize total recipes
+                    'total_comments' => 0, // Initialize total comments
                     'recipes' => [],
                 ],
             ];
 
             // Add additional user data based on role
             if ($user->role === 'chef') {
-                // Calculate total views across all recipes
+                // Fetch recipes with comments
                 $recipes = $user->recipes()->with(['comments' => function ($query) {
                     $query->select('id', 'recipe_id', 'comment', 'rating', 'views')
                           ->where('comment', '!=', ''); // Exclude empty comments
@@ -253,8 +255,14 @@ class UsersController extends Controller
                     $recipeData = [
                         'id' => $recipe->id,
                         'title' => $recipe->title,
-                        'total_views' => $totalViews,
-                        'average_rating' => $averageRating, // Include average rating
+                        'totals' => [
+                            'total_views' => $totalViews,
+                            'average_rating' => $averageRating, // Include average rating
+                            'total_comments' => $recipe->comments->count() // Count comments
+                        ],
+                        'comments' => [],
+                        'ratings' => [],
+                        'views' => [],
                     ];
 
                     // Add comments if they exist
@@ -281,8 +289,10 @@ class UsersController extends Controller
 
                     $responsePayload['user']['recipes'][] = $recipeData;
 
-                    // Accumulate total views for the user
+                    // Accumulate totals for the user
                     $responsePayload['user']['total_views'] += $totalViews;
+                    $responsePayload['user']['total_recipes'] += 1; // Increment total recipes
+                    $responsePayload['user']['total_comments'] += $recipe->comments->count(); // Count comments
                 }
             } else {
                 // Include normal user details
