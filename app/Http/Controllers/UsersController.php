@@ -254,6 +254,12 @@ class UsersController extends Controller
                     $responsePayload['user']['events'] = $chefProfile->events;
                     $responsePayload['user']['recipe_count'] = $chefProfile->recipes()->count();
                     $responsePayload['user']['total_votes'] = $chefProfile->votes()->count();
+                    // Get engagements for all recipes of the chef
+                    $responsePayload['user']['Engagements'] = [];
+                    foreach ($chefProfile->recipes as $recipe) {
+                        $engagements = Comment::where('recipe_id', $recipe->id)->get();
+                        $responsePayload['user']['Engagements'][$recipe->id] = $engagements;
+                    }
 
                 }
 
@@ -263,7 +269,6 @@ class UsersController extends Controller
                     return [
                         'recipe_id' => $vote->recipe_id,
                         'recipe_title' => $vote->recipe->title,
-                        'Engagements' =>Comment::where('recipe_id', $vote->recipe->id)->get(),
 
                         // Adjust according to your Recipe model
                         // Add other recipe details as necessary
