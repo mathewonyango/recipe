@@ -139,7 +139,6 @@ Route::get('/api/topics', [TopicsController::class, 'getAllTopics']);
 
 Route::get('/api/recipes', [RecipesController::class, 'getAllRecipes']);
 Route::post('/api/recipes/add', [RecipesController::class, 'submitRecipe']);
-// Route::post('/api/comment', [RecipesController::class, 'submitComment']);
 
 
 
@@ -152,10 +151,10 @@ Route::post('/api/reset-password', [UsersController::class, 'resetPassword']);
 
 
 
-Route::prefix('api')->group(function () {
+// Route::prefix('api')->group(function () {
 
     // Submit a Comment
-    Route::post('/recipe/comment', [RecipesController::class, 'submitComment'])
+    Route::post('/api/recipe/comment', [RecipesController::class, 'submitComment'])
         ->name('recipes.submitComment');
 
     // Submit a Rating
@@ -181,4 +180,4 @@ Route::prefix('api')->group(function () {
     // // Get All Commenters for a Recipe
     // Route::get('/recipes/{recipe_id}/commenters', [RecipesController::class, 'getCommenters'])
     //     ->name('recipes.getCommenters');
-});
+// });

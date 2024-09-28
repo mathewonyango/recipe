@@ -251,7 +251,7 @@ class RecipesController extends Controller
         $validator = Validator::make($request->all(), [
             'recipe_id' => 'required|exists:recipes,id',
             'comment' => 'required|string',
-            'rating' => 'nullable|integer|between:1,5',
+            // 'rating' => 'nullable|integer|between:1,5',
         ]);
 
         if ($validator->fails()) {
@@ -266,7 +266,7 @@ class RecipesController extends Controller
             'recipe_id' => $request->recipe_id,
             'user_id' => $request->user_id,
             'comment' => $request->comment,
-            'rating' => $request->rating,
+            'rating' => "5",
             'interaction_type' => 'comment', // Explicitly set the interaction type
         ]);
 
