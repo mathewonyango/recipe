@@ -13,18 +13,18 @@ use App\Models\Recipe;
 
 class VotesController extends Controller
 {
-    public function vote(Request $request, $recipeId)
+    public function vote(Request $request)
 {
     // Find the user
     $user = User::find($request->user_id);
 
     // Check if the user is authorized to vote (role must be 'user')
     if ($user->role !== 'user') {
-        return response()->json(['error' => 'You are not authorized to vote.'], 403);
+        return response()->json(['error' => 'Chefs are Not Authorized to Vote!.'], 403);
     }
 
     // Find the recipe
-    $recipe = Recipe::find($recipeId);
+    $recipe = Recipe::find($request->recipe_id);
     if (!$recipe) {
         return response()->json(['error' => 'Recipe not found.'], 404);
     }
@@ -62,7 +62,7 @@ if ($currentDate->gt($votingEndDate)) {
 
     // Check if the user has already voted for this specific recipe
     $existingVote = Vote::where('user_id', $user->id)
-        ->where('recipe_id', $recipeId)
+        ->where('recipe_id', $request->recipe_id)
         ->first();
 
     if ($existingVote) {
@@ -72,7 +72,7 @@ if ($currentDate->gt($votingEndDate)) {
     // Create a new vote
     $vote = Vote::create([
         'user_id' => $user->id,
-        'recipe_id' => $recipeId,
+        'recipe_id' => $request->recipe_id,
     ]);
 
     // Increment the recipe's vote count
