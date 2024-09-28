@@ -230,35 +230,50 @@ class UsersController extends Controller
                     'username' => $user->username,
                     'email' => $user->email,
                     'role' => $user->role,
+                    'total_views' => 0, // Initialize total views for the user
+                    'recipes' => [],
                 ],
             ];
 
             // Add additional user data based on role
             if ($user->role === 'chef') {
-                $totalViews = Comment::whereIn('recipe_id', $user->recipes()->pluck('id'))->sum('views');
-                $responsePayload['user']['total_views'] = $totalViews;
-
-                // Include comments and ratings for the chef's recipes
+                // Calculate total views across all recipes
                 $recipes = $user->recipes()->with(['comments' => function ($query) {
                     $query->select('id', 'recipe_id', 'comment', 'rating', 'views')
                           ->where('comment', '!=', ''); // Exclude empty comments
                 }])->get();
 
-                $responsePayload['user']['recipes'] = $recipes->map(function ($recipe) {
-                    return [
+                // Loop through recipes to build the response
+                foreach ($recipes as $recipe) {
+                    $totalViews = $recipe->comments->sum('views'); // Total views from comments
+
+                    $responsePayload['user']['recipes'][] = [
                         'id' => $recipe->id,
                         'title' => $recipe->title,
-                        'total_views' => $recipe->comments->sum('views'), // Total views from comments
+                        'total_views' => $totalViews,
                         'comments' => $recipe->comments->map(function ($comment) {
                             return [
                                 'id' => $comment->id,
                                 'comment' => $comment->comment,
+                            ];
+                        }),
+                        'ratings' => $recipe->comments->map(function ($comment) {
+                            return [
+                                'id' => $comment->id,
                                 'rating' => $comment->rating,
+                            ];
+                        }),
+                        'views' => $recipe->comments->map(function ($comment) {
+                            return [
+                                'id' => $comment->id,
                                 'views' => $comment->views,
                             ];
                         }),
                     ];
-                });
+
+                    // Accumulate total views for the user
+                    $responsePayload['user']['total_views'] += $totalViews;
+                }
             } else {
                 // Include normal user details
                 $responsePayload['user']['recipes_voted_for'] = $user->votes->map(function ($vote) {
