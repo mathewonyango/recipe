@@ -158,11 +158,11 @@ Route::post('/api/reset-password', [UsersController::class, 'resetPassword']);
         ->name('recipes.submitComment');
 
     // Submit a Rating
-    Route::post('/recipe/rate', [RecipesController::class, 'submitRating'])
+    Route::post('/api/recipe/rate', [RecipesController::class, 'submitRating'])
         ->name('recipes.submitRating');
 
     // Log a View
-    Route::post('/recipe/view', [RecipesController::class, 'logView'])
+    Route::post('/api/recipe/view', [RecipesController::class, 'logView'])
         ->name('recipes.logView');
 
     // Get All Interactions (views, ratings, comments)
