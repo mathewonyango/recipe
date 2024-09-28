@@ -149,3 +149,36 @@ Route::post('/api/vote/recipe', [VotesController::class, 'vote']);
 
 Route::post('/api/forgot-password-token', [UsersController::class, 'forgotPassword']);
 Route::post('/api/reset-password', [UsersController::class, 'resetPassword']);
+
+
+
+Route::prefix('api')->group(function () {
+
+    // Submit a Comment
+    Route::post('/recipes/{recipe_id}/comments', [RecipesController::class, 'submitComment'])
+        ->name('recipes.submitComment');
+
+    // Submit a Rating
+    Route::post('/recipes/{recipe_id}/ratings', [RecipesController::class, 'submitRating'])
+        ->name('recipes.submitRating');
+
+    // Log a View
+    Route::post('/recipes/{recipe_id}/views', [RecipesController::class, 'logView'])
+        ->name('recipes.logView');
+
+    // Get All Interactions (views, ratings, comments)
+    Route::get('/recipes/{recipe_id}/interactions', [RecipesController::class, 'getInteractions'])
+        ->name('recipes.getInteractions');
+
+    // Get All Viewers for a Recipe
+    Route::get('/recipes/{recipe_id}/viewers', [RecipesController::class, 'getViewers'])
+        ->name('recipes.getViewers');
+
+    // Get All Raters for a Recipe
+    Route::get('/recipes/{recipe_id}/raters', [RecipesController::class, 'getRaters'])
+        ->name('recipes.getRaters');
+
+    // Get All Commenters for a Recipe
+    Route::get('/recipes/{recipe_id}/commenters', [RecipesController::class, 'getCommenters'])
+        ->name('recipes.getCommenters');
+});

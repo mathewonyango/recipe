@@ -126,9 +126,12 @@ class RecipesController extends Controller
                 ->withCount('votes') // Count the number of votes for each recipe
                 ->get()
                 ->map(function ($recipe) {
-                    $recipeEngagement = $recipe->comments;
+                        // Get all interactions for a recipe
+                        $views = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'view')->get();
+                        $ratings = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'rate')->get();
+                        $comments = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'comment')->get();
                     return [
-                        'id' => $recipe->id,
+
                         'title' => $recipe->title,
                         'description' => $recipe->description,
                         'ingredients' => $recipe->ingredients,
@@ -139,7 +142,9 @@ class RecipesController extends Controller
                             'name' => $recipe->user->name,
                             'profile_picture' => $recipe->user->profile_picture,
                         ],
-                        'Engaments' => $recipe->comments,
+                        'views' => $views,
+                        'ratings' => $ratings,
+                        'comments' => $comments,
                         'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
                         'total_votes' => $recipe->total_votes, // Count of votes for the recipe
                     ];
@@ -238,45 +243,117 @@ class RecipesController extends Controller
         ], 201);
     }
 
+
     public function submitComment(Request $request)
-{
+    {
+        // Validation
+        $validator = Validator::make($request->all(), [
+            'recipe_id' => 'required|exists:recipes,id',
+            'comment' => 'required|string',
+            'rating' => 'nullable|integer|between:1,5',
+        ]);
 
-    $apiKey = $request->header('X-API-Key');
-    $expectedApiKey = env('API_KEY'); // Fetch from environment
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
-    if ($apiKey !== $expectedApiKey) {
-        return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-    }
+        // Create the comment
+        $comment = Comment::create([
+            'recipe_id' => $request->recipe_id,
+            'user_id' => $request->user_id,
+            'comment' => $request->comment,
+            'rating' => $request->rating,
+            'interaction_type' => 'comment', // Explicitly set the interaction type
+        ]);
 
-
-    // Validate the request
-    $validator = Validator::make($request->all(), [
-        'recipe_id' => 'required|exists:recipes,id',
-        'comment' => 'required|string',
-        'rating' => 'nullable|integer|between:1,5', // Rating must be between 1 and 5
-    ]);
-
-    // Check for validation errors
-    if ($validator->fails()) {
         return response()->json([
-            'message' => 'Validation failed',
-            'errors' => $validator->errors(),
-        ], 422);
+            'message' => 'Comment submitted successfully',
+            'comment' => $comment,
+        ], 201);
     }
+    public function submitRating(Request $request)
+    {
+        // Validation
+        $validator = Validator::make($request->all(), [
+            'recipe_id' => 'required|exists:recipes,id',
+            'rating' => 'required|integer|between:1,5',
+        ]);
 
-    // Create the comment
-    $comment = Comment::create([
-        'recipe_id' => $request->recipe_id,
-        'user_id' => $request->user_id, // Assuming user is authenticated
-        'comment' => $request->comment,
-        'rating' => $request->rating,
-    ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
-    return response()->json([
-        'message' => 'Comment submitted successfully',
-        'comment' => $comment,
-    ], 201);
-}
+        // Check if user already rated
+        $existingRating = Comment::where('user_id', $request->user_id)
+                                 ->where('recipe_id', $request->recipe_id)
+                                 ->where('interaction_type', 'rate')
+                                 ->first();
+
+        if ($existingRating) {
+            return response()->json([
+                'message' => 'You have already rated this recipe.',
+            ], 409); // Conflict
+        }
+
+        // Store the rating as an interaction
+        $rating = Comment::create([
+            'recipe_id' => $request->recipe_id,
+            'user_id' => $request->user_id,
+            'rating' => $request->rating,
+            'interaction_type' => 'rate', // Explicitly set interaction type
+        ]);
+
+        return response()->json([
+            'message' => 'Rating submitted successfully',
+            'rating' => $rating,
+        ], 201);
+    }
+    public function trackView(Request $request)
+    {
+        // Validation
+        $validator = Validator::make($request->all(), [
+            'recipe_id' => 'required|exists:recipes,id',
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        // Check if user already viewed the recipe
+        $existingView = Comment::where('user_id', $request->user_id)
+                                ->where('recipe_id', $request->recipe_id)
+                                ->where('interaction_type', 'view')
+                                ->first();
+
+        if ($existingView) {
+            return response()->json([
+                'message' => 'You have already viewed this recipe.',
+            ], 409);
+        }
+
+        // Log the view
+        $view = Comment::create([
+            'recipe_id' => $request->recipe_id,
+            'user_id' => $request->user_id,
+            'interaction_type' => 'view',
+            'viewed_at' => now(), // Track the time of view
+        ]);
+
+        return response()->json([
+            'message' => 'View logged successfully',
+            'view' => $view,
+        ], 200);
+    }
 
 
 }
