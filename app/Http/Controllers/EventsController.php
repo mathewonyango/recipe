@@ -230,7 +230,7 @@ class EventsController extends Controller
             'topic',
             'recipes.chef',
             'recipes.comments'
-        ])->find($request->id);
+        ])->find($request->event_id);
 
         // Check if the event exists
         if (!$event) {
