@@ -337,7 +337,7 @@ class RecipesController extends Controller
     private function incrementRecipeViews($recipe_id)
 {
     // Increment the view count for the recipe by 1
-    $recipe = Recipe::findOrFail($recipe_id);
+    $recipe = Comment::findOrFail($recipe_id);
     $recipe->increment('views'); // Increments the view count by 1
 }
 
