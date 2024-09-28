@@ -112,6 +112,7 @@ class TopicsController extends Controller
                 $currentDate = Carbon::now();
                 $status = $topic->end_date > $currentDate ? 'open' : 'closed'; //
                 return [
+                        'Topic_status'=>$status,
                         'total_votes' => $topic->totalVotes(),
                         'total_chefs' => $topic->totalChefs(),
                         'total_comments' => $topic->totalComments(),
@@ -119,7 +120,6 @@ class TopicsController extends Controller
                         'average_rating' => $topic->averageRatings(),
                         'winner' => $topic->winner(),
                         'chef_rankings' => $topic->chefRankings(),
-                        'Event_status'=>$status,
                 ];
             });
 
