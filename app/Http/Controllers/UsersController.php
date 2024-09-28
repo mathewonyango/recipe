@@ -35,7 +35,6 @@ class UsersController extends Controller
             'full_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'username' => 'required|string|max:255|unique:users',
-            'push_notification' => 'required|in:allow,deny',
             'password' => 'required|string|min:6', // Minimum length can be adjusted
             'notification_preferences' => 'nullable|array', // Expecting an array for notification preferences
         ]);
@@ -54,7 +53,7 @@ class UsersController extends Controller
                 'name' => $request->full_name,
                 'email' => $request->email,
                 'username' => $request->username,
-                'push_notification' => $request->push_notification,
+                'push_notification' => 'allow',
                 'password' => Hash::make($request->password), // Hash the password
                 'notification_preferences' => json_encode($request->notification_preferences), // Optional, store as JSON
                 'role' => 'user', // Default role for general users

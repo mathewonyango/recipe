@@ -37,18 +37,18 @@ class VotesController extends Controller
     // Get the topic associated with the recipe
     $topic = $recipe->topic;
 
-    // Check if voting is allowed (10 days after topic's end date)
-    $currentDate = Carbon::now();
-    $votingStartDate = Carbon::parse($topic->end_date);
-    $votingEndDate = $votingStartDate->addDays(10);
+   // Check if voting is allowed (10 days after topic's end date)
+$currentDate = Carbon::now();
+$votingStartDate = Carbon::parse($topic->end_date);
+$votingEndDate = $votingStartDate->copy()->addDays(10); // Extend voting to 10 days after end_date
 
-    if ($currentDate->lt($votingStartDate)) {
-        return response()->json(['error' => 'Voting has not started yet.'], 400);
-    }
+if ($currentDate->lt($votingStartDate)) {
+    return response()->json(['error' => 'Voting has not started yet.'], 400);
+}
 
-    if ($currentDate->gt($votingEndDate)) {
-        return response()->json(['error' => 'Voting period is over.'], 400);
-    }
+if ($currentDate->gt($votingEndDate)) {
+    return response()->json(['error' => 'Voting period is over.'], 400);
+}
 
     // Check if the user has already voted for any recipe in this topic
     $existingVoteForAnyRecipe = Vote::where('user_id', $user->id)
