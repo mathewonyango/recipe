@@ -244,34 +244,39 @@ class UsersController extends Controller
                 ],
             ];
 
-            // Additional data for chefs
+            // Check if the logged-in user is a chef
             if ($user->role === 'chef') {
                 $chefProfile = User::with('recipes', 'votes', 'events')->find($user->id);
 
                 if ($chefProfile) {
+                    // Get all recipe IDs associated with the chef
+                    $recipeIds = $chefProfile->recipes->pluck('id');
+
+                    // Calculate total views for the chef's recipes
+                    $totalViews = Comment::whereIn('recipe_id', $recipeIds)->sum('views');
+
+                    // Add total views to the response payload
+                    $responsePayload['total_views'] = $totalViews;
+
                     $responsePayload['user']['recipes'] = $chefProfile->recipes;
                     $responsePayload['user']['recipe_voted_for'] = $chefProfile->votes;
                     $responsePayload['user']['events'] = $chefProfile->events;
                     $responsePayload['user']['recipe_count'] = $chefProfile->recipes()->count();
                     $responsePayload['user']['total_votes'] = $chefProfile->votes()->count();
+
                     // Get engagements for all recipes of the chef
                     $responsePayload['user']['Engagements'] = [];
                     foreach ($chefProfile->recipes as $recipe) {
                         $engagements = Comment::where('recipe_id', $recipe->id)->get();
                         $responsePayload['user']['Engagements'][$recipe->id] = $engagements;
                     }
-
                 }
-
             } else {
                 // Additional data for normal users
                 $responsePayload['user']['recipes_voted_for'] = $user->votes->map(function ($vote) {
                     return [
                         'recipe_id' => $vote->recipe_id,
                         'recipe_title' => $vote->recipe->title,
-
-                        // Adjust according to your Recipe model
-                        // Add other recipe details as necessary
                     ];
                 });
 
@@ -279,8 +284,7 @@ class UsersController extends Controller
                 $responsePayload['user']['events_participated'] = $user->events->map(function ($event) {
                     return [
                         'event_id' => $event->id,
-                        'event_name' => $event->name, // Adjust according to your Event model
-                        // Add other event details as necessary
+                        'event_name' => $event->name,
                     ];
                 });
             }
@@ -291,6 +295,7 @@ class UsersController extends Controller
             return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
+
 
 
    // Forgot password method to generate token
