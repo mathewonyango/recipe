@@ -260,7 +260,7 @@ class RecipesController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
-
+        $this->incrementRecipeViews($$request->recipe_id);
         // Create the comment
         $comment = Comment::create([
             'recipe_id' => $request->recipe_id,
@@ -302,6 +302,8 @@ class RecipesController extends Controller
             ], 409); // Conflict
         }
 
+        $this->incrementRecipeViews($$request->recipe_id);
+
         // Store the rating as an interaction
         $rating = Comment::create([
             'recipe_id' => $request->recipe_id,
@@ -316,46 +318,25 @@ class RecipesController extends Controller
             'rating' => $rating,
         ], 201);
     }
-    public function trackView(Request $request)
+    public function RecordView(Request $request)
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-            'recipe_id' => 'required|exists:recipes,id',
-            'user_id' => 'required|exists:users,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        // Check if user already viewed the recipe
-        $existingView = Comment::where('user_id', $request->user_id)
-                                ->where('recipe_id', $request->recipe_id)
-                                ->where('interaction_type', 'view')
-                                ->first();
-
-        if ($existingView) {
-            return response()->json([
-                'message' => 'You have already viewed this recipe.',
-            ], 409);
-        }
-
-        // Log the view
-        $view = Comment::create([
-            'recipe_id' => $request->recipe_id,
-            'user_id' => $request->user_id,
-            'interaction_type' => 'view',
-            'viewed_at' => now(), // Track the time of view
-        ]);
+          // Increment the view count for the recipe by 1
+    $recipe = Recipe::findOrFail($request->recipe_id);
+    $recipe->increment('views'); // Increments the view count by 1
 
         return response()->json([
             'message' => 'View logged successfully',
-            'view' => $view,
+            'views' => $recipe->views,
         ], 200);
     }
+
+
+    private function incrementRecipeViews($recipe_id)
+{
+    // Increment the view count for the recipe by 1
+    $recipe = Recipe::findOrFail($recipe_id);
+    $recipe->increment('views'); // Increments the view count by 1
+}
 
 
 }
