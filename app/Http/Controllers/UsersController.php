@@ -262,7 +262,7 @@ class UsersController extends Controller
                         ],
                         'comments' => [],
                         'ratings' => [],
-                        'views' => [],
+                        // 'views' => [],
                     ];
 
                     // Add comments if they exist
