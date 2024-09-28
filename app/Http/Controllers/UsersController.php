@@ -158,13 +158,13 @@ class UsersController extends Controller
                     'recipes' => $chefProfile->recipes,
                     'votes' => $chefProfile->votes,
                     'events' => $chefProfile->events,
-                    'recipe_count' => $chefProfile->recipes()->count(),
-                    'total_votes' => $chefProfile->votes()->count(),
+                    // 'recipe_count' => $chefProfile->recipes()->count(),
+                    // 'total_votes' => $chefProfile->votes()->count(),
                     'payment_status' => $chef->payment_status,
                     'social_media_links' => json_decode($chef->social_media_links, true), // Return as array
                     'role' => $chef->role,
                     'status' => $chef->status,
-                    'push_notification' => $chef->push_notification,
+                    'push_notification' => $chef->push_notification ?? 'allow',
                     'notification_preferences'=>$chef->notification_preferences ?? ['email'],
                     ]
             ], 201);
