@@ -266,7 +266,7 @@ class RecipesController extends Controller
             'recipe_id' => $request->recipe_id,
             'user_id' => $request->user_id,
             'comment' => $request->comment,
-            'rating' => "5",
+            'rating' => 5,
             'interaction_type' => 'comment', // Explicitly set the interaction type
         ]);
 
