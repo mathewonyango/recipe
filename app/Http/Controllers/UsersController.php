@@ -274,8 +274,8 @@ class UsersController extends Controller
 
                     } else {
                         // Ensure empty arrays are not returned
-                        $recipeData['comments'] = null;
-                        $recipeData['ratings'] = null;
+                        $recipeData['comments'] = 0;
+                        $recipeData['ratings'] = 0;
                         // $recipeData['views'] = null;
                     }
 
