@@ -143,7 +143,7 @@ Route::post('/api/comment', [RecipesController::class, 'submitComment']);
 
 
 
-Route::post('/api/vote/recipes', [VotesController::class, 'vote']);
+Route::post('/api/vote/recipe', [VotesController::class, 'vote']);
 
 
 
