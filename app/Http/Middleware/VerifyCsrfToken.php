@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 
 class VerifyCsrfToken
@@ -21,21 +22,21 @@ class VerifyCsrfToken
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if the request method is one that typically requires CSRF protection
-        if ($request->isMethod('post') || $request->isMethod('put') || $request->isMethod('delete')) {
-            // Check for CSRF token in the request headers
-            if (!$request->hasHeader('X-CSRF-Token')) {
-                // Return JSON response indicating missing CSRF token
-                return response()->json([
-                    'message' => 'CSRF token is missing',
-                    'method' => $request->method(),
-                    'url' => $request->fullUrl(),
-                    'headers' => $request->headers->all(),
-                ], 419); // 419: unknown status code for CSRF token missing
-            }
+        // Generate CSRF token if not already set in the session
+        if (!$request->session()->has('_token')) {
+            // Generate a new token
+            $token = Session::token();
+            // Store the token in the session
+            $request->session()->put('_token', $token);
         }
 
-        // Proceed with the request
-        return $next($request);
+        // Get the CSRF token
+        $csrfToken = $request->session()->get('_token');
+
+        // Set CSRF token in the response headers
+        $response = $next($request);
+        $response->headers->set('X-CSRF-Token', $csrfToken);
+
+        return $response;
     }
 }
