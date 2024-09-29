@@ -96,6 +96,9 @@ Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+
+Route::withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->group(function () {
+
 //APIs Goes Here
 Route::post('/api/register-chef', [UsersController::class, 'registerChef']);
 Route::post('/api/register', [UsersController::class, 'register']);
@@ -164,6 +167,7 @@ Route::post('/api/reset-password', [UsersController::class, 'resetPassword']);
     // Log a View
     Route::post('/api/recipe/view', [RecipesController::class, 'RecordView'])
         ->name('recipes.logView');
+    });
 
     // Get All Interactions (views, ratings, comments)
     // Route::get('/recipes/{recipe_id}/interactions', [RecipesController::class, 'getInteractions'])
