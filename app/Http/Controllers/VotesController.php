@@ -15,6 +15,14 @@ class VotesController extends Controller
 {
     public function vote(Request $request)
 {
+
+    $apiKey = $request->input('api_key'); // Use input() to get data from the body
+    $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+
+    // Check if the provided API key matches the expected API key
+    if ($apiKey !== $expectedApiKey) {
+        return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+    }
     // Find the user
     $user = User::find($request->user_id);
 

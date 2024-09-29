@@ -23,10 +23,10 @@ class UsersController extends Controller
 
     public function register(Request $request)
     {
-        // Check API Key from environment variable
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = env('API_KEY'); // Fetch from environment
+        $apiKey = $request->input('api_key'); // Use input() to get data from the body
+        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
+        // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
             return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
         }
@@ -76,13 +76,13 @@ class UsersController extends Controller
 
     public function registerChef(Request $request)
     {
-        // Check for API key
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = env('API_KEY'); // Fetch from environment
+        $apiKey = $request->input('api_key'); // Use input() to get data from the body
+            $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
+            // Check if the provided API key matches the expected API key
+            if ($apiKey !== $expectedApiKey) {
+                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            }
 
         try {
             // Validate the request
@@ -192,13 +192,13 @@ class UsersController extends Controller
 
     public function login(Request $request)
     {
-        // Check API Key
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = env('API_KEY'); // Fetch from environment
+        $apiKey = $request->input('api_key'); // Use input() to get data from the body
+            $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
+            // Check if the provided API key matches the expected API key
+            if ($apiKey !== $expectedApiKey) {
+                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            }
 
         // Validate the request data
         $validator = Validator::make($request->all(), [
@@ -316,6 +316,14 @@ class UsersController extends Controller
    // Forgot password method to generate token
    public function forgotPassword(Request $request)
    {
+
+    $apiKey = $request->input('api_key'); // Use input() to get data from the body
+    $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+
+    // Check if the provided API key matches the expected API key
+    if ($apiKey !== $expectedApiKey) {
+        return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+    }
        // Validate the email
        $validator = Validator::make($request->all(), [
            'email' => 'required|email|exists:users,email'
@@ -351,6 +359,15 @@ class UsersController extends Controller
     // Reset password method
     public function resetPassword(Request $request)
     {
+
+
+        $apiKey = $request->input('api_key'); // Use input() to get data from the body
+        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+
+        // Check if the provided API key matches the expected API key
+        if ($apiKey !== $expectedApiKey) {
+            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        }
         // Validate the token, email, and new password
         $validator = Validator::make($request->all(), [
             'token' => 'required',
@@ -410,10 +427,10 @@ class UsersController extends Controller
 
     public function getChefs(Request $request)
     {
+        $apiKey = $request->input('api_key'); // Use input() to get data from the body
+        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = env('API_KEY'); // Fetch from environment
-
+        // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
             return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
         }
@@ -462,9 +479,10 @@ class UsersController extends Controller
     public function Users(Request $request)
     {
 
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = env('API_KEY'); // Fetch from environment
+        $apiKey = $request->input('api_key'); // Use input() to get data from the body
+        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
+        // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
             return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
         }
@@ -513,9 +531,10 @@ class UsersController extends Controller
     // Update Chef Profile Data
     public function updateProfile($id, Request $request)
     {
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+        $apiKey = $request->input('api_key'); // Use input() to get data from the body
+        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
+        // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
             return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
         }
@@ -557,12 +576,14 @@ class UsersController extends Controller
     public function addRecipe(Request $request)
     {
         // Check for the unique header
-        $apiKey = $request->header('X-API-Key');
-        $expectedApiKey = env('API_KEY'); // Fetch from environment
+        // Fetch the API key from the request body
+            $apiKey = $request->input('api_key'); // Use input() to get data from the body
+            $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
+            // Check if the provided API key matches the expected API key
+            if ($apiKey !== $expectedApiKey) {
+                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            }
 
         // Validate the incoming request
         $request->validate([
