@@ -13,7 +13,7 @@
                                 <div class="mx-auto mb-5">
                                     <a href="/">
                                         <img src="assets/images/logo.png" alt="" height="24" />
-                                        <h3 class="d-inline align-middle ml-1 text-logo">Login</h3>
+                                        <h3 class="d-inline align-middle ml-1 text-logo">Shreyu</h3>
                                     </a>
                                 </div>
 
@@ -51,7 +51,7 @@
 
                                     <div class="form-group mt-4">
                                         <label class="form-control-label">Password</label>
-                                        <a href="#"
+                                        <a href="{{ route('password.request') }}"
                                             class="float-right text-muted text-unline-dashed ml-1">Forgot your
                                             password?</a>
                                         <div class="input-group input-group-merge">
@@ -85,7 +85,7 @@
                                     </div>
                                 </form>
 
-                                <div class="py-3 text-center"><span class="font-size-16 font-weight-bold">Or</span>
+                                <!-- <div class="py-3 text-center"><span class="font-size-16 font-weight-bold">Or</span>
                                 </div>
                                 <div class="row">
                                     <div class="col-6">
@@ -96,7 +96,7 @@
                                         <a href="" class="btn btn-white"><i
                                                 class='uil uil-facebook mr-2 icon-fb'></i>With Facebook</a>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                             <div class="col-lg-6 d-none d-md-inline-block">
                                 <div class="auth-page-sidebar">
