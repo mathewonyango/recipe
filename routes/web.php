@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Auth;
 // LogViewerController
 use App\Http\Controllers\LogViewerController;
 use App\Http\Controllers\DeploymentController;
+use App\Http\Middleware\VerifyCsrfToken;
+
 use OpenApi\Annotations as OA;
 
 
@@ -99,8 +101,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 //APIs Goes Here
-Route::post('/api/register-chef', [UsersController::class, 'registerChef'])->middleware('VerifyCsrfToken');
-Route::post('/api/register', [UsersController::class, 'register'])->middleware('VerifyCsrfToken');
+Route::post('/api/register-chef', [UsersController::class, 'registerChef'])->middleware(VerifyCsrfToken::class);
+Route::post('/api/register', [UsersController::class, 'register'])->middleware(VerifyCsrfToken::class);
 
 // Route::post('/api/chefs/login', [UsersController::class, 'loginChef']);
 Route::post('/api/login', [UsersController::class, 'login']);
