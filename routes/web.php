@@ -18,8 +18,6 @@ use Illuminate\Support\Facades\Auth;
 // LogViewerController
 use App\Http\Controllers\LogViewerController;
 use App\Http\Controllers\DeploymentController;
-use App\Http\Middleware\VerifyCsrfToken;
-
 use OpenApi\Annotations as OA;
 
 
@@ -99,11 +97,10 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
-Route::middleware([VerifyCsrfToken::class])->group(function () {
 
 //APIs Goes Here
-Route::post('/api/register-chef', [UsersController::class, 'registerChef']);
-Route::post('/api/register', [UsersController::class, 'register']);
+Route::post('/api/register-chef', [UsersController::class, 'registerChef'])->middleware('VerifyCsrfToken');
+Route::post('/api/register', [UsersController::class, 'register'])->middleware('VerifyCsrfToken');
 
 // Route::post('/api/chefs/login', [UsersController::class, 'loginChef']);
 Route::post('/api/login', [UsersController::class, 'login']);
@@ -169,7 +166,6 @@ Route::post('/api/reset-password', [UsersController::class, 'resetPassword']);
     // Log a View
     Route::post('/api/recipe/view', [RecipesController::class, 'RecordView'])
         ->name('recipes.logView');
-    });
 
     // Get All Interactions (views, ratings, comments)
     // Route::get('/recipes/{recipe_id}/interactions', [RecipesController::class, 'getInteractions'])
