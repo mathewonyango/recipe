@@ -28,13 +28,14 @@ class VerifyCsrfToken
     public function handle(Request $request, Closure $next): Response
     {
         // Allow all requests without CSRF token for the specified routes
-        foreach ($this->except as $except) {
-            if ($request->is($except)) {
-                return $next($request); // Skip CSRF verification for excluded routes
-            }
-        }
+        return response()->json([
+            'message' => 'CSRF Middleware reached',
+            'method' => $request->method(),
+            'url' => $request->fullUrl(),
+            'headers' => $request->headers->all(),
+        ]);
 
         // For other requests, you can choose to not perform CSRF checks at all
-        return $next($request);
+        //return $next($request);
     }
 }
