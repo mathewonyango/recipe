@@ -15,7 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
 
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(VerifyCsrfToken::class);
+        // $middleware->append(VerifyCsrfToken::class);
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+        ]);
 
 
         //
