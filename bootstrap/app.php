@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
 
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->alias(['VerifyCsrfToken' => \app\Http\Middleware\VerifyCsrfToken::class,        ]);
+        $middleware->alias(['VerifyCsrfToken' => \app\Http\Middleware\VerifyCsrfToken::class,]);
 
         //
     })
