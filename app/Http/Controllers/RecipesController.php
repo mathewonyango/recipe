@@ -34,9 +34,10 @@ class RecipesController extends Controller
 {
 
           // Check for API key
-          $apiKey = $request->header('X-API-Key');
-          $expectedApiKey = 'ABDI'; // Replace with your actual unique key
+          $apiKey = $request->input('api_key'); // Use input() to get data from the body
+          $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
+          // Check if the provided API key matches the expected API key
           if ($apiKey !== $expectedApiKey) {
               return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
           }
