@@ -8,14 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class VerifyCsrfToken
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     protected $except = [
-        'api/*', // Exclude all API routes from CSRF verification
-        // You can add more specific routes here if needed
+        // You can specify any routes to be excluded from CSRF verification here if needed
     ];
 
     /**
@@ -27,15 +21,21 @@ class VerifyCsrfToken
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Allow all requests without CSRF token for the specified routes
-        return response()->json([
-            'message' => 'CSRF Middleware reached',
-            'method' => $request->method(),
-            'url' => $request->fullUrl(),
-            'headers' => $request->headers->all(),
-        ]);
+        // Check if the request method is one that typically requires CSRF protection
+        if ($request->isMethod('post') || $request->isMethod('put') || $request->isMethod('delete')) {
+            // Check for CSRF token in the request headers
+            if (!$request->hasHeader('X-CSRF-Token')) {
+                // Return JSON response indicating missing CSRF token
+                return response()->json([
+                    'message' => 'CSRF token is missing',
+                    'method' => $request->method(),
+                    'url' => $request->fullUrl(),
+                    'headers' => $request->headers->all(),
+                ], 419); // 419: unknown status code for CSRF token missing
+            }
+        }
 
-        // For other requests, you can choose to not perform CSRF checks at all
-        //return $next($request);
+        // Proceed with the request
+        return $next($request);
     }
 }
