@@ -103,7 +103,7 @@
                                     <div class="overlay"></div>
                                     <div class="auth-user-testimonial">
                                         <p class="font-size-24 font-weight-bold text-white mb-1">I simply love it!</p>
-                                        <p class="lead">"It's a elegent templete. I love it very much!"</p>
+                                        <p class="lead">"It's a elegent experience. I love it very much!"</p>
                                         <p>- Admin User</p>
                                     </div>
                                 </div>
