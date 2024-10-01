@@ -42,7 +42,7 @@ class ChefsController extends Controller
         return view('Chef.index', compact('chefs'));
     }
 
-public function approve($id) {
+public function approveChef($id) {
     // Approve a chef
     $chef = User::findOrFail($id);
     $chef->update(['approval_status' => 'approved']);
