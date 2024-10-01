@@ -349,20 +349,6 @@ class UsersController extends Controller
                 $votedRecipes = Vote::where('user_id', $user->id)->pluck('recipe_id')->toArray();
 
                 $responsePayload['user']['recipes'] = $allRecipes->map(function ($recipe) use ($votedRecipes) {
-                    // Fetch total views and comments from Comment model
-                    $totalViews = Comment::where('recipe_id', $recipe->id)
-                                         ->where('interaction_type', 'view') // Assuming you have a 'type' field for 'view'
-                                         ->count();
-
-                    $totalComments = Comment::where('recipe_id', $recipe->id)
-                                            ->where('interaction_type', 'comment') // Assuming you have a 'type' field for 'comment'
-                                            ->count();
-
-                    // Fetch the actual comments
-                    $comments = Comment::where('recipe_id', $recipe->id)
-                                       ->where('interaction_type', 'comment')
-                                       ->get();
-
                     return [
                         'id' => $recipe->id,
                         'title' => $recipe->title,
@@ -376,16 +362,6 @@ class UsersController extends Controller
                             'profile_picture' => $recipe->user->profile_picture,
                         ],
                         'total_votes' => $recipe->votes_count, // Total votes for the recipe
-                        'total_views' => $totalViews,          // Total views for this recipe
-                        'total_comments' => $totalComments,    // Total comments for this recipe
-                        'comments' => $comments->map(function ($comment) {
-                            return [
-                                'id' => $comment->id,
-                                'user_id' => $comment->user_id,
-                                'comment_text' => $comment->comment,
-                                'created_at' => $comment->created_at,
-                            ];
-                        }),
                         'user_voted' => in_array($recipe->id, $votedRecipes), // Indicate if the user voted for this recipe
                     ];
                 });
