@@ -347,7 +347,7 @@ class UsersController extends Controller
                             'total_views' => $totalViews,
                             'average_rating' => $averageRating,
                             'total_comments' => $recipe->comments->count(),
-                            'total_votes' => $recipe->votes_count // Include total votes
+                            'total_votes_earned' => $recipe->votes_count // Include total votes
                         ],
                         'comments' => $recipe->comments->map(function ($comment) {
                             return [
