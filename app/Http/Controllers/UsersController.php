@@ -248,6 +248,11 @@ class UsersController extends Controller
                         'active' => [],
                         'past' => [],
                     ],
+                    'totals' => [
+                        'total_votes_earned' => 0,
+                        'total_views_earned' => 0,
+                        'total_comments_received' => 0,
+                    ],
                 ],
             ];
 
@@ -298,12 +303,17 @@ class UsersController extends Controller
                                             ->where('interaction_type', 'comment') // Assuming you have a 'type' field for 'comment'
                                             ->count();
 
+                    // Fetch the actual comments
+                    $comments = Comment::where('recipe_id', $recipe->id)
+                                       ->where('interaction_type', 'comment')
+                                       ->get();
+
                     // Add up to totals for the chef
                     $totalVotesChef += $recipe->votes_count;
                     $totalViewsChef += $totalViews;
                     $totalCommentsChef += $totalComments;
 
-                    // Return recipe-specific data
+                    // Return recipe-specific data with comments included
                     return [
                         'id' => $recipe->id,
                         'title' => $recipe->title,
@@ -314,13 +324,21 @@ class UsersController extends Controller
                         'total_votes' => $recipe->votes_count, // Total votes for this recipe
                         'total_views' => $totalViews,          // Total views for this recipe
                         'total_comments' => $totalComments,    // Total comments for this recipe
+                        'comments' => $comments->map(function ($comment) {
+                            return [
+                                'id' => $comment->id,
+                                'user_id' => $comment->user_id,
+                                'comment_text' => $comment->comment_text,
+                                'created_at' => $comment->created_at,
+                            ];
+                        }),
                     ];
                 });
 
-                // Include chef's total votes, views, and comments in the response
-                $responsePayload['user']['total_votes_earned'] = $totalVotesChef;
-                $responsePayload['user']['total_views_earned'] = $totalViewsChef;
-                $responsePayload['user']['total_comments_received'] = $totalCommentsChef;
+                // Update totals for chef in the response
+                $responsePayload['user']['totals']['total_votes_earned'] = $totalVotesChef;
+                $responsePayload['user']['totals']['total_views_earned'] = $totalViewsChef;
+                $responsePayload['user']['totals']['total_comments_received'] = $totalCommentsChef;
 
             } else {
                 // For normal users, fetch all recipes and indicate the ones they've voted for
