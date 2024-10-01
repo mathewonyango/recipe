@@ -235,7 +235,7 @@ class UsersController extends Controller
 
             // Prepare response payload
             $responsePayload = [
-                'message' => 'Login successful!',
+                'response_description' => 'Login successful!',
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -390,7 +390,7 @@ class UsersController extends Controller
             return response()->json($responsePayload, 200);
 
         } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+            return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
 
@@ -407,7 +407,7 @@ class UsersController extends Controller
 
     // Check if the provided API key matches the expected API key
     if ($apiKey !== $expectedApiKey) {
-        return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
     }
        // Validate the email
        $validator = Validator::make($request->all(), [
@@ -416,7 +416,7 @@ class UsersController extends Controller
 
        if ($validator->fails()) {
            return response()->json([
-               'message' => 'Validation failed',
+               'response_description' => 'Validation failed',
                'errors' => $validator->errors(),
            ], 422);
        }
@@ -433,7 +433,7 @@ class UsersController extends Controller
        // Send token back to the app (this can also be emailed)
        $user=User::where('email', $request->email)->first();
        return response()->json([
-           'message' => 'Password reset token generated.',
+           'response_description' => 'Password reset token generated.',
            'token' => $token,
            'name' => $user->name,
            'email' => $user->email,
@@ -451,7 +451,7 @@ class UsersController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
         // Validate the token, email, and new password
         $validator = Validator::make($request->all(), [
@@ -462,7 +462,7 @@ class UsersController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation failed',
+                'response_description' => 'Validation failed',
                 'errors' => $validator->errors(),
             ], 422);
         }
@@ -475,7 +475,7 @@ class UsersController extends Controller
 
         if (!$reset) {
             return response()->json([
-                'message' => 'Invalid token or email.'
+                'response_description' => 'Invalid token or email.'
             ], 400);
         }
 
@@ -483,7 +483,7 @@ class UsersController extends Controller
         $tokenExpired = Carbon::parse($reset->created_at)->addHour()->isPast();
         if ($tokenExpired) {
             return response()->json([
-                'message' => 'Token has expired.',
+                'response_description' => 'Token has expired.',
             ], 400);
         }
 
@@ -496,7 +496,7 @@ class UsersController extends Controller
         DB::table('password_resets')->where('email', $request->email)->delete();
 
         return response()->json([
-            'message' => 'Password has been reset successfully.',
+            'response_description' => 'Password has been reset successfully.',
             'user' => $user,
             'new-password' => $request->password
         ], 200);
@@ -517,7 +517,7 @@ class UsersController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         try {
@@ -558,7 +558,7 @@ class UsersController extends Controller
 
             return response()->json(['chefs' => $sortedChefs], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+            return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
     public function Users(Request $request)
@@ -569,7 +569,7 @@ class UsersController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         try {
@@ -608,7 +608,7 @@ class UsersController extends Controller
 
             return response()->json(['users' => $responseData], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+            return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
 
@@ -621,7 +621,7 @@ class UsersController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         // Validate the incoming request data
@@ -638,7 +638,7 @@ class UsersController extends Controller
         $chef = User::find($id);
 
         if (!$chef) {
-            return response()->json(['message' => 'Chef not found.'], 404);
+            return response()->json(['response_description' => 'Chef not found.'], 404);
         }
 
         // Update the chef's profile data
@@ -652,7 +652,7 @@ class UsersController extends Controller
         $chef->save();
 
         return response()->json([
-            'message' => 'Profile updated successfully',
+            'response_description' => 'Profile updated successfully',
             'chef' => $chef,
         ]);
     }
@@ -667,7 +667,7 @@ class UsersController extends Controller
 
             // Check if the provided API key matches the expected API key
             if ($apiKey !== $expectedApiKey) {
-                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+                return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
             }
 
         // Validate the incoming request
@@ -685,7 +685,7 @@ class UsersController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $recipe,
-            'message' => 'Recipe created successfully.'
+            'response_description' => 'Recipe created successfully.'
         ], 201);
     }
 }

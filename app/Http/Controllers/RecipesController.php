@@ -39,7 +39,7 @@ class RecipesController extends Controller
 
           // Check if the provided API key matches the expected API key
           if ($apiKey !== $expectedApiKey) {
-              return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+              return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
           }
 
     // Validation rules
@@ -91,7 +91,7 @@ class RecipesController extends Controller
 
    // Return success response with topic title
    return response()->json([
-       'message' => 'Recipe submitted successfully!',
+       'response_description' => 'Recipe submitted successfully!',
        'recipe' => [
            'title' => $recipe->title,
            'topic_title' => $topic->name, // Return the topic title instead of ID
@@ -193,7 +193,7 @@ class RecipesController extends Controller
             $expectedApiKey = env('API_KEY'); // Fetch from environment
 
             if ($apiKey !== $expectedApiKey) {
-                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+                return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
             }
 
         try {
@@ -205,12 +205,12 @@ class RecipesController extends Controller
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Recipe not found.',
+                'response_description' => 'Recipe not found.',
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'An error occurred while fetching the recipe.',
+                'response_description' => 'An error occurred while fetching the recipe.',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -224,7 +224,7 @@ class RecipesController extends Controller
 
             // Check if the provided API key matches the expected API key
             if ($apiKey !== $expectedApiKey) {
-                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+                return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
             }
         // Validate the incoming request
         $request->validate([
@@ -266,7 +266,7 @@ class RecipesController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation failed',
+                'response_description' => 'Validation failed',
                 'errors' => $validator->errors(),
             ], 422);
         }
@@ -281,7 +281,7 @@ class RecipesController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Comment submitted successfully',
+            'response_description' => 'Comment submitted successfully',
             'comment' => $comment,
         ], 201);
     }
@@ -293,7 +293,7 @@ class RecipesController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
         // Validation
         $validator = Validator::make($request->all(), [
@@ -304,7 +304,7 @@ class RecipesController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation failed',
+                'response_description' => 'Validation failed',
                 'errors' => $validator->errors(),
             ], 422);
         }
@@ -317,7 +317,7 @@ class RecipesController extends Controller
 
         if ($existingRating) {
             return response()->json([
-                'message' => 'You have already rated this recipe.',
+                'response_description' => 'You have already rated this recipe.',
             ], 409); // Conflict
         }
 
@@ -334,7 +334,7 @@ class RecipesController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Rating submitted successfully',
+            'response_description' => 'Rating submitted successfully',
             'rating' => $rating,
 
         ], 201);
@@ -348,14 +348,14 @@ class RecipesController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
           // Increment the view count for the recipe by 1
     $view = Comment::findOrFail($request->recipe_id);
     $view->increment('views'); // Increments the view count by 1
 
         return response()->json([
-            'message' => 'View logged successfully',
+            'response_description' => 'View logged successfully',
             // 'views' => $recipe->views,
         ], 200);
     }
