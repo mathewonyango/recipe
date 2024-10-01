@@ -267,9 +267,9 @@ class UsersController extends Controller
             foreach ($pastEvents as $event) {
                 $eventData = [
                     'id' => $event->id,
-                    'title' => $event->title,
-                    'description' => $event->description,
-                    'date' => $event->date,
+                    'Name' => $event->name,
+                    'Charges' => $event->charges,
+                    'date' => $event->day_of_event,
                     'location' => $event->location,
                 ];
                 $responsePayload['user']['events']['past'][] = $eventData;
