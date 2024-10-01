@@ -233,23 +233,38 @@ class UsersController extends Controller
                     'total_recipes' => 0,
                     'total_comments' => 0,
                     'recipes' => [],
+                    'events' => [], // Initialize events array
                 ],
             ];
 
-            // If user is a chef, fetch additional data
+            // Fetch all events for the user
+            $events = $user->events()->get(); // Adjust if you have a specific relationship defined in the User model
+            foreach ($events as $event) {
+                $eventData = [
+                    'id' => $event->id, // Include event ID
+                    'title' => $event->title,
+                    'description' => $event->description,
+                    'date' => $event->date, // Assuming you have a date field
+                    'location' => $event->location, // Assuming you have a location field
+                ];
+                $responsePayload['user']['events'][] = $eventData;
+            }
+
+            // Fetch recipes based on user role
             if ($user->role === 'chef') {
-                $recipes = $user->recipes()->with(['comments', 'votes']) // Load comments and votes
+                // Fetch the chef's own recipes
+                $userRecipes = $user->recipes()->with(['comments', 'votes']) // Load comments and votes
                                 ->withCount('votes') // Count votes
                                 ->get();
 
-                foreach ($recipes as $recipe) {
+                foreach ($userRecipes as $recipe) {
                     $totalViews = $recipe->comments->sum('views');
                     $averageRating = $recipe->comments->count() > 0
                                     ? round($recipe->comments->avg('rating'))
                                     : 0;
 
                     $recipeData = [
-                        'id' => $recipe->id,
+                        'id' => $recipe->id, // Include recipe ID
                         'title' => $recipe->title,
                         'totals' => [
                             'total_views' => $totalViews,
@@ -276,14 +291,80 @@ class UsersController extends Controller
                     $responsePayload['user']['total_recipes'] += 1;
                     $responsePayload['user']['total_comments'] += $recipe->comments->count();
                 }
-            } else {
-                // If user is not a chef, provide recipes voted for
-                $responsePayload['user']['recipes_voted_for'] = $user->votes->map(function ($vote) {
-                    return [
-                        'recipe_id' => $vote->recipe_id,
-                        'recipe_title' => $vote->recipe->title,
+
+                // Fetch all available recipes
+                $allRecipes = Recipe::with(['user', 'votes'])
+                    ->withCount('votes')
+                    ->get();
+
+                foreach ($allRecipes as $recipe) {
+                    $totalViews = $recipe->comments->sum('views');
+                    $averageRating = $recipe->comments->count() > 0
+                                    ? round($recipe->comments->avg('rating'))
+                                    : 0;
+
+                    $recipeData = [
+                        'id' => $recipe->id, // Include recipe ID
+                        'title' => $recipe->title,
+                        'totals' => [
+                            'total_views' => $totalViews,
+                            'average_rating' => $averageRating,
+                            'total_comments' => $recipe->comments->count(),
+                            'total_votes' => $recipe->votes_count // Include total votes
+                        ],
+                        'comments' => $recipe->comments->map(function ($comment) {
+                            return [
+                                'id' => $comment->id,
+                                'comment' => $comment->comment,
+                            ];
+                        }),
+                        'ratings' => $recipe->comments->map(function ($comment) {
+                            return [
+                                'id' => $comment->id,
+                                'rating' => $comment->rating,
+                            ];
+                        }),
                     ];
-                });
+
+                    $responsePayload['user']['recipes'][] = $recipeData;
+                }
+            } else {
+                // For normal users, fetch all recipes
+                $allRecipes = Recipe::with(['user', 'votes'])
+                    ->withCount('votes')
+                    ->get();
+
+                foreach ($allRecipes as $recipe) {
+                    $totalViews = $recipe->comments->sum('views');
+                    $averageRating = $recipe->comments->count() > 0
+                                    ? round($recipe->comments->avg('rating'))
+                                    : 0;
+
+                    $recipeData = [
+                        'id' => $recipe->id, // Include recipe ID
+                        'title' => $recipe->title,
+                        'totals' => [
+                            'total_views' => $totalViews,
+                            'average_rating' => $averageRating,
+                            'total_comments' => $recipe->comments->count(),
+                            'total_votes' => $recipe->votes_count // Include total votes
+                        ],
+                        'comments' => $recipe->comments->map(function ($comment) {
+                            return [
+                                'id' => $comment->id,
+                                'comment' => $comment->comment,
+                            ];
+                        }),
+                        'ratings' => $recipe->comments->map(function ($comment) {
+                            return [
+                                'id' => $comment->id,
+                                'rating' => $comment->rating,
+                            ];
+                        }),
+                    ];
+
+                    $responsePayload['user']['recipes'][] = $recipeData;
+                }
             }
 
             return response()->json($responsePayload, 200);
