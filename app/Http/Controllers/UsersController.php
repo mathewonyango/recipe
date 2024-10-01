@@ -211,7 +211,7 @@ class UsersController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => 'Validation failed,username_or_email and password are required.', 'errors' => $validator->errors()], 400);
+            return response()->json(['message' => 'Validation failed,email and password are required.', 'errors' => $validator->errors()], 400);
         }
 
         try {
