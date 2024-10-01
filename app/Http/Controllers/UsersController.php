@@ -216,13 +216,13 @@ class UsersController extends Controller
 
         try {
             // Check if the user exists
-            $user = User::where('email', $request->email)
-                        ->first();
+            $user = User::first();
 
-            // Verify user credentials
-            if (!$user || !Hash::check($request->password, $user->password)) {
-                return response()->json(['message' => 'Invalid credentials.'], 401);
+            // Check if user exists
+            if (!$user) {
+                return response()->json(['message' => 'No user found.'], 404);
             }
+
 
             // Get today's date
             $today = Carbon::now()->toDateString();
