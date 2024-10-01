@@ -279,21 +279,31 @@ class UsersController extends Controller
             if ($user->role === 'chef') {
                 // Fetch the chef's own recipes
                 $chefRecipes = Recipe::where('user_id', $user->id)
-                                      ->withCount(['votes', 'views', 'comments']) // Include counts for votes, views, and comments
+                                      ->withCount('votes') // Include vote count
                                       ->get();
 
-                // Calculate total votes, views, and comments for all recipes
-                $totalVotesChef = $chefRecipes->sum('votes_count');
-                $totalViewsChef = $chefRecipes->sum('views_count');
-                $totalCommentsChef = $chefRecipes->sum('comments_count');
-
-                // Add the totals to the response payload
-                $responsePayload['user']['total_votes_earned'] = $totalVotesChef;
-                $responsePayload['user']['total_views_earned'] = $totalViewsChef;
-                $responsePayload['user']['total_comments_received'] = $totalCommentsChef;
+                // Initialize totals for the chef
+                $totalVotesChef = 0;
+                $totalViewsChef = 0;
+                $totalCommentsChef = 0;
 
                 // Include chef-specific data in response
-                $responsePayload['user']['recipes'] = $chefRecipes->map(function ($recipe) {
+                $responsePayload['user']['recipes'] = $chefRecipes->map(function ($recipe) use (&$totalVotesChef, &$totalViewsChef, &$totalCommentsChef) {
+                    // Fetch total views and comments from Comment model
+                    $totalViews = Comment::where('recipe_id', $recipe->id)
+                                         ->where('type', 'view') // Assuming you have a 'type' field for 'view'
+                                         ->count();
+
+                    $totalComments = Comment::where('recipe_id', $recipe->id)
+                                            ->where('type', 'comment') // Assuming you have a 'type' field for 'comment'
+                                            ->count();
+
+                    // Add up to totals for the chef
+                    $totalVotesChef += $recipe->votes_count;
+                    $totalViewsChef += $totalViews;
+                    $totalCommentsChef += $totalComments;
+
+                    // Return recipe-specific data
                     return [
                         'id' => $recipe->id,
                         'title' => $recipe->title,
@@ -302,10 +312,15 @@ class UsersController extends Controller
                         'instructions' => $recipe->instructions,
                         'cooking_time' => $recipe->cooking_time,
                         'total_votes' => $recipe->votes_count, // Total votes for this recipe
-                        'total_views' => $recipe->views_count, // Total views for this recipe
-                        'total_comments' => $recipe->comments_count, // Total comments for this recipe
+                        'total_views' => $totalViews,          // Total views for this recipe
+                        'total_comments' => $totalComments,    // Total comments for this recipe
                     ];
                 });
+
+                // Include chef's total votes, views, and comments in the response
+                $responsePayload['user']['total_votes_earned'] = $totalVotesChef;
+                $responsePayload['user']['total_views_earned'] = $totalViewsChef;
+                $responsePayload['user']['total_comments_received'] = $totalCommentsChef;
 
             } else {
                 // For normal users, fetch all recipes and indicate the ones they've voted for
