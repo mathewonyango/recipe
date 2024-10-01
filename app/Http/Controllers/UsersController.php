@@ -279,11 +279,18 @@ class UsersController extends Controller
             if ($user->role === 'chef') {
                 // Fetch the chef's own recipes
                 $chefRecipes = Recipe::where('user_id', $user->id)
-                                      ->with('votes') // Include votes relationship
-                                      ->withCount('votes') // Count votes for each recipe
+                                      ->withCount(['votes', 'views', 'comments']) // Include counts for votes, views, and comments
                                       ->get();
 
-                $totalVotesChef = $chefRecipes->sum('votes_count'); // Total votes across all recipes
+                // Calculate total votes, views, and comments for all recipes
+                $totalVotesChef = $chefRecipes->sum('votes_count');
+                $totalViewsChef = $chefRecipes->sum('views_count');
+                $totalCommentsChef = $chefRecipes->sum('comments_count');
+
+                // Add the totals to the response payload
+                $responsePayload['user']['total_votes_earned'] = $totalVotesChef;
+                $responsePayload['user']['total_views_earned'] = $totalViewsChef;
+                $responsePayload['user']['total_comments_received'] = $totalCommentsChef;
 
                 // Include chef-specific data in response
                 $responsePayload['user']['recipes'] = $chefRecipes->map(function ($recipe) {
@@ -295,11 +302,10 @@ class UsersController extends Controller
                         'instructions' => $recipe->instructions,
                         'cooking_time' => $recipe->cooking_time,
                         'total_votes' => $recipe->votes_count, // Total votes for this recipe
+                        'total_views' => $recipe->views_count, // Total views for this recipe
+                        'total_comments' => $recipe->comments_count, // Total comments for this recipe
                     ];
                 });
-
-                // Include total votes earned by the chef
-                $responsePayload['user']['total_votes_earned'] = $totalVotesChef;
 
             } else {
                 // For normal users, fetch all recipes and indicate the ones they've voted for
@@ -334,6 +340,7 @@ class UsersController extends Controller
             return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
+
 
 
 
