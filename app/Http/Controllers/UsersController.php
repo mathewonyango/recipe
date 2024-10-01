@@ -328,7 +328,7 @@ class UsersController extends Controller
                             return [
                                 'id' => $comment->id,
                                 'user_id' => $comment->user_id,
-                                'comment_text' => $comment->comment_text,
+                                'comment_text' => $comment->comment,
                                 'created_at' => $comment->created_at,
                             ];
                         }),
