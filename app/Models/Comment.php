@@ -23,6 +23,7 @@ class Comment extends Model
         return $this->belongsTo(User::class, 'user_id'); // A comment belongs to a user
     }
 
+
     // Relationship to Recipe
     public function recipe()
     {
