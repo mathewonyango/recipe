@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings/profile', [UsersController::class, 'update'])->name('settings.profile.update');
 });
 
+
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -87,6 +88,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/api/chefs', [UsersController::class, 'getChefs']);
     Route::get('/api/chefs/{id}', [UsersController::class, 'getChefProfile']);
     Route::post('/api/chefs/{id}', [UsersController::class, 'updateProfile']);
+    Route::put('/api/user/update', [UsersController::class, 'update']);
+    Route::put('/chef/update', [UsersController::class, 'updateChef']);
+
+
 
     // User API Route
     Route::get('/api/users', [UsersController::class, 'Users']);

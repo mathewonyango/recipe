@@ -190,6 +190,93 @@ class UsersController extends Controller
         }
     }
 
+    public function updateChef(Request $request)
+    {
+        $apiKey = $request->input('api_key'); // Use input() to get data from the body
+        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+
+        // Check if the provided API key matches the expected API key
+        if ($apiKey !== $expectedApiKey) {
+            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        }
+
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'full_name' => 'nullable|string|max:255',
+            'email' => 'nullable|string|email|max:255|unique:users,email,' . $request->user_id,
+            'username' => 'nullable|string|max:255|unique:users,username,' . $request->user_id,
+            'password' => 'nullable|string|min:6',
+            'experience_level' => 'nullable|in:Beginner,Intermediate,Professional',
+            'location' => 'nullable|string',
+            'profile_picture' => 'nullable|string', // Optional
+            'cuisine_type' => 'nullable|string', // Optional
+            'certification' => 'nullable|string', // Optional
+            'bio' => 'nullable|string', // Optional
+            'push_notification' => 'nullable|in:allow,deny',
+            'notification_preferences' => 'nullable|array', // Optional (array of preferences)
+            'payment_status' => 'nullable|string', // Optional
+            'social_media_links' => 'nullable|array', // Optional (array of links)
+            'social_media_links.*' => 'nullable|url', // Ensure each link is a valid URL
+        ]);
+
+        // If validation fails, return error messages
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        // Attempt to find the chef by ID
+        try {
+            $chef = User::findOrFail($request->user_id); // Fetch the chef by ID
+
+            // Update chef details only if new values are provided
+            $chef->name = $request->full_name ?? $chef->name;
+            $chef->email = $request->email ?? $chef->email;
+            $chef->username = $request->username ?? $chef->username;
+
+            if ($request->password) {
+                $chef->password = Hash::make($request->password); // Hash the new password if provided
+            }
+
+            $chef->experience_level = $request->experience_level ?? $chef->experience_level;
+            $chef->location = $request->location ?? $chef->location;
+            $chef->profile_picture = $request->profile_picture ?? $chef->profile_picture; // Optional
+            $chef->cuisine_type = $request->cuisine_type ?? $chef->cuisine_type; // Optional
+            $chef->certification = $request->certification ?? $chef->certification; // Optional
+            $chef->bio = $request->bio ?? $chef->bio; // Optional
+            $chef->push_notification = $request->push_notification ?? $chef->push_notification;
+            $chef->notification_preferences = json_encode($request->notification_preferences ?? json_decode($chef->notification_preferences, true)); // Update preferences
+            $chef->payment_status = $request->payment_status ?? $chef->payment_status; // Optional
+            $chef->social_media_links = json_encode($request->social_media_links ?? json_decode($chef->social_media_links, true)); // Optional
+
+            // Save the updated chef to the database
+            $chef->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Chef updated successfully!',
+                'chef' => $chef // Return the updated chef data
+            ], 200);
+
+        } catch (\Illuminate\Database\QueryException $ex) {
+            // Catch database-related errors
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Database error',
+                'details' => $ex->getMessage(),
+            ], 500);
+        } catch (\Exception $ex) {
+            // Catch any general errors
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Something went wrong',
+                'details' => $ex->getMessage(),
+            ], 500);
+        }
+    }
 
 
 
@@ -614,48 +701,59 @@ class UsersController extends Controller
 
 
     // Update Chef Profile Data
-    public function updateProfile($id, Request $request)
-    {
-        $apiKey = $request->input('api_key'); // Use input() to get data from the body
-        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+    public function update(Request $request)
+{
+    $apiKey = $request->input('api_key'); // Use input() to get data from the body
+    $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
-        // Check if the provided API key matches the expected API key
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
-
-        // Validate the incoming request data
-        $request->validate([
-            'bio' => 'string|nullable',
-            'recipe_submitted' => 'integer|nullable',
-            'payment_status' => 'string|nullable',
-            'social_media_links' => 'array|nullable',
-            'event_participated' => 'array|nullable',
-            'profile_picture' => 'string|nullable',
-        ]);
-
-        // Find the chef
-        $chef = User::find($id);
-
-        if (!$chef) {
-            return response()->json(['response_description' => 'Chef not found.'], 404);
-        }
-
-        // Update the chef's profile data
-        $chef->bio = $request->input('bio', $chef->bio);
-        $chef->recipe_submitted = $request->input('recipe_submitted', $chef->recipe_submitted);
-        $chef->payment_status = $request->input('payment_status', $chef->payment_status);
-        $chef->social_media_links = $request->input('social_media_links', $chef->social_media_links);
-        $chef->event_participated = $request->input('event_participated', $chef->event_participated);
-        $chef->profile_picture = $request->input('profile_picture', $chef->profile_picture);
-
-        $chef->save();
-
-        return response()->json([
-            'response_description' => 'Profile updated successfully',
-            'chef' => $chef,
-        ]);
+    // Check if the provided API key matches the expected API key
+    if ($apiKey !== $expectedApiKey) {
+        return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
     }
+
+    // Validate the request data
+    $validator = Validator::make($request->all(), [
+        'full_name' => 'nullable|string|max:255',
+        'email' => 'nullable|string|email|max:255|unique:users,email,' . $request->user_id,
+        'username' => 'nullable|string|max:255|unique:users,username,' . $request->user_id,
+        'password' => 'nullable|string|min:6', // Minimum length can be adjusted
+        'notification_preferences' => 'nullable|array', // Expecting an array for notification preferences
+    ]);
+
+    // If validation fails, return error messages
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors(),
+        ], 422);
+    }
+
+    // Attempt to find the user by ID
+    try {
+        $user = User::findOrFail($request->user_id);
+
+        // Update user details
+        $user->name = $request->full_name ?? $user->name; // Only update if provided
+        $user->email = $request->email ?? $user->email;
+        $user->username = $request->username ?? $user->username;
+
+        if ($request->password) {
+            $user->password = Hash::make($request->password); // Hash the new password if provided
+        }
+
+        $user->notification_preferences = json_encode($request->notification_preferences); // Update preferences
+        $user->save(); // Save the updated user
+
+        return response()->json(['message' => 'User updated successfully!', 'user' => $user], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Update failed. Please try again.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
 
 
     public function addRecipe(Request $request)
