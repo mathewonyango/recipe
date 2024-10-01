@@ -58,7 +58,7 @@ Route::middleware('auth')->group(function () {
     // Chef Routes
     Route::get('/chef/all', [ChefsController::class, 'index'])->name('chefs.index');
     Route::get('/chef/pending', [ChefsController::class, 'pending'])->name('chefs.pending');
-    Route::post('/chefs/approve/{id}', [ChefsController::class, 'approveChef'])->name('chefs.approve');
+    Route::post('/chefs/approve/{id}', [ChefsController::class, 'approveChef'])->name('chefs.approved');
     // Route::post('/chef/approve/{id}', [UsersController::class, 'approveChef'])->name('chefs.approve');
 
     // Profile Routes
