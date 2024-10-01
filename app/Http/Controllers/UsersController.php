@@ -291,11 +291,11 @@ class UsersController extends Controller
                 $responsePayload['user']['recipes'] = $chefRecipes->map(function ($recipe) use (&$totalVotesChef, &$totalViewsChef, &$totalCommentsChef) {
                     // Fetch total views and comments from Comment model
                     $totalViews = Comment::where('recipe_id', $recipe->id)
-                                         ->where('type', 'view') // Assuming you have a 'type' field for 'view'
+                                         ->where('interaction_type', 'view') // Assuming you have a 'type' field for 'view'
                                          ->count();
 
                     $totalComments = Comment::where('recipe_id', $recipe->id)
-                                            ->where('type', 'comment') // Assuming you have a 'type' field for 'comment'
+                                            ->where('interaction_type', 'comment') // Assuming you have a 'type' field for 'comment'
                                             ->count();
 
                     // Add up to totals for the chef
