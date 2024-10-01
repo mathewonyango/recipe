@@ -255,10 +255,10 @@ class UsersController extends Controller
             foreach ($activeEvents as $event) {
                 $eventData = [
                     'id' => $event->id,
-                    'title' => $event->title,
-                    'description' => $event->description,
-                    'date' => $event->date,
-                    'location' => $event->location,
+                    'Event_name' => $event->name,
+                    'Event_charges' => $event->charges,
+                    'Event_date' => $event->day_of_event,
+                    'Event_location' => $event->location,
                 ];
                 $responsePayload['user']['events']['active'][] = $eventData;
             }
