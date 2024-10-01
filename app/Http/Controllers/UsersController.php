@@ -239,7 +239,7 @@ class UsersController extends Controller
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
-                    'username' => $user->username,
+                    // 'username' => $user->username,
                     'email' => $user->email,
                     'role' => $user->role,
                     'recipes' => [],
