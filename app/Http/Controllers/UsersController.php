@@ -206,7 +206,7 @@ class UsersController extends Controller
 
         // Validate the request data
         $validator = Validator::make($request->all(), [
-            'username_or_email' => 'required|string',
+            'email' => 'required|string',
             'password' => 'required|string',
         ]);
 
@@ -216,8 +216,7 @@ class UsersController extends Controller
 
         try {
             // Check if the user exists
-            $user = User::where('username', $request->username_or_email)
-                        ->orWhere('email', $request->username_or_email)
+            $user = User::where('email', $request->email)
                         ->first();
 
             // Verify user credentials
