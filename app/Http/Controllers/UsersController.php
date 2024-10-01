@@ -192,13 +192,13 @@ class UsersController extends Controller
 
     public function login(Request $request)
     {
-        $apiKey = $request->input('api_key'); // Use input() to get data from the body
-            $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+        $apiKey = $request->input('api_key');
+        $expectedApiKey = env('API_KEY');
 
-            // Check if the provided API key matches the expected API key
-            if ($apiKey !== $expectedApiKey) {
-                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-            }
+        // Check if API Key matches
+        if ($apiKey !== $expectedApiKey) {
+            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        }
 
         // Validate the request data
         $validator = Validator::make($request->all(), [
@@ -211,17 +211,16 @@ class UsersController extends Controller
         }
 
         try {
-            // Check if the user exists in the database
+            // Check if the user exists
             $user = User::where('username', $request->username_or_email)
-                ->orWhere('email', $request->username_or_email)
-                ->first();
+                        ->orWhere('email', $request->username_or_email)
+                        ->first();
 
-            // If user not found or password does not match
             if (!$user || !Hash::check($request->password, $user->password)) {
                 return response()->json(['message' => 'Invalid credentials.'], 401);
             }
 
-            // Prepare the response data
+            // Prepare response payload
             $responsePayload = [
                 'message' => 'Login successful!',
                 'user' => [
@@ -230,72 +229,55 @@ class UsersController extends Controller
                     'username' => $user->username,
                     'email' => $user->email,
                     'role' => $user->role,
-                    'total_views' => 0, // Initialize total views for the user
-                    'total_recipes' => 0, // Initialize total recipes
-                    'total_comments' => 0, // Initialize total comments
+                    'total_views' => 0,
+                    'total_recipes' => 0,
+                    'total_comments' => 0,
                     'recipes' => [],
                 ],
             ];
 
-            // Add additional user data based on role
+            // If user is a chef, fetch additional data
             if ($user->role === 'chef') {
-                // Fetch recipes with comments
-                $recipes = $user->recipes()->with(['comments' => function ($query) {
-                    $query->select('id', 'recipe_id', 'comment', 'rating', 'views')
-                          ->where('comment', '!=', ''); // Exclude empty comments
-                }])->get();
+                $recipes = $user->recipes()->with(['comments', 'votes']) // Load comments and votes
+                                ->withCount('votes') // Count votes
+                                ->get();
 
-                // Loop through recipes to build the response
                 foreach ($recipes as $recipe) {
-                    $totalViews = $recipe->comments->sum('views'); // Total views from comments
+                    $totalViews = $recipe->comments->sum('views');
                     $averageRating = $recipe->comments->count() > 0
-                        ? round($recipe->comments->avg('rating')) // Round the average rating
-                        : 0; // Set to 0 if there are no comments
+                                    ? round($recipe->comments->avg('rating'))
+                                    : 0;
 
                     $recipeData = [
                         'id' => $recipe->id,
                         'title' => $recipe->title,
                         'totals' => [
                             'total_views' => $totalViews,
-                            'average_rating' => $averageRating, // Include average rating
-                            'total_comments' => $recipe->comments->count() // Count comments
+                            'average_rating' => $averageRating,
+                            'total_comments' => $recipe->comments->count(),
+                            'total_votes' => $recipe->votes_count // Include total votes
                         ],
-                        'comments' => [],
-                        'ratings' => [],
-                        // 'views' => [],
-                    ];
-
-                    // Add comments if they exist
-                    if ($recipe->comments->count() > 0) {
-                        $recipeData['comments'] = $recipe->comments->map(function ($comment) {
+                        'comments' => $recipe->comments->map(function ($comment) {
                             return [
                                 'id' => $comment->id,
                                 'comment' => $comment->comment,
                             ];
-                        });
-                        $recipeData['ratings'] = $recipe->comments->map(function ($comment) {
+                        }),
+                        'ratings' => $recipe->comments->map(function ($comment) {
                             return [
                                 'id' => $comment->id,
                                 'rating' => $comment->rating,
                             ];
-                        });
-
-                    } else {
-                        // Ensure empty arrays are not returned
-                        $recipeData['comments'] = 0;
-                        $recipeData['ratings'] = 0;
-                        // $recipeData['views'] = null;
-                    }
+                        }),
+                    ];
 
                     $responsePayload['user']['recipes'][] = $recipeData;
-
-                    // Accumulate totals for the user
                     $responsePayload['user']['total_views'] += $totalViews;
-                    $responsePayload['user']['total_recipes'] += 1; // Increment total recipes
-                    $responsePayload['user']['total_comments'] += $recipe->comments->count(); // Count comments
+                    $responsePayload['user']['total_recipes'] += 1;
+                    $responsePayload['user']['total_comments'] += $recipe->comments->count();
                 }
             } else {
-                // Include normal user details
+                // If user is not a chef, provide recipes voted for
                 $responsePayload['user']['recipes_voted_for'] = $user->votes->map(function ($vote) {
                     return [
                         'recipe_id' => $vote->recipe_id,
@@ -305,11 +287,12 @@ class UsersController extends Controller
             }
 
             return response()->json($responsePayload, 200);
+
         } catch (\Exception $e) {
-            // Handle any unexpected errors
             return response()->json(['message' => 'An error occurred.'], 500);
         }
     }
+
 
 
 
