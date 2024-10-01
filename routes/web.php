@@ -88,7 +88,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/api/chefs', [UsersController::class, 'getChefs']);
     Route::get('/api/chefs/{id}', [UsersController::class, 'getChefProfile']);
     Route::post('/api/chefs/{id}', [UsersController::class, 'updateProfile']);
-    Route::put('/api/user/update', [UsersController::class, 'update']);
+    Route::put('/api/user/update', [UsersController::class, 'updateUser']);
     Route::put('/api/chef/update', [UsersController::class, 'updateChef']);
 
 

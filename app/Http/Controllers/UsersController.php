@@ -701,7 +701,7 @@ class UsersController extends Controller
 
 
     // Update Chef Profile Data
-    public function update(Request $request)
+    public function updateUser(Request $request)
 {
     $apiKey = $request->input('api_key'); // Use input() to get data from the body
     $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
@@ -717,14 +717,20 @@ class UsersController extends Controller
         'email' => 'nullable|string|email|max:255|unique:users,email,' . $request->user_id,
         'username' => 'nullable|string|max:255|unique:users,username,' . $request->user_id,
         'password' => 'nullable|string|min:6', // Minimum length can be adjusted
-        'notification_preferences' => 'nullable|array', // Expecting an array for notification preferences
+        // 'notification_preferences' => 'nullable|array', // Expecting an array for notification preferences
+        'location' => 'nullable|string',
+        'profile_picture' => 'nullable|string', // Optional
+        'bio' => 'nullable|string', // Optional
+        'push_notification' => 'nullable|in:allow,deny',
+        'notification_preferences' => 'nullable|array', // Optional (array of preferences)
+        'social_media_links' => 'nullable|array', // Optional (array of links)
     ]);
 
     // If validation fails, return error messages
     if ($validator->fails()) {
         return response()->json([
-            'message' => 'Validation failed',
-            'errors' => $validator->errors(),
+            'response_description' => 'Validation failed',
+            'response_description' => $validator->errors(),
         ], 422);
     }
 
@@ -736,6 +742,12 @@ class UsersController extends Controller
         $user->name = $request->full_name ?? $user->name; // Only update if provided
         $user->email = $request->email ?? $user->email;
         $user->username = $request->username ?? $user->username;
+        $user->location = $request->location ?? $user->location;
+        $user->push_notification = $request->push_notification ?? $user->push_notification;
+        $user->profile_picture = $request->profile_picture ?? $user->profile_picture;
+        $user->bio = $request->bio ?? $user->bio;
+        $user->social_media_links = json_encode($request->social_media_links);
+
 
         if ($request->password) {
             $user->password = Hash::make($request->password); // Hash the new password if provided
@@ -744,12 +756,12 @@ class UsersController extends Controller
         $user->notification_preferences = json_encode($request->notification_preferences); // Update preferences
         $user->save(); // Save the updated user
 
-        return response()->json(['message' => 'User updated successfully!', 'user' => $user], 200);
+        return response()->json(['response_description' => 'User updated successfully!', 'user' => $user], 200);
 
     } catch (\Exception $e) {
         return response()->json([
-            'message' => 'Update failed. Please try again.',
-            'error' => $e->getMessage(),
+            'response_description' => 'Update failed. Please try again.',
+            'response_description' => $e->getMessage(),
         ], 500);
     }
 }
