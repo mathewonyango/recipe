@@ -28,32 +28,8 @@ class ChefsController extends Controller
         // Approve the chef's registration
         $chefs = User::where('role', 'chef')->where('approval_status', 'approved')->paginate(10);
 
-        // Prepare data for approval counts over time
-        $chefs = User::where('role', 'chef')
-        ->where('approval_status', 'approved')
-        ->paginate(10);
-
-    // Get the count of approved, pending, and rejected chefs
-    $approvedCount = User::where('role', 'chef')
-        ->where('approval_status', 'approved')
-        ->count();
-
-    $pendingCount = User::where('role', 'chef')
-        ->where('approval_status', 'pending')
-        ->count();
-
-    $rejectedCount = User::where('role', 'chef')
-        ->where('approval_status', 'rejected')
-        ->count();
-
-
-        $chefRecipeCounts = User::where('role', 'chef')
-        ->where('approval_status', 'approved')
-        ->withCount('recipes') // Assuming 'recipes' is the relation
-        ->pluck('recipes_count', 'name');
-
     // Pass the counts and the chefs data to the view
-    return view('Chef.approved', compact('chefs', 'approvedCount', 'pendingCount', 'rejectedCount','chefRecipeCounts'));
+    return view('Chef.approved', compact('chefs'));
 
     }
 
@@ -66,7 +42,12 @@ class ChefsController extends Controller
         return view('Chef.index', compact('chefs'));
     }
 
-
+public function approve($id) {
+    // Approve a chef
+    $chef = User::findOrFail($id);
+    $chef->update(['approval_status' => 'approved']);
+    return redirect()->route('chefs.pending')->with('success', 'Chef approved successfully!');
+}
 
 }
 
