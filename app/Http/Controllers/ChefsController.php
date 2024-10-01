@@ -61,7 +61,7 @@ class ChefsController extends Controller
 
     public function index() {
         // Return approved chefs
-        $chefs = User::where('role', 'chef')->paginate(10);
+        $chefs = User::where('role', 'chef')->latest()->paginate(10);
 
         return view('Chef.index', compact('chefs'));
     }
