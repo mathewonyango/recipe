@@ -327,6 +327,7 @@ class UsersController extends Controller
                         'comments' => $comments->map(function ($comment) {
                             return [
                                 'id' => $comment->id,
+                                'recipe_title'=>Recipe::get($comment->recipe_id)->title,
                                 'user_id' => $comment->user_id,
                                 'comment_text' => $comment->comment,
                                 'created_at' => $comment->created_at,
