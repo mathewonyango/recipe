@@ -360,12 +360,21 @@ class UsersController extends Controller
 
                 $responsePayload['user']['recipes'] = $allRecipes->map(function ($recipe) use ($votedRecipes) {
                     return [
-                        'id' => $recipe->id,
+                       'id' => $recipe->id,
+
                         'title' => $recipe->title,
-                        'description' => $recipe->description,
-                        'ingredients' => $recipe->ingredients,
-                        'instructions' => $recipe->instructions,
+                        'topic_name' => $recipe->topic->name,
+                        'servings' => $recipe->servings,
+                        'cook_time' => $recipe->cook_time,
                         'cooking_time' => $recipe->cooking_time,
+                        "ingredients" => $recipe->ingredients,
+                        "instructions" => $recipe->instructions,
+                        // 'user_id' => $recipe->user_id,
+                        // 'status' => $recipe->status,
+                        'image' => $recipe->image,
+                        'tags' => $recipe->tags,
+                        'difficulty_level' => $recipe->difficulty_level,
+                        'nutritional_information' => $recipe->nutritional_information,
                         'chef' => [
                             'id' => $recipe->user->id,
                             'name' => $recipe->user->name,
