@@ -315,11 +315,21 @@ class UsersController extends Controller
                     // Return recipe-specific data with comments included
                     return [
                         'id' => $recipe->id,
+
                         'title' => $recipe->title,
-                        'description' => $recipe->description,
-                        'ingredients' => $recipe->ingredients,
-                        'instructions' => $recipe->instructions,
+                        'topic_name' => $recipe->topic->name,
+                        'servings' => $recipe->servings,
+                        'cook_time' => $recipe->cook_time,
                         'cooking_time' => $recipe->cooking_time,
+                        "ingredients" => $recipe->ingredients,
+                        "instructions" => $recipe->instructions,
+                        // 'user_id' => $recipe->user_id,
+                        // 'status' => $recipe->status,
+                        'image' => $recipe->image,
+                        'tags' => $recipe->tags,
+                        'difficulty_level' => $recipe->difficulty_level,
+                        'nutritional_information' => $recipe->nutritional_information,
+
                         'total_votes' => $recipe->votes_count, // Total votes for this recipe
                         'total_views' => $totalViews,          // Total views for this recipe
                         'total_comments' => $totalComments,    // Total comments for this recipe
