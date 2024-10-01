@@ -229,16 +229,13 @@ class UsersController extends Controller
                     'username' => $user->username,
                     'email' => $user->email,
                     'role' => $user->role,
-                    'total_views' => 0,
-                    'total_recipes' => 0,
-                    'total_comments' => 0,
                     'recipes' => [],
                     'events' => [], // Initialize events array
                 ],
             ];
 
             // Fetch all events for the user
-            $events = $user->events()->get(); // Adjust if you have a specific relationship defined in the User model
+            $events = $user->events()->get();
             foreach ($events as $event) {
                 $eventData = [
                     'id' => $event->id, // Include event ID
@@ -250,12 +247,20 @@ class UsersController extends Controller
                 $responsePayload['user']['events'][] = $eventData;
             }
 
-            // Fetch recipes based on user role
+            // If user is a chef
             if ($user->role === 'chef') {
+                $responsePayload['user']['total_views'] = 0;
+                $responsePayload['user']['total_recipes'] = 0;
+                $responsePayload['user']['total_comments'] = 0;
+                $responsePayload['user']['total_votes_earned_by_chef'] = 0;
+
                 // Fetch the chef's own recipes
-                $userRecipes = $user->recipes()->with(['comments', 'votes']) // Load comments and votes
-                                ->withCount('votes') // Count votes
+                $userRecipes = $user->recipes()->with(['comments', 'votes'])
+                                ->withCount('votes')
                                 ->get();
+
+                // Track total votes for the chef's recipes
+                $totalVotesForChef = 0;
 
                 foreach ($userRecipes as $recipe) {
                     $totalViews = $recipe->comments->sum('views');
@@ -263,14 +268,16 @@ class UsersController extends Controller
                                     ? round($recipe->comments->avg('rating'))
                                     : 0;
 
+                    $totalVotesForChef += $recipe->votes_count;
+
                     $recipeData = [
-                        'id' => $recipe->id, // Include recipe ID
+                        'id' => $recipe->id,
                         'title' => $recipe->title,
                         'totals' => [
                             'total_views' => $totalViews,
                             'average_rating' => $averageRating,
                             'total_comments' => $recipe->comments->count(),
-                            'total_votes' => $recipe->votes_count // Include total votes
+                            'total_votes' => $recipe->votes_count,
                         ],
                         'comments' => $recipe->comments->map(function ($comment) {
                             return [
@@ -292,6 +299,8 @@ class UsersController extends Controller
                     $responsePayload['user']['total_comments'] += $recipe->comments->count();
                 }
 
+                $responsePayload['user']['total_votes_earned_by_chef'] = $totalVotesForChef;
+
                 // Fetch all available recipes
                 $allRecipes = Recipe::with(['user', 'votes'])
                     ->withCount('votes')
@@ -304,13 +313,13 @@ class UsersController extends Controller
                                     : 0;
 
                     $recipeData = [
-                        'id' => $recipe->id, // Include recipe ID
+                        'id' => $recipe->id,
                         'title' => $recipe->title,
                         'totals' => [
                             'total_views' => $totalViews,
                             'average_rating' => $averageRating,
                             'total_comments' => $recipe->comments->count(),
-                            'total_votes' => $recipe->votes_count // Include total votes
+                            'total_votes' => $recipe->votes_count,
                         ],
                         'comments' => $recipe->comments->map(function ($comment) {
                             return [
@@ -329,26 +338,19 @@ class UsersController extends Controller
                     $responsePayload['user']['recipes'][] = $recipeData;
                 }
             } else {
-                // For normal users, fetch all recipes
+                // For normal users
                 $allRecipes = Recipe::with(['user', 'votes'])
                     ->withCount('votes')
                     ->get();
 
                 foreach ($allRecipes as $recipe) {
-                    $totalViews = $recipe->comments->sum('views');
-                    $averageRating = $recipe->comments->count() > 0
-                                    ? round($recipe->comments->avg('rating'))
-                                    : 0;
+                    // Check if the user has voted for this recipe
+                    $hasVoted = $recipe->votes->where('user_id', $user->id)->isNotEmpty();
 
                     $recipeData = [
-                        'id' => $recipe->id, // Include recipe ID
+                        'id' => $recipe->id,
                         'title' => $recipe->title,
-                        'totals' => [
-                            'total_views' => $totalViews,
-                            'average_rating' => $averageRating,
-                            'total_comments' => $recipe->comments->count(),
-                            'total_votes_earned' => $recipe->votes_count // Include total votes
-                        ],
+                        'has_voted_for' => $hasVoted, // Indicate whether the user has voted for this recipe
                         'comments' => $recipe->comments->map(function ($comment) {
                             return [
                                 'id' => $comment->id,
