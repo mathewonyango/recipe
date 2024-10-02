@@ -35,15 +35,7 @@ class TopicsController extends Controller
 
     public function addTopic(Request $request)
     {
-        try {
 
-            $apiKey = $request->input('api_key'); // Use input() to get data from the body
-            $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
-
-            // Check if the provided API key matches the expected API key
-            if ($apiKey !== $expectedApiKey) {
-                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-            }
             // Validate the incoming request data
             $request->validate([
                 'name' => 'required|string|max:255|unique:topics,name',
@@ -61,10 +53,7 @@ class TopicsController extends Controller
 
             // Return a success response
             return redirect()->route('topics.index')->with('success', 'Topic created successfully.');
-        } catch (\Exception $e) {
-            // Return an error response if there's an exception
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+
     }
 
 
