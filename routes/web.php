@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\{
     UsersController, DashboardController, TopicsController, RecipesController, EventsController,
     ReportsController, ChefsController, VotesController, AuthController, LogViewerController,
-    DeploymentController, BackupController
+    DeploymentController, BackupController,PaymentController
 };
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\VerifyCsrfToken;
@@ -113,6 +113,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Vote API Route
     Route::post('/api/vote/recipe', [VotesController::class, 'vote']);
+
+    Route::post('/api/payment/update', [PaymentController::class, 'updatePayment']);
+    Route::get('/api/payment/user', [PaymentController::class, 'getPayments']);
 
 
 // Event Routes

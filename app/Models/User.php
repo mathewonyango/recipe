@@ -77,6 +77,11 @@ class User extends Authenticatable
           return $this->hasMany(Recipe::class, 'user_id'); // Chef can have many recipes
       }
 
+      public function payments()
+{
+    return $this->hasMany(Payment::class);
+}
+
       // Relationship to Votes
       public function votes()
       {
