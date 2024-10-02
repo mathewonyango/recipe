@@ -103,6 +103,7 @@ class TopicsController extends Controller
                 $currentDate = Carbon::now();
                 $status = $topic->end_date > $currentDate ? 'open' : 'closed'; //
                 return [
+                        'topic_id'=>$topic->id,
                         'Topic_status'=>$status,
                         'total_votes' => $topic->totalVotes(),
                         'total_chefs' => $topic->totalChefs(),
