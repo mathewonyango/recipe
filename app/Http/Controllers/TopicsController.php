@@ -105,6 +105,9 @@ class TopicsController extends Controller
                 return [
                         'topic_id'=>$topic->id,
                         'Topic_status'=>$status,
+                        'description'=>$topic->description,
+                        'start_date'=>$topic->start_date,
+                        'end_date'=>$topic->end_date,
                         'total_votes' => $topic->totalVotes(),
                         'total_chefs' => $topic->totalChefs(),
                         'total_comments' => $topic->totalComments(),
