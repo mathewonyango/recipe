@@ -116,8 +116,9 @@ class TopicsController extends Controller
             });
 
             return response()->json([
-            'topics' => $responseData,
-            'response_description' => 'Topics fetched successfully!'],
+                'response_description' => 'Topics fetched successfully!',
+                'topics' => $responseData],
+
             200);
         } catch (\Exception $e) {
             return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()], 500);
