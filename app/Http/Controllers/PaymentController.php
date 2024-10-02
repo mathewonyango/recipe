@@ -16,41 +16,59 @@ class PaymentController extends Controller
 {
     // Validate input
     $request->validate([
-        'user_id' => 'required|exists:users,id',
         'amount' => 'required|numeric',
+        'status' => 'required|in:paid,unpaid,partial',
         'transaction_id' => 'nullable|string',
     ]);
-
-    // Set the required amount (in this case, Ksh 1000)
-    $requiredAmount = 1000;
-
-    // Determine the payment status based on the amount paid
-    $status = 'unpaid'; // Default status
-
-    if ($request->input('amount') >= $requiredAmount) {
-        $status = 'paid'; // Fully paid if amount is equal or greater than 1000
-    } elseif ($request->input('amount') > 0 && $request->input('amount') < $requiredAmount) {
-        $status = 'partial'; // Partially paid if less than 1000
-    }
 
     // Find the user
     $user = User::findOrFail($request->user_id);
 
-    // Update or create payment for the user
-    $payment = Payment::updateOrCreate(
-        ['user_id' => $request->user_id],
-        [
-            'amount' => $request->input('amount'),
-            'status' => $status, // Set status based on comparison
+    // Check if the user has an existing payment record
+    $payment = Payment::where('user_id', $request->user_id)->first();
+
+    if ($payment) {
+        // If the user has a payment record, accumulate the amount
+        $newAmount = $payment->amount + $request->input('amount');
+
+        // Update the payment record
+        $payment->update([
+            'amount' => $newAmount,
+            'status' => $this->determinePaymentStatus($newAmount), // Function to determine status based on amount
             'transaction_id' => $request->input('transaction_id'),
-        ]
-    );
+        ]);
+    } else {
+        // If no payment record exists, create a new one
+        $payment = Payment::create([
+            'user_id' => $user->id,
+            'amount' => $request->input('amount'),
+            'status' => $this->determinePaymentStatus($request->input('amount')), // Set initial status
+            'transaction_id' => $request->input('transaction_id'),
+        ]);
+    }
 
     return response()->json([
         'message' => 'Payment updated successfully',
-        'payment' => $payment,
+        'payment' => $payment
     ], 200);
 }
+
+/**
+ * Determine the payment status based on the total amount paid.
+ */
+protected function determinePaymentStatus($amount)
+{
+    $totalAmountRequired = 1000; // Define the total amount required
+
+    if ($amount >= $totalAmountRequired) {
+        return 'paid';
+    } elseif ($amount > 0 && $amount < $totalAmountRequired) {
+        return 'partial';
+    } else {
+        return 'unpaid';
+    }
+}
+
 
 
      // Fetch payments for a user
