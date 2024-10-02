@@ -345,11 +345,15 @@ class UsersController extends Controller
             // Include active events
             foreach ($activeEvents as $event) {
                 $eventData = [
+                    'status'=>"active",
                     'id' => $event->id,
                     'Event_name' => $event->name,
                     'Event_charges' => $event->charges,
                     'Event_date' => $event->day_of_event,
                     'Event_location' => $event->location,
+                    "Event_topic"=>$event->topic->name,
+                    "Event_time"=>$event->time,
+                    'Event_contact_number'=>$event->contact_number,
                 ];
                 $responsePayload['user']['events']['active'][] = $eventData;
             }
@@ -357,11 +361,15 @@ class UsersController extends Controller
             // Include past events
             foreach ($pastEvents as $event) {
                 $eventData = [
+                    'status'=>"closed",
                     'id' => $event->id,
                     'Event_name' => $event->name,
                     'Event_charges' => $event->charges,
                     'Event_date' => $event->day_of_event,
                     'Event_location' => $event->location,
+                    "Event_topic"=>$event->topic->name,
+                    "Event_time"=>$event->time,
+                    'Event_contact_number'=>$event->contact_number,
                 ];
                 $responsePayload['user']['events']['past'][] = $eventData;
             }
@@ -434,6 +442,7 @@ class UsersController extends Controller
                 });
 
                 // Update totals for chef in the response
+                $responsePayload['user']['total_recipes_submitted'] = $chefRecipes->count();
                 $responsePayload['user']['totals']['total_votes_earned'] = $totalVotesChef;
                 $responsePayload['user']['totals']['total_views_earned'] = $totalViewsChef;
                 $responsePayload['user']['totals']['total_comments_received'] = $totalCommentsChef;
