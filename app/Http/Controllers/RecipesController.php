@@ -271,7 +271,7 @@ class RecipesController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
-        $this->incrementRecipeViews($$request->recipe_id);
+        $this->incrementRecipeViews($request->recipe_id);
         // Create the comment
         $comment = Comment::create([
             'recipe_id' => $request->recipe_id,
