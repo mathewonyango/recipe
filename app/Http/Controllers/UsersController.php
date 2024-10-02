@@ -331,7 +331,7 @@ class UsersController extends Controller
                     // 'username' => $user->username,
                     'email' => $user->email,
                     'role' => $user->role,
-                    'payment_status'=>$user->payment,
+                    'payments'=>$user->payment,
                     'recipes' => [],
                     'events' => [
                         'active' => [],
