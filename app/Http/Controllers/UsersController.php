@@ -304,7 +304,8 @@ class UsersController extends Controller
         try {
             // Check if the user exists
             $user = User::where('email', $request->email)
-                        ->first();
+            ->with('payment') // Eager load the payment relationship
+            ->first();
 
             // Verify user credentials
             if (!$user || !Hash::check($request->password, $user->password)) {
