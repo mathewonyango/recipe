@@ -708,7 +708,7 @@ class UsersController extends Controller
 
     // Check if the provided API key matches the expected API key
     if ($apiKey !== $expectedApiKey) {
-        return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
     }
 
     // Validate the request data

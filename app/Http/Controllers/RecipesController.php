@@ -93,6 +93,7 @@ class RecipesController extends Controller
    return response()->json([
        'response_description' => 'Recipe submitted successfully!',
        'recipe' => [
+        'recipe_id'=>$recipe->id,
            'title' => $recipe->title,
            'topic_title' => $topic->name, // Return the topic title instead of ID
            'servings' => $recipe->servings,
@@ -133,7 +134,7 @@ class RecipesController extends Controller
                         $ratings = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'rate')->get();
                         $comments = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'comment')->get();
                     return [
-
+                        'recipe_id'=>$recipe->id,
                         'title' => $recipe->title,
                         'description' => $recipe->description,
                         'ingredients' => $recipe->ingredients,
