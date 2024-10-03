@@ -32,8 +32,9 @@ class Topic extends Model
     // Method to sum all votes for recipes in this topic
     public function totalVotes()
     {
-        return $this->recipes()->sum('vote'); // Sum the 'vote' column in recipes
+        return (int) $this->recipes()->sum('vote'); // Casting the sum result to integer
     }
+
 
     public function event()
     {
