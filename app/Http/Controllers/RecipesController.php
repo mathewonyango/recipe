@@ -140,6 +140,7 @@ class RecipesController extends Controller
                         'ingredients' => $recipe->ingredients,
                         'instructions' => $recipe->instructions,
                         'cooking_time' => $recipe->cooking_time,
+                        'difficulty_level'=>$recipe->difficulty_level,
                         'chef' => [  // Renamed 'user' to 'chef'
                             'id' => $recipe->user->id,
                             'name' => $recipe->user->name,
