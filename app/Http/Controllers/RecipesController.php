@@ -140,6 +140,7 @@ class RecipesController extends Controller
                         'ingredients' => $recipe->ingredients,
                         'instructions' => $recipe->instructions,
                         'cooking_time' => $recipe->cooking_time,
+                        'serving_number'=>$recipe->servings,
                         'difficulty_level'=>$recipe->difficulty_level,
                         'chef' => [  // Renamed 'user' to 'chef'
                             'id' => $recipe->user->id,
@@ -154,9 +155,13 @@ class RecipesController extends Controller
                     ];
                 });
 
-            return response()->json(['recipes' => $recipes], 200);
+
+            return response()->json([
+                'response_description'=>"recipes fetched successfully",
+                'recipes' => $recipes],
+                 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+            return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
     public function approve($id)
