@@ -68,7 +68,7 @@ if ($currentDate->gt($votingEndDate)) {
     //     return response()->json(['response_description' => 'You have already voted for a recipe in this topic.'], 400);
     // }
 
-    // Check if the user has already voted for this specific recipe
+    // Check if the user has already voted for this specific recipes
     $existingVote = Vote::where('user_id', $user->id)
         ->where('recipe_id', $request->recipe_id)
         ->first();
