@@ -119,8 +119,7 @@ class UsersController extends Controller
                 return response()->json([
                     'response'=>"999",
                     'status' => 'error',
-                    'response_description' => 'Validation failed',
-                    'errors' => $validator->errors()
+                    'response_description' =>$validator->errors(),
                 ], 422);
             }
 
