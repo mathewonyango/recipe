@@ -50,8 +50,8 @@ class UsersController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'response' => "999",
-                'response_description' => 'All fields are required.',
-                // 'response_description' => $validator->errors(),
+                // 'response_description' => 'All fields are required.',
+                'response_description' => $validator->errors(),
             ], 422);
         }
 
