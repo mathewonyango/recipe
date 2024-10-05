@@ -27,13 +27,13 @@ class UsersController extends Controller
 
     public function register(Request $request)
     {
-        $apiKey = $request->input('api_key'); // Use input() to get data from the body
-        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+        // $apiKey = $request->input('api_key'); // Use input() to get data from the body
+        // $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
-        // Check if the provided API key matches the expected API key
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
+        // // Check if the provided API key matches the expected API key
+        // if ($apiKey !== $expectedApiKey) {
+        //     return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        // }
 
         // Validate the request data
         $validator = Validator::make($request->all(), [
