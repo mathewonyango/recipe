@@ -59,14 +59,14 @@ if ($currentDate->gt($votingEndDate)) {
 }
 
     // Check if the user has already voted for any recipe in this topic
-    $existingVoteForAnyRecipe = Vote::where('user_id', $user->id)
-        ->whereHas('recipe', function($query) use ($topic) {
-            $query->where('topic_id', $topic->id);
-        })->exists();
+    // $existingVoteForAnyRecipe = Vote::where('user_id', $user->id)
+    //     ->whereHas('recipe', function($query) use ($topic) {
+    //         $query->where('topic_id', $topic->id);
+    //     })->exists();
 
-    if ($existingVoteForAnyRecipe) {
-        return response()->json(['response_description' => 'You have already voted for a recipe in this topic.'], 400);
-    }
+    // if ($existingVoteForAnyRecipe) {
+    //     return response()->json(['response_description' => 'You have already voted for a recipe in this topic.'], 400);
+    // }
 
     // Check if the user has already voted for this specific recipe
     $existingVote = Vote::where('user_id', $user->id)
