@@ -116,12 +116,12 @@ class RecipesController extends Controller
         try {
 
 
-            $apiKey = $request->header('X-API-Key');
-            $expectedApiKey = env('API_KEY'); // Fetch from environment
+            // $apiKey = $request->header('X-API-Key');
+            // $expectedApiKey = env('API_KEY'); // Fetch from environment
 
-            if ($apiKey !== $expectedApiKey) {
-                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-            }
+            // if ($apiKey !== $expectedApiKey) {
+            //     return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            // }
 
             // Fetch all recipes with relevant relationships
             $recipes = Recipe::with(['user', 'votes']) // Load user and votes relationships
