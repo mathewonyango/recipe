@@ -33,7 +33,7 @@ class UsersController extends Controller
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
             return response()->json([
-                'response' => "999",
+                'response' => "401",
                 'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
@@ -49,7 +49,7 @@ class UsersController extends Controller
         // If validation fails, return error messages
         if ($validator->fails()) {
             return response()->json([
-                'response' => "999",
+                'response' => "422",
                 'response_description' => 'All fields are required.',
                 // 'response_description' => $validator->errors(),
             ], 422);
@@ -88,7 +88,9 @@ class UsersController extends Controller
 
             // Check if the provided API key matches the expected API key
             if ($apiKey !== $expectedApiKey) {
-                return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+                return response()->json([
+                    'response' => "401",
+                    'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
             }
 
         try {
@@ -115,10 +117,11 @@ class UsersController extends Controller
             // Return validation errors if any
             if ($validator->fails()) {
                 return response()->json([
+                    'response'=>"999",
                     'status' => 'error',
-                    'message' => 'Validation failed',
+                    'response_description' => 'Validation failed',
                     'errors' => $validator->errors()
-                ], 400);
+                ], 999);
             }
 
             // Create new Chef
@@ -150,8 +153,9 @@ class UsersController extends Controller
 
             // Return the registered data as a response
             return response()->json([
+                'response'=>"000",
                 'status' => 'success',
-                'message' => 'Chef registered successfully!',
+                'response_description' => 'Chef registered successfully!',
                 'chef' => [
                     'name' => $chef->name,
                     'email' => $chef->email,
@@ -175,21 +179,24 @@ class UsersController extends Controller
                     'push_notification' => $chef->push_notification ?? 'allow',
                     'notification_preferences'=>$chef->notification_preferences ?? ['email'],
                     ]
-            ], 201);
+            ], 000);
         } catch (\Illuminate\Database\QueryException $ex) {
             // Catch database-related errors (e.g., duplicate entry, foreign key constraint failures)
             return response()->json([
+                'response'=>"500",
                 'status' => 'error',
-                'message' => 'Database error',
+                'response_description' => 'server internal error',
                 'details' => $ex->getMessage(),
             ], 500);
         } catch (\Exception $ex) {
             // Catch any general errors
             return response()->json([
+                'response'=>"501",
+                'response_description' => 'server internal error',
                 'status' => 'error',
                 'message' => 'Something went wrong',
                 'details' => $ex->getMessage(),
-            ], 500);
+            ], 501);
         }
     }
 
