@@ -298,7 +298,10 @@ class UsersController extends Controller
 
         // Check if API Key matches
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json([
+                'response'=>"999",
+                'status' => 'error',
+                'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         // Validate the request data
@@ -308,7 +311,9 @@ class UsersController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['response_description' => 'Validation failed,email and password are required.', 'errors' => $validator->errors()], 400);
+            return response()->json([
+                'response'=>"999",
+                'response_description' => 'Validation failed,email and password are required.', 'errors' => $validator->errors()], 400);
         }
 
         try {
@@ -319,7 +324,10 @@ class UsersController extends Controller
 
             // Verify user credentials
             if (!$user || !Hash::check($request->password, $user->password)) {
-                return response()->json(['message' => 'Invalid credentials.'], 401);
+                return response()->json([
+                    'response'=>"999",
+                    'status' => 'error',
+                    'response_description' => 'Invalid credentials.'], 401);
             }
 
             // Get today's date
@@ -333,6 +341,8 @@ class UsersController extends Controller
 
             // Prepare response payload
             $responsePayload = [
+                'response'=>"000",
+                'status' => 'success',
                 'response_description' => 'Login successful!',
                 'user' => [
                     'id' => $user->id,
@@ -499,7 +509,9 @@ class UsersController extends Controller
             return response()->json($responsePayload, 200);
 
         } catch (\Exception $e) {
-            return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()], 500);
+            return response()->json([
+                'response'=>"999",
+                'response_description' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
 
