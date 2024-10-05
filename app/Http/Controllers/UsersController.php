@@ -32,7 +32,7 @@ class UsersController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         // Validate the request data
@@ -47,8 +47,8 @@ class UsersController extends Controller
         // If validation fails, return error messages
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
+                'response_description' => 'Validation failed',
+                'response_description' => $validator->errors(),
             ], 422);
         }
 
@@ -194,7 +194,7 @@ class UsersController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         // Validate the request data
@@ -220,8 +220,8 @@ class UsersController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'response_description' => 'Validation failed',
+                'response_description' => $validator->errors()
             ], 400);
         }
 
@@ -254,7 +254,7 @@ class UsersController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Chef updated successfully!',
+                'response_description' => 'Chef updated successfully!',
                 'chef' => $chef // Return the updated chef data
             ], 200);
 
@@ -262,14 +262,14 @@ class UsersController extends Controller
             // Catch database-related errors
             return response()->json([
                 'status' => 'error',
-                'message' => 'Database error',
+                'response_description' => 'Database error',
                 'details' => $ex->getMessage(),
             ], 500);
         } catch (\Exception $ex) {
             // Catch any general errors
             return response()->json([
                 'status' => 'error',
-                'message' => 'Something went wrong',
+                'response_description' => 'Something went wrong',
                 'details' => $ex->getMessage(),
             ], 500);
         }
@@ -285,7 +285,7 @@ class UsersController extends Controller
 
         // Check if API Key matches
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         // Validate the request data
@@ -295,7 +295,7 @@ class UsersController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => 'Validation failed,email and password are required.', 'errors' => $validator->errors()], 400);
+            return response()->json(['response_description' => 'Validation failed,email and password are required.', 'errors' => $validator->errors()], 400);
         }
 
         try {
