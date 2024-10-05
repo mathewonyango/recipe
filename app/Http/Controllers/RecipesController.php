@@ -246,12 +246,19 @@ class RecipesController extends Controller
                     'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
             }
         // Validate the incoming request
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'ingredients' => 'required|string',
             'instructions' => 'required|string',
             'topic_id' => 'required', // Ensures topic_id exists in the topics table
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'response' => "999",
+                'response_description' => $validator->errors(),
+            ], 422);
+        }
 
         // Create the recipe
         $recipe = Recipe::create($request->all());
@@ -267,7 +274,7 @@ class RecipesController extends Controller
         }
             else {
                 return response()->json([
-                    'response' => "999",
+                    'response' => "500",
                     'response_description' => 'An error occurred .pleeease try again'], 401);
             }
 
