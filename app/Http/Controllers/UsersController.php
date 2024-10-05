@@ -121,7 +121,7 @@ class UsersController extends Controller
                     'status' => 'error',
                     'response_description' => 'Validation failed',
                     'errors' => $validator->errors()
-                ], 999);
+                ], 422);
             }
 
             // Create new Chef
@@ -179,7 +179,7 @@ class UsersController extends Controller
                     'push_notification' => $chef->push_notification ?? 'allow',
                     'notification_preferences'=>$chef->notification_preferences ?? ['email'],
                     ]
-            ], 000);
+            ], 200);
         } catch (\Illuminate\Database\QueryException $ex) {
             // Catch database-related errors (e.g., duplicate entry, foreign key constraint failures)
             return response()->json([
