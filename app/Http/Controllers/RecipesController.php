@@ -40,7 +40,7 @@ class RecipesController extends Controller
           // Check if the provided API key matches the expected API key
           if ($apiKey !== $expectedApiKey) {
               return response()->json([
-                'response'=>"999",
+                'response'=>"401",
                 'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
           }
 
@@ -166,7 +166,9 @@ class RecipesController extends Controller
                 'recipes' => $recipes],
                  200);
         } catch (\Exception $e) {
-            return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()], 500);
+            return response()->json([
+                'response' => "999",
+                'response_description' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
     public function approve($id)
@@ -223,7 +225,7 @@ class RecipesController extends Controller
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
-                'response' => "999",
+                'response' => "500",
                 'status' => 'error',
                 'response_description' => 'An error occurred while fetching the recipe.',
                 'error' => $e->getMessage()
@@ -239,7 +241,9 @@ class RecipesController extends Controller
 
             // Check if the provided API key matches the expected API key
             if ($apiKey !== $expectedApiKey) {
-                return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+                return response()->json([
+                    'response' => "401",
+                    'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
             }
         // Validate the incoming request
         $request->validate([
@@ -251,6 +255,7 @@ class RecipesController extends Controller
 
         // Create the recipe
         $recipe = Recipe::create($request->all());
+        if($recipe){
 
         // Return the response
         return response()->json([
@@ -259,6 +264,12 @@ class RecipesController extends Controller
             'data' => $recipe,
             'message' => 'Recipe created successfully.'
         ], 201);
+        }
+            else {
+                return response()->json([
+                    'response' => "999",
+                    'response_description' => 'An error occurred .pleeease try again'], 401);
+            }
 
     }
 
@@ -272,7 +283,7 @@ class RecipesController extends Controller
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
             return response()->json([
-                'response' => "999",
+                'response' => "401",
                 'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
@@ -286,8 +297,7 @@ class RecipesController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'response' => "999",
-                'response_description' => 'Validation failed',
-                'errors' => $validator->errors(),
+                'response_description' => $validator->errors(),
             ], 422);
         }
         $this->incrementRecipeViews($request->recipe_id);
@@ -315,7 +325,7 @@ class RecipesController extends Controller
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
             return response()->json([
-                'response' => "999",
+                'response' => "401",
                 'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
         // Validation
@@ -328,8 +338,7 @@ class RecipesController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'response' => "999",
-                'response_description' => 'Validation failed',
-                'errors' => $validator->errors(),
+                'response_description' =>$validator->errors(),
             ], 422);
         }
 
@@ -341,7 +350,7 @@ class RecipesController extends Controller
 
         if ($existingRating) {
             return response()->json([
-                'response' => "999",
+                'response' => "409",
                 'response_description' => 'You have already rated this recipe.',
             ], 409); // Conflict
         }
