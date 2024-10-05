@@ -71,7 +71,10 @@ class TopicsController extends Controller
 
             // Check if the provided API key matches the expected API key
             if ($apiKey !== $expectedApiKey) {
-                return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+                return response()->json([
+                    'response'=> "999",
+                    'status' => 'error',
+                    'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
             }
 
             // Initialize the query builder
@@ -121,12 +124,15 @@ class TopicsController extends Controller
             });
 
             return response()->json([
+                'response'=>"000",
                 'response_description' => 'Topics fetched successfully!',
                 'topics' => $responseData],
 
             200);
         } catch (\Exception $e) {
-            return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()], 500);
+            return response()->json([
+                'response'=>"999",
+                'response_description' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
 

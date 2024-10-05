@@ -32,7 +32,9 @@ class UsersController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json([
+                'response' => "999",
+                'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         // Validate the request data
@@ -47,8 +49,9 @@ class UsersController extends Controller
         // If validation fails, return error messages
         if ($validator->fails()) {
             return response()->json([
-                'response_description' => 'Validation failed',
-                'response_description' => $validator->errors(),
+                'response' => "999",
+                'response_description' => 'All fields are required.',
+                // 'response_description' => $validator->errors(),
             ], 422);
         }
 
@@ -63,13 +66,16 @@ class UsersController extends Controller
                 'notification_preferences' => json_encode($request->notification_preferences), // Optional, store as JSON
                 'role' => 'user', // Default role for general users
             ]);
-            return response()->json(['response_description' => 'Registration successful!', 'user' => $user], 201);
+            return response()->json([
+                'response' => "000",
+                'response_description' => 'Registration successful!', 'user' => $user], 201);
 
         } catch (\Exception $e) {
             // Return a detailed error message in case of failure
             return response()->json([
+                'response'=>"999",
                 'response_description' => 'Registration failed. Please try again.',
-                'response_description' => $e->getMessage(),
+                // 'response_description' => $e->getMessage(),
             ], 500);
         }
     }
@@ -194,7 +200,10 @@ class UsersController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json([
+                'response'=>"999",
+                'status' => 'error',
+                'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         // Validate the request data
@@ -219,6 +228,7 @@ class UsersController extends Controller
         // If validation fails, return error messages
         if ($validator->fails()) {
             return response()->json([
+                'response'=>"999",
                 'status' => 'error',
                 'response_description' => 'Validation failed',
                 'response_description' => $validator->errors()
@@ -253,6 +263,7 @@ class UsersController extends Controller
             $chef->save();
 
             return response()->json([
+                'response'=>"000",
                 'status' => 'success',
                 'response_description' => 'Chef updated successfully!',
                 'chef' => $chef // Return the updated chef data
@@ -261,6 +272,7 @@ class UsersController extends Controller
         } catch (\Illuminate\Database\QueryException $ex) {
             // Catch database-related errors
             return response()->json([
+                'response'=>"999",
                 'status' => 'error',
                 'response_description' => 'Database error',
                 'details' => $ex->getMessage(),
@@ -268,6 +280,7 @@ class UsersController extends Controller
         } catch (\Exception $ex) {
             // Catch any general errors
             return response()->json([
+                'response'=>"999",
                 'status' => 'error',
                 'response_description' => 'Something went wrong',
                 'details' => $ex->getMessage(),
