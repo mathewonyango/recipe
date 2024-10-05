@@ -86,7 +86,9 @@ if ($currentDate->gt($votingEndDate)) {
     // Increment the recipe's vote count
     $recipe->increment('vote');
 
-    return response()->json(['response_description' => 'Vote successfully recorded.'], 200);
+    return response()->json([
+        'response'=>"000",
+        'response_description' => 'Vote successfully recorded.'], 200);
 }
 
 
