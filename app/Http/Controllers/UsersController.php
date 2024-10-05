@@ -196,7 +196,7 @@ class UsersController extends Controller
                 'status' => 'error',
                 'message' => 'Something went wrong',
                 'details' => $ex->getMessage(),
-            ], 501);
+            ], 500);
         }
     }
 
