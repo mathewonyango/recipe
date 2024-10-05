@@ -27,13 +27,13 @@ class UsersController extends Controller
 
     public function register(Request $request)
     {
-        // $apiKey = $request->input('api_key'); // Use input() to get data from the body
-        // $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+        $apiKey = $request->input('api_key'); // Use input() to get data from the body
+        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
-        // // Check if the provided API key matches the expected API key
-        // if ($apiKey !== $expectedApiKey) {
-        //     return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
-        // }
+        // Check if the provided API key matches the expected API key
+        if ($apiKey !== $expectedApiKey) {
+            return response()->json(['message' => 'Unauthorized access. Invalid API Key.'], 401);
+        }
 
         // Validate the request data
         $validator = Validator::make($request->all(), [
@@ -63,16 +63,13 @@ class UsersController extends Controller
                 'notification_preferences' => json_encode($request->notification_preferences), // Optional, store as JSON
                 'role' => 'user', // Default role for general users
             ]);
-
-
-
-            return response()->json(['message' => 'Registration successful!', 'user' => $user], 201);
+            return response()->json(['response_description' => 'Registration successful!', 'user' => $user], 201);
 
         } catch (\Exception $e) {
             // Return a detailed error message in case of failure
             return response()->json([
-                'message' => 'Registration failed. Please try again.',
-                'error' => $e->getMessage(),
+                'response_description' => 'Registration failed. Please try again.',
+                'response_description' => $e->getMessage(),
             ], 500);
         }
     }
