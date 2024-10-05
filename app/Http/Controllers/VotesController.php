@@ -22,7 +22,7 @@ class VotesController extends Controller
     // Check if the provided API key matches the expected API key
     if ($apiKey !== $expectedApiKey) {
         return response()->json([
-            'response'=>"999",
+            'response'=>"401",
             'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
     }
     // Find the user
@@ -39,14 +39,14 @@ class VotesController extends Controller
     $recipe = Recipe::find($request->recipe_id);
     if (!$recipe) {
         return response()->json([
-            'response'=>"999",
+            'response'=>"404",
             'response_description' => 'Recipe not found.'], 404);
     }
 
     // Check if the recipe is approved
     if ($recipe->status !== 'approved') {
         return response()->json([
-            'response'=>"999",
+            'response'=>"400",
             'response_description' => 'You cannot vote for a recipe that is not approved.'], 400);
     }
 
@@ -60,13 +60,13 @@ $votingEndDate = $votingStartDate->copy()->addDays(10); // Extend voting to 10 d
 
 if ($currentDate->lt($votingStartDate)) {
     return response()->json([
-        'response'=>"999",
+        'response'=>"444",
         'response_description' => 'Voting has not started yet.'], 400);
 }
 
 if ($currentDate->gt($votingEndDate)) {
     return response()->json([
-'response'=>"999",
+'response'=>"445",
 'response_description' => 'Voting period is over.'], 400);
 }
 
@@ -87,7 +87,7 @@ if ($currentDate->gt($votingEndDate)) {
 
     if ($existingVote) {
         return response()->json([
-            'response'=>"999",
+            'response'=>"446",
             'response_description' => 'You have already voted for this recipe.'], 400);
     }
 
