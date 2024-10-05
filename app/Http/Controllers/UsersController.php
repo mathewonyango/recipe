@@ -49,7 +49,7 @@ class UsersController extends Controller
         // If validation fails, return error messages
         if ($validator->fails()) {
             return response()->json([
-                'response' => "422",
+                'response' => "999",
                 'response_description' => 'All fields are required.',
                 // 'response_description' => $validator->errors(),
             ], 422);
@@ -73,7 +73,7 @@ class UsersController extends Controller
         } catch (\Exception $e) {
             // Return a detailed error message in case of failure
             return response()->json([
-                'response'=>"999",
+                'response'=>"500",
                 'response_description' => 'Registration failed. Please try again.',
                 // 'response_description' => $e->getMessage(),
             ], 500);
@@ -184,7 +184,7 @@ class UsersController extends Controller
             return response()->json([
                 'response'=>"500",
                 'status' => 'error',
-                'response_description' => 'server internal error',
+                'response_description' => 'Network connection error',
                 'details' => $ex->getMessage(),
             ], 500);
         } catch (\Exception $ex) {
