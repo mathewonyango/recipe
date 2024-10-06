@@ -696,7 +696,9 @@ class UsersController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json([
+                'response'=>"401",
+                'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
 
         try {
@@ -733,9 +735,14 @@ class UsersController extends Controller
 
             // Assign voting positions based on sorted order
 
-            return response()->json(['users' => $responseData], 200);
+            return response()->json([
+                'response'=>"000",
+                'response_description'=>"users fetched succesfully",
+                'users' => $responseData],
+                200);
         } catch (\Exception $e) {
-            return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()], 500);
+            return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()],
+             500);
         }
     }
 
@@ -772,7 +779,7 @@ class UsersController extends Controller
     if ($validator->fails()) {
         return response()->json([
             'response'=>"999",
-            'response_description' =>  $validator->errors(),
+            'response_description' =>$validator->errors(),
         ], 422);
     }
 
@@ -806,7 +813,7 @@ class UsersController extends Controller
         return response()->json([
             'response'=>"500",
             'response_description' => 'Update failed. Please try again.',
-            'response_description' => $e->getMessage(),
+            // 'response_description' => $e->getMessage(),
         ], 500);
     }
 }
@@ -822,7 +829,9 @@ class UsersController extends Controller
 
             // Check if the provided API key matches the expected API key
             if ($apiKey !== $expectedApiKey) {
-                return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+                return response()->json([
+                    'response'=>"401",
+                    'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
             }
 
         // Validate the incoming request
@@ -838,6 +847,7 @@ class UsersController extends Controller
 
         // Return the response
         return response()->json([
+            'response'=>"000",
             'status' => 'success',
             'data' => $recipe,
             'response_description' => 'Recipe created successfully.'
