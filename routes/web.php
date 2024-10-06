@@ -88,8 +88,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/api/chefs', [UsersController::class, 'getChefs']);
     Route::get('/api/chefs/{id}', [UsersController::class, 'getChefProfile']);
     Route::post('/api/chefs/{id}', [UsersController::class, 'updateProfile']);
-    Route::put('/api/user/update', [UsersController::class, 'updateUser']);
-    Route::put('/api/chef/update', [UsersController::class, 'updateChef']);
+    Route::post('/api/user/update', [UsersController::class, 'updateUser']);
+    Route::post('/api/chef/update', [UsersController::class, 'updateChef']);
 
 
 
@@ -124,5 +124,5 @@ Route::get('/events/create', [EventsController::class, 'create'])->name('events.
 Route::post('/events', [EventsController::class, 'store'])->name('events.store');
 Route::get('/events/{event}', [EventsController::class, 'show'])->name('events.show');
 Route::get('/events/{event}/edit', [EventsController::class, 'edit'])->name('events.edit');
-Route::put('/events/{event}', [EventsController::class, 'update'])->name('events.update');
+Route::post('/events/{event}', [EventsController::class, 'update'])->name('events.update');
 Route::delete('/events/{event}', [EventsController::class, 'destroy'])->name('events.destroy');
