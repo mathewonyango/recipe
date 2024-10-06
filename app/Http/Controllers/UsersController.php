@@ -207,7 +207,7 @@ class UsersController extends Controller
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
             return response()->json([
-                'response'=>"999",
+                'response'=>"401",
                 'status' => 'error',
                 'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
@@ -278,15 +278,15 @@ class UsersController extends Controller
         } catch (\Illuminate\Database\QueryException $ex) {
             // Catch database-related errors
             return response()->json([
-                'response'=>"999",
+                'response'=>"500",
                 'status' => 'error',
-                'response_description' => 'Database error',
+                'response_description' => 'Server  error',
                 'details' => $ex->getMessage(),
             ], 500);
         } catch (\Exception $ex) {
             // Catch any general errors
             return response()->json([
-                'response'=>"999",
+                'response'=>"501",
                 'status' => 'error',
                 'response_description' => 'Something went wrong',
                 'details' => $ex->getMessage(),
@@ -748,7 +748,9 @@ class UsersController extends Controller
 
     // Check if the provided API key matches the expected API key
     if ($apiKey !== $expectedApiKey) {
-        return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+        return response()->json([
+            'response'=>"401",
+            'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
     }
 
     // Validate the request data
@@ -769,8 +771,8 @@ class UsersController extends Controller
     // If validation fails, return error messages
     if ($validator->fails()) {
         return response()->json([
-            'response_description' => 'Validation failed',
-            'response_description' => $validator->errors(),
+            'response'=>"999",
+            'response_description' =>  $validator->errors(),
         ], 422);
     }
 
@@ -796,10 +798,13 @@ class UsersController extends Controller
         $user->notification_preferences = json_encode($request->notification_preferences); // Update preferences
         $user->save(); // Save the updated user
 
-        return response()->json(['response_description' => 'User updated successfully!', 'user' => $user], 200);
+        return response()->json([
+            'response'=>"000",
+            'response_description' => 'User updated successfully!', 'user' => $user], 200);
 
     } catch (\Exception $e) {
         return response()->json([
+            'response'=>"500",
             'response_description' => 'Update failed. Please try again.',
             'response_description' => $e->getMessage(),
         ], 500);
