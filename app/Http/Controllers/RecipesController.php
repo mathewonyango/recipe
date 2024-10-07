@@ -165,7 +165,7 @@ class RecipesController extends Controller
                                     'created_at' => $comment->created_at,
                                     'commenter' => [
                                         'name' => $comment->user->name,  // Get the name of the commenter
-                                        'profile_picture' => $comment->user->profile_picture, // If you also want the profile picture
+                                        // 'profile_picture' => $comment->user->profile_picture, // If you also want the profile picture
                                     ],
                                 ];
                             }),
