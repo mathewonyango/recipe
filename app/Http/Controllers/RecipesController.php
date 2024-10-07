@@ -312,7 +312,7 @@ class RecipesController extends Controller
         $comment = new Comment;
         $comment->user_id = $validated['user_id'];
         $comment->recipe_id = $validated['recipe_id'];
-        $comment->content = $validated['comment'];
+        $comment->comment = $validated['comment'];
         $comment->save();
 
         // Return a success response
