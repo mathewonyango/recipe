@@ -865,7 +865,7 @@ class UsersController extends Controller
                     'profile_picture' => $user->profile_picture ?? '',
                     'bio' => $user->bio ?? '',
                     'push_notification' => $user->push_notification ?? '',
-                    'notification_preferences' => $user->notification_preferences ?? '',
+                    'notification_preferences' => $user->notification_preferences ?? 'Nil',
                     'social_media_links' => $user->social_media_links ?? '',
                     'event_participated' => $user->event_participated ?? 0, // Set to 0 if null
                 ],
