@@ -109,7 +109,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/api/recipes/add', [RecipesController::class, 'submitRecipe']);
     Route::post('/api/recipe/comment', [RecipesController::class, 'submitComment'])->name('recipes.submitComment');
     Route::post('/api/recipe/rate', [RecipesController::class, 'submitRating'])->name('recipes.submitRating');
-    Route::post('/api/recipe/view', [RecipesController::class, 'submitView'])->name('recipes.logView');
+    Route::post('/api/recipe/views', [RecipesController::class, 'recipeView'])->name('recipes.logView');
 
     // Vote API Route
     Route::post('/api/vote/recipe', [VotesController::class, 'vote']);
