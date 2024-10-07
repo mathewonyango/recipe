@@ -382,7 +382,7 @@ class RecipesController extends Controller
 }
 
 
-public function recipeViews(Request $request)
+public function recipeView(Request $request)
 {
 
     $apiKey = $request->input('api_key'); // Use input() to get data from the body
