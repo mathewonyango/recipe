@@ -854,7 +854,27 @@ class UsersController extends Controller
                 $updatedFields['location'] = $request->location;
                 $user->location = $request->location;
             }
-            // Continue for other fields...
+            if ($request->filled('profile_picture') && $request->profile_picture != $user->profile_picture) {
+                $updatedFields['profile_picture'] = $request->profile_picture;
+                $user->profile_picture = $request->profile_picture;
+            }
+            if ($request->filled('bio') && $request->bio != $user->bio) {
+                $updatedFields['bio'] = $request->bio;
+                $user->bio = $request->bio;
+            }
+            if ($request->filled('push_notification') && $request->push_notification != $user->push_notification) {
+                $updatedFields['push_notification'] = $request->push_notification;
+                $user->push_notification = $request->push_notification;
+            }
+            if ($request->filled('notification_preferences') && $request->notification_preferences != $user->notification_preferences) {
+                $updatedFields['notification_preferences'] = $request->notification_preferences;
+                $user->notification_preferences = $request->notification_preferences;
+            }
+            if ($request->filled('social_media_links') && $request->social_media_links != $user->social_media_links) {
+                $updatedFields['social_media_links'] = $request->social_media_links;
+                $user->social_media_links = $request->social_media_links;
+            }
+
 
             if (!empty($updatedFields)) {
                 $user->save();
