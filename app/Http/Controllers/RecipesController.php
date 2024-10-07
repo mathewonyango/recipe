@@ -141,29 +141,41 @@ class RecipesController extends Controller
                         $views = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'view')->get();
                         $ratings = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'rate')->get();
                         $comments = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'comment')->get();
-                    return [
-                        'recipe_id'=>$recipe->id,
-                        'title' => $recipe->title,
-                        'description' => $recipe->description,
-                        'ingredients' => $recipe->ingredients,
-                        'instructions' => $recipe->instructions,
-                        'cooking_time' => $recipe->cooking_time,
-                        'serving_number'=>$recipe->servings,
-                        'difficulty_level'=>$recipe->difficulty_level,
-                        'chef' => [  // Renamed 'user' to 'chef'
-                            'id' => $recipe->user->id,
-                            'name' => $recipe->user->name,
-                            'profile_picture' => $recipe->user->profile_picture,
-                        ],
+                        return [
+                            'recipe_id' => $recipe->id,
+                            'title' => $recipe->title,
+                            'description' => $recipe->description,
+                            'ingredients' => $recipe->ingredients,
+                            'instructions' => $recipe->instructions,
+                            'cooking_time' => $recipe->cooking_time,
+                            'serving_number' => $recipe->servings,
+                            'difficulty_level' => $recipe->difficulty_level,
+                            'chef' => [
+                                'id' => $recipe->user->id,
+                                'name' => $recipe->user->name,
+                                'profile_picture' => $recipe->user->profile_picture,
+                            ],
 
-                        // 'views' => $recipe->views->count(),
-                        'ratings' => $ratings,
-                        'comments' => $recipe->comments,
-                        'rating_count'=>$recipe->ratings->count(),
-                        'views_count' => $recipe->views->count(),
-                        'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
-                        'total_votes' => $recipe->total_votes, // Count of votes for the recipe
-                    ];
+                            'ratings' => $ratings,
+
+                            // Mapping the comments to extract relevant information, including the commenter's name
+                            'comments' => $recipe->comments->map(function ($comment) {
+                                return [
+                                    'content' => $comment->comment,  // Assuming 'content' is the field for the comment message
+                                    'created_at' => $comment->created_at,
+                                    'commenter' => [
+                                        'name' => $comment->user->name,  // Get the name of the commenter
+                                        'profile_picture' => $comment->user->profile_picture, // If you also want the profile picture
+                                    ],
+                                ];
+                            }),
+
+                            'rating_count' => $recipe->ratings->count(),
+                            'views_count' => $recipe->views->count(),
+                            'comments_count' => $recipe->comments->count(),
+                            'total_votes' => $recipe->total_votes,
+                        ];
+
                 });
 
 
