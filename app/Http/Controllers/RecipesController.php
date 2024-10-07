@@ -155,10 +155,9 @@ class RecipesController extends Controller
                             'name' => $recipe->user->name,
                             'profile_picture' => $recipe->user->profile_picture,
                         ],
-                        'views' => $views,
+                        // 'views' => $recipe->views->count(),
                         'ratings' => $ratings,
                         'comments' => $comments,
-
                         'rating_count'=>$recipe->ratings->count(),
                         'views_count' => $recipe->views->count(),
                         'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
@@ -290,46 +289,40 @@ class RecipesController extends Controller
 
     public function submitComment(Request $request)
     {
-
-        $apiKey = $request->input('api_key'); // Use input() to get data from the body
+        $apiKey = $request->input('api_key'); // Get the API key from the request
         $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
             return response()->json([
                 'response' => "401",
-                'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+                'response_description' => 'Unauthorized access. Invalid API Key.'
+            ], 401);
         }
 
-        // Validation
-        $validator = Validator::make($request->all(), [
+
+        // Validate the incoming request data
+        $validated = $request->validate([
+            'user_id'   => 'required|exists:users,id',
             'recipe_id' => 'required|exists:recipes,id',
-            'comment' => 'required|string',
-            // 'rating' => 'nullable|integer|between:1,5',
+            'comment'   => 'required|string|max:1000' // Adjust the max length as necessary
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'response' => "999",
-                'response_description' => $validator->errors(),
-            ], 422);
-        }
-        $this->incrementRecipeViews($request->recipe_id);
-        // Create the comment
-        $comment = Comment::create([
-            'recipe_id' => $request->recipe_id,
-            'user_id' => $request->user_id,
-            'comment' => $request->comment,
-            'rating' => 5,
-            'interaction_type' => 'comment', // Explicitly set the interaction type
-        ]);
+        // Create and save a new comment
+        $comment = new Comment;
+        $comment->user_id = $validated['user_id'];
+        $comment->recipe_id = $validated['recipe_id'];
+        $comment->content = $validated['content'];
+        $comment->save();
 
+        // Return a success response
         return response()->json([
             'response' => "000",
-            'response_description' => 'Comment submitted successfully',
-            'comment' => $comment,
+            'response_description' => 'Comment submitted successfully.',
+            'comment' => $comment
         ], 201);
     }
+
 
     public function submitRating(Request $request)
 {

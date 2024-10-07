@@ -29,4 +29,6 @@ class Comment extends Model
     {
         return $this->belongsTo(Recipe::class, 'recipe_id'); // A comment belongs to a recipe
     }
+
+
 }
