@@ -491,7 +491,6 @@ class UsersController extends Controller
                     // Return recipe-specific data with comments included
                     return [
                         'id' => $recipe->id,
-
                         'title' => $recipe->title,
                         'topic_name' => $recipe->topic->name,
                         'servings' => $recipe->servings,
@@ -506,7 +505,6 @@ class UsersController extends Controller
                         'tags' => $recipe->tags,
                         'difficulty_level' => $recipe->difficulty_level,
                         'nutritional_information' => $recipe->nutritional_information,
-
                         'total_votes' => $recipe->votes_count, // Total votes for this recipe
                         'total_views' => $totalViews,          // Total views for this recipe
                         'total_comments' => $totalComments,    // Total comments for this recipe
@@ -539,7 +537,6 @@ class UsersController extends Controller
                 $responsePayload['user']['recipes'] = $allRecipes->map(function ($recipe) use ($votedRecipes) {
                     return [
                        'id' => $recipe->id,
-
                         'title' => $recipe->title,
                         'topic_name' => $recipe->topic->name,
                         'servings' => $recipe->servings,
@@ -801,74 +798,86 @@ class UsersController extends Controller
 
     // Update Chef Profile Data
     public function updateUser(Request $request)
-{
-    $apiKey = $request->input('api_key'); // Use input() to get data from the body
-    $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+    {
+        $apiKey = $request->input('api_key');
+        $expectedApiKey = env('API_KEY');
 
-    // Check if the provided API key matches the expected API key
-    if ($apiKey !== $expectedApiKey) {
-        return response()->json([
-            'response'=>"401",
-            'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
-    }
-
-    // Validate the request data
-    $validator = Validator::make($request->all(), [
-        'full_name' => 'nullable|string|max:255',
-        'email' => 'nullable|string|email|max:255|unique:users,email,' . $request->user_id,
-        'username' => 'nullable|string|max:255|unique:users,username,' . $request->user_id,
-        'password' => 'nullable|string|min:6', // Minimum length can be adjusted
-        // 'notification_preferences' => 'nullable|array', // Expecting an array for notification preferences
-        'location' => 'nullable|string',
-        'profile_picture' => 'nullable|string', // Optional
-        'bio' => 'nullable|string', // Optional
-        'push_notification' => 'nullable|in:allow,deny',
-        'notification_preferences' => 'nullable|array', // Optional (array of preferences)
-        'social_media_links' => 'nullable|array', // Optional (array of links)
-    ]);
-
-    // If validation fails, return error messages
-    if ($validator->fails()) {
-        return response()->json([
-            'response'=>"999",
-            'response_description' =>$validator->errors(),
-        ], 422);
-    }
-
-    // Attempt to find the user by ID
-    try {
-        $user = User::findOrFail($request->user_id);
-
-        // Update user details
-        $user->name = $request->full_name ?? $user->name; // Only update if provided
-        $user->email = $request->email ?? $user->email;
-        $user->username = $request->username ?? $user->username;
-        $user->location = $request->location ?? $user->location;
-        $user->push_notification = $request->push_notification ?? $user->push_notification;
-        $user->profile_picture = $request->profile_picture ?? $user->profile_picture;
-        $user->bio = $request->bio ?? $user->bio;
-        $user->social_media_links = json_encode($request->social_media_links);
-
-
-        if ($request->password) {
-            $user->password = Hash::make($request->password); // Hash the new password if provided
+        if ($apiKey !== $expectedApiKey) {
+            return response()->json([
+                'response' => "401",
+                'response_description' => 'Unauthorized access. Invalid API Key.'
+            ], 401);
         }
 
-        $user->notification_preferences = json_encode($request->notification_preferences); // Update preferences
-        $user->save(); // Save the updated user
+        $validator = Validator::make($request->all(), [
+            'full_name' => 'nullable|string|max:255',
+            'email' => 'nullable|string|email|max:255|unique:users,email,' . $request->user_id,
+            'username' => 'nullable|string|max:255|unique:users,username,' . $request->user_id,
+            'password' => 'nullable|string|min:6',
+            'location' => 'nullable|string',
+            'profile_picture' => 'nullable|string',
+            'bio' => 'nullable|string',
+            'push_notification' => 'nullable|in:allow,deny',
+            'notification_preferences' => 'nullable|array',
+            'social_media_links' => 'nullable|array',
+        ]);
 
-        return response()->json([
-            'response'=>"000",
-            'response_description' => 'User updated successfully!', 'user' => $user], 200);
+        if ($validator->fails()) {
+            return response()->json([
+                'response' => "999",
+                'response_description' => $validator->errors(),
+            ], 422);
+        }
 
-    } catch (\Exception $e) {
-        return response()->json([
-            'response'=>"500",
-            'response_description' => 'Update failed. Please try again.',
-            // 'response_description' => $e->getMessage(),
-        ], 500);
+        try {
+            $user = User::findOrFail($request->user_id);
+
+            $updatedFields = [];
+
+            if ($request->filled('full_name') && $request->full_name != $user->name) {
+                $updatedFields['full_name'] = $request->full_name;
+                $user->name = $request->full_name;
+            }
+            if ($request->filled('email') && $request->email != $user->email) {
+                $updatedFields['email'] = $request->email;
+                $user->email = $request->email;
+            }
+            if ($request->filled('username') && $request->username != $user->username) {
+                $updatedFields['username'] = $request->username;
+                $user->username = $request->username;
+            }
+            if ($request->filled('password')) {
+                $updatedFields['password'] = 'Updated';
+                $user->password = Hash::make($request->password);
+            }
+            if ($request->filled('location') && $request->location != $user->location) {
+                $updatedFields['location'] = $request->location;
+                $user->location = $request->location;
+            }
+            // Continue for other fields...
+
+            if (!empty($updatedFields)) {
+                $user->save();
+                return response()->json([
+                    'response' => "000",
+                    'response_description' => 'User updated successfully!',
+                    'updated_fields' => $updatedFields
+                ], 200);
+            }
+
+            return response()->json([
+                'response' => "304",
+                'response_description' => 'No fields were updated.'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'response' => "500",
+                'response_description' => 'Update failed. Please try again.',
+            ], 500);
+        }
     }
-}
+
 
 
 
