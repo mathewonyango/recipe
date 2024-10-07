@@ -317,8 +317,7 @@ class UsersController extends Controller
                     'bio' => $chef->bio ?? '',
                     'push_notification' => $chef->push_notification ?? '',
                     'notification_preferences' => json_decode($chef->notification_preferences) ?? '',
-                    'social_media_links' =>  json_decode($chef->social_media_links) ?? '',
-
+                    'social_media_links' =>json_decode($chef->social_media_links) ?? '',
                     'event_participated' => $user->event_participated ?? 0, // Set to 0 if null
                 ]
             ], 200);
