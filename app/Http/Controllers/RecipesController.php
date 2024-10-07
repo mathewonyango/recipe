@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Recipe;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
+//rating
+use App\Models\Rating;
 
 // Topic
 use App\Models\Topic;
@@ -325,65 +327,57 @@ class RecipesController extends Controller
             'comment' => $comment,
         ], 201);
     }
+
     public function submitRating(Request $request)
-    {
+{
+    $apiKey = $request->input('api_key'); // Use input() to get data from the body
+    $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
-        $apiKey = $request->input('api_key'); // Use input() to get data from the body
-        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+    // Check if the provided API key matches the expected API key
+    if ($apiKey !== $expectedApiKey) {
+        return response()->json([
+            'response' => "401",
+            'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+    }
 
-        // Check if the provided API key matches the expected API key
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json([
-                'response' => "401",
-                'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
-        // Validation
-        $validator = Validator::make($request->all(), [
-            'recipe_id' => 'required|exists:recipes,id',
-            'user_id' => 'required|exists:users,id', // Ensure user_id is required and valid
-            'rating' => 'required|integer|between:1,5',
-        ]);
+    // Validate the incoming request
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'recipe_id' => 'required|exists:recipes,id',
+        'rating' => 'required|integer|min:1|max:5' // Assume rating is between 1 and 5
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'response' => "999",
-                'response_description' =>$validator->errors(),
-            ], 422);
-        }
+    // Check if the user has already rated this recipe
+    $existingRating = Rating::where('user_id', $validated['user_id'])
+                        ->where('recipe_id', $validated['recipe_id'])
+                        ->first();
 
-        // Check if user already rated
-        $existingRating = Comment::where('user_id', $request->user_id)
-                                 ->where('recipe_id', $request->recipe_id)
-                                 ->where('interaction_type', 'rate')
-                                 ->first();
-
-        if ($existingRating) {
-            return response()->json([
-                'response' => "409",
-                'response_description' => 'You have already rated this recipe.',
-            ], 409); // Conflict
-        }
-
-
-        // Increment views for the recipe, if required
-        $this->incrementRecipeViews($request->recipe_id);
-
-        // Store the rating as an interaction
-        $rating = Comment::create([
-            'recipe_id' => $request->recipe_id,
-            'user_id' => $request->user_id,
-            'rating' => $request->rating,
-            'comment' => "", // Default empty comment
-            'interaction_type' => 'rate', // Explicitly set interaction type
-        ]);
+    if ($existingRating) {
+        // Update the existing rating
+        $existingRating->rating = $validated['rating'];
+        $existingRating->save();
 
         return response()->json([
             'response' => "000",
-            'response_description' => 'Rating submitted successfully',
-            'rating' => $rating,
+            'response_description' => 'Rating updated successfully.',
+            'rating' => $existingRating
+        ], 200);
+    } else {
+        // Create a new rating
+        $rating = new Rating;
+        $rating->user_id = $validated['user_id'];
+        $rating->recipe_id = $validated['recipe_id'];
+        $rating->rating = $validated['rating'];
+        $rating->save();
 
+        return response()->json([
+            'response' => "001",
+            'response_description' => 'Rating submitted successfully.',
+            'rating' => $rating
         ], 201);
     }
+}
+
 
     public function RecordView(Request $request)
     {
