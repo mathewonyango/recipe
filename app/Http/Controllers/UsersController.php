@@ -200,18 +200,17 @@ class UsersController extends Controller
     }
     public function updateChef(Request $request)
     {
-        $apiKey = $request->input('api_key'); // Use input() to get data from the body
-        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+        $apiKey = $request->input('api_key');
+        $expectedApiKey = env('API_KEY');
 
-        // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
             return response()->json([
-                'response'=>"401",
+                'response' => "401",
                 'status' => 'error',
-                'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+                'response_description' => 'Unauthorized access. Invalid API Key.'
+            ], 401);
         }
 
-        // Validate the request data
         $validator = Validator::make($request->all(), [
             'full_name' => 'nullable|string|max:255',
             'email' => 'nullable|string|email|max:255|unique:users,email,' . $request->user_id,
@@ -219,131 +218,117 @@ class UsersController extends Controller
             'password' => 'nullable|string|min:6',
             'experience_level' => 'nullable|in:Beginner,Intermediate,Professional',
             'location' => 'nullable|string',
-            'profile_picture' => 'nullable|string', // Optional
-            'cuisine_type' => 'nullable|string', // Optional
-            'certification' => 'nullable|string', // Optional
-            'bio' => 'nullable|string', // Optional
+            'profile_picture' => 'nullable|string',
+            'cuisine_type' => 'nullable|string',
+            'certification' => 'nullable|string',
+            'bio' => 'nullable|string',
             'push_notification' => 'nullable|in:allow,deny',
-            'notification_preferences' => 'nullable|array', // Optional (array of preferences)
-            'payment_status' => 'nullable|string', // Optional
-            'social_media_links' => 'nullable|array', // Optional (array of links)
-            'social_media_links.*' => 'nullable|url', // Ensure each link is a valid URL
+            'notification_preferences' => 'nullable|array',
+            'payment_status' => 'nullable|string',
+            'social_media_links' => 'nullable|array',
+            'social_media_links.*' => 'nullable|url',
         ]);
 
-        // If validation fails, return error messages
         if ($validator->fails()) {
             return response()->json([
-                'response'=>"999",
+                'response' => "999",
                 'status' => 'error',
                 'response_description' => 'Validation failed',
                 'response_description' => $validator->errors()
             ], 400);
         }
 
-        // Attempt to find the chef by ID
         try {
-            $chef = User::findOrFail($request->user_id); // Fetch the chef by ID
+            $chef = User::findOrFail($request->user_id);
             $changes = [];
 
-            // Update chef details only if new values are provided
             if ($request->filled('full_name') && $request->full_name !== $chef->name) {
                 $chef->name = $request->full_name;
                 $changes['full_name'] = $request->full_name;
             }
-
             if ($request->filled('email') && $request->email !== $chef->email) {
                 $chef->email = $request->email;
                 $changes['email'] = $request->email;
             }
-
             if ($request->filled('username') && $request->username !== $chef->username) {
                 $chef->username = $request->username;
                 $changes['username'] = $request->username;
             }
-
             if ($request->filled('password')) {
-                $chef->password = Hash::make($request->password); // Hash the new password if provided
+                $chef->password = Hash::make($request->password);
                 $changes['password'] = 'Updated';
             }
-
             if ($request->filled('experience_level') && $request->experience_level !== $chef->experience_level) {
                 $chef->experience_level = $request->experience_level;
                 $changes['experience_level'] = $request->experience_level;
             }
-
             if ($request->filled('location') && $request->location !== $chef->location) {
                 $chef->location = $request->location;
                 $changes['location'] = $request->location;
             }
-
             if ($request->filled('profile_picture') && $request->profile_picture !== $chef->profile_picture) {
                 $chef->profile_picture = $request->profile_picture;
                 $changes['profile_picture'] = $request->profile_picture;
             }
-
             if ($request->filled('cuisine_type') && $request->cuisine_type !== $chef->cuisine_type) {
                 $chef->cuisine_type = $request->cuisine_type;
                 $changes['cuisine_type'] = $request->cuisine_type;
             }
-
             if ($request->filled('certification') && $request->certification !== $chef->certification) {
                 $chef->certification = $request->certification;
                 $changes['certification'] = $request->certification;
             }
-
             if ($request->filled('bio') && $request->bio !== $chef->bio) {
                 $chef->bio = $request->bio;
                 $changes['bio'] = $request->bio;
             }
-
             if ($request->filled('push_notification') && $request->push_notification !== $chef->push_notification) {
                 $chef->push_notification = $request->push_notification;
                 $changes['push_notification'] = $request->push_notification;
             }
-
-            if ($request->filled('notification_preferences')) {
-                $chef->notification_preferences = json_encode($request->notification_preferences);
+            if ($request->filled('notification_preferences') && $request->notification_preferences !== $chef->notification_preferences) {
+                $chef->notification_preferences = $request->notification_preferences;
                 $changes['notification_preferences'] = $request->notification_preferences;
             }
-
             if ($request->filled('payment_status') && $request->payment_status !== $chef->payment_status) {
                 $chef->payment_status = $request->payment_status;
                 $changes['payment_status'] = $request->payment_status;
             }
-
-            if ($request->filled('social_media_links')) {
-                $chef->social_media_links = json_encode($request->social_media_links);
+            if ($request->filled('social_media_links') && $request->social_media_links !== $chef->social_media_links) {
+                $chef->social_media_links = $request->social_media_links;
                 $changes['social_media_links'] = $request->social_media_links;
             }
 
-            // Save the updated chef to the database
-            $chef->save();
+            if (!empty($changes)) {
+                $chef->save();
+            }
 
             return response()->json([
-                'response'=>"000",
-                'status' => 'success',
+                'response' => "000",
                 'response_description' => 'Chef updated successfully!',
-                'updated_fields' => $changes // Return only the updated fields
+                'chef_data' => [
+                    'full_name' => $chef->name ?? '',
+                    'email' => $chef->email ?? '',
+                    'username' => $chef->username ?? '',
+                    'location' => $chef->location ?? '',
+                    'profile_picture' => $chef->profile_picture ?? '',
+                    'cuisine_type' => $chef->cuisine_type ?? '',
+                    'certification' => $chef->certification ?? '',
+                    'bio' => $chef->bio ?? '',
+                    'push_notification' => $chef->push_notification ?? '',
+                    'notification_preferences' => json_decode($chef->notification_preferences) ?? [],
+                    'event_participated' => $user->event_participated ?? 0, // Set to 0 if null
+                ]
             ], 200);
 
-        } catch (\Illuminate\Database\QueryException $ex) {
-            // Catch database-related errors
+        } catch (\Exception $e) {
             return response()->json([
-                'response'=>"500",
-                'status' => 'error',
-                'response_description' => 'Server  error',
-                'details' => $ex->getMessage(),
-            ], 500);
-        } catch (\Exception $ex) {
-            // Catch any general errors
-            return response()->json([
-                'response'=>"501",
-                'status' => 'error',
-                'response_description' => 'Something went wrong',
-                'details' => $ex->getMessage(),
+                'response' => "500",
+                'response_description' => 'Update failed. Please try again.',
             ], 500);
         }
     }
+
 
 
 
@@ -832,62 +817,58 @@ class UsersController extends Controller
         try {
             $user = User::findOrFail($request->user_id);
 
-            $updatedFields = [];
-
-            if ($request->filled('full_name') && $request->full_name != $user->name) {
-                $updatedFields['full_name'] = $request->full_name;
+            // Update user fields only if provided in the request
+            if ($request->filled('full_name')) {
                 $user->name = $request->full_name;
             }
-            if ($request->filled('email') && $request->email != $user->email) {
-                $updatedFields['email'] = $request->email;
+            if ($request->filled('email')) {
                 $user->email = $request->email;
             }
-            if ($request->filled('username') && $request->username != $user->username) {
-                $updatedFields['username'] = $request->username;
+            if ($request->filled('username')) {
                 $user->username = $request->username;
             }
             if ($request->filled('password')) {
-                $updatedFields['password'] = 'Updated';
                 $user->password = Hash::make($request->password);
             }
-            if ($request->filled('location') && $request->location != $user->location) {
-                $updatedFields['location'] = $request->location;
+            if ($request->filled('location')) {
                 $user->location = $request->location;
             }
-            if ($request->filled('profile_picture') && $request->profile_picture != $user->profile_picture) {
-                $updatedFields['profile_picture'] = $request->profile_picture;
+            if ($request->filled('profile_picture')) {
                 $user->profile_picture = $request->profile_picture;
             }
-            if ($request->filled('bio') && $request->bio != $user->bio) {
-                $updatedFields['bio'] = $request->bio;
+            if ($request->filled('bio')) {
                 $user->bio = $request->bio;
             }
-            if ($request->filled('push_notification') && $request->push_notification != $user->push_notification) {
-                $updatedFields['push_notification'] = $request->push_notification;
+            if ($request->filled('push_notification')) {
                 $user->push_notification = $request->push_notification;
             }
-            if ($request->filled('notification_preferences') && $request->notification_preferences != $user->notification_preferences) {
-                $updatedFields['notification_preferences'] = $request->notification_preferences;
+            if ($request->filled('notification_preferences')) {
                 $user->notification_preferences = $request->notification_preferences;
             }
-            if ($request->filled('social_media_links') && $request->social_media_links != $user->social_media_links) {
-                $updatedFields['social_media_links'] = $request->social_media_links;
+            if ($request->filled('social_media_links')) {
                 $user->social_media_links = $request->social_media_links;
             }
 
+            // Save the updated user
+            $user->save();
 
-            if (!empty($updatedFields)) {
-                $user->save();
-                return response()->json([
-                    'response' => "000",
-                    'response_description' => 'User updated successfully!',
-                    'updated_fields' => $updatedFields
-                ], 200);
-            }
-
+            // Prepare the user response data
             return response()->json([
-                'response' => "304",
-                'response_description' => 'No fields were updated.'
+                'response' => "000",
+                'response_description' => 'User updated successfully!',
+                'user' => [
+                    'user_id' => $user->id,
+                    'full_name' => $user->name ?? '',
+                    'email' => $user->email ?? '',
+                    'username' => $user->username ?? '',
+                    'location' => $user->location ?? '',
+                    'profile_picture' => $user->profile_picture ?? '',
+                    'bio' => $user->bio ?? '',
+                    'push_notification' => $user->push_notification ?? '',
+                    'notification_preferences' => $user->notification_preferences ?? [],
+                    'social_media_links' => $user->social_media_links ?? [],
+                    'event_participated' => $user->event_participated ?? 0, // Set to 0 if null
+                ],
             ], 200);
 
         } catch (\Exception $e) {
@@ -897,6 +878,7 @@ class UsersController extends Controller
             ], 500);
         }
     }
+
 
 
 
