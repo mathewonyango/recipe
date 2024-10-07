@@ -410,7 +410,7 @@ public function recipeView(Request $request)
     if ($existingView) {
         // If the view already exists, return a message indicating it's already viewed
         return response()->json([
-            'response' => "200",
+            'response' => "001",
             'response_description' => 'View already recorded.',
             'view' => $existingView
         ], 200);
@@ -422,7 +422,7 @@ public function recipeView(Request $request)
         $view->save();
 
         return response()->json([
-            'response' => "201",
+            'response' => "000",
             'response_description' => 'View recorded successfully.',
             'view' => $view
         ], 201);
