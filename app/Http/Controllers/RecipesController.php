@@ -160,7 +160,7 @@ class RecipesController extends Controller
                         'comments' => $comments,
 
                         'rating_count'=>$recipe->ratings->count(),
-                        'views_count' => $views->count(),
+                        'views_count' => $recipe->views->count(),
                         'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
                         'total_votes' => $recipe->total_votes, // Count of votes for the recipe
                     ];
@@ -428,8 +428,6 @@ public function recipeView(Request $request)
         ], 201);
     }
 }
-
-
 
     private function incrementRecipeViews($recipe_id)
 {
