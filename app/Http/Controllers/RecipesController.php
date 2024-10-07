@@ -154,6 +154,8 @@ class RecipesController extends Controller
                         'views' => $views,
                         'ratings' => $ratings,
                         'comments' => $comments,
+                        'rating_count'=>$ratings->count(),
+                        'views_count' => $views->count(),
                         'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
                         'total_votes' => $recipe->total_votes, // Count of votes for the recipe
                     ];

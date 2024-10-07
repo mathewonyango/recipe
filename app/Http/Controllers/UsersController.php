@@ -198,7 +198,6 @@ class UsersController extends Controller
             ], 500);
         }
     }
-
     public function updateChef(Request $request)
     {
         $apiKey = $request->input('api_key'); // Use input() to get data from the body
@@ -244,26 +243,78 @@ class UsersController extends Controller
         // Attempt to find the chef by ID
         try {
             $chef = User::findOrFail($request->user_id); // Fetch the chef by ID
+            $changes = [];
 
             // Update chef details only if new values are provided
-            $chef->name = $request->full_name ?? $chef->name;
-            $chef->email = $request->email ?? $chef->email;
-            $chef->username = $request->username ?? $chef->username;
-
-            if ($request->password) {
-                $chef->password = Hash::make($request->password); // Hash the new password if provided
+            if ($request->filled('full_name') && $request->full_name !== $chef->name) {
+                $chef->name = $request->full_name;
+                $changes['full_name'] = $request->full_name;
             }
 
-            $chef->experience_level = $request->experience_level ?? $chef->experience_level;
-            $chef->location = $request->location ?? $chef->location;
-            $chef->profile_picture = $request->profile_picture ?? $chef->profile_picture; // Optional
-            $chef->cuisine_type = $request->cuisine_type ?? $chef->cuisine_type; // Optional
-            $chef->certification = $request->certification ?? $chef->certification; // Optional
-            $chef->bio = $request->bio ?? $chef->bio; // Optional
-            $chef->push_notification = $request->push_notification ?? $chef->push_notification;
-            $chef->notification_preferences = json_encode($request->notification_preferences ?? json_decode($chef->notification_preferences, true)); // Update preferences
-            $chef->payment_status = $request->payment_status ?? $chef->payment_status; // Optional
-            $chef->social_media_links = json_encode($request->social_media_links ?? json_decode($chef->social_media_links, true)); // Optional
+            if ($request->filled('email') && $request->email !== $chef->email) {
+                $chef->email = $request->email;
+                $changes['email'] = $request->email;
+            }
+
+            if ($request->filled('username') && $request->username !== $chef->username) {
+                $chef->username = $request->username;
+                $changes['username'] = $request->username;
+            }
+
+            if ($request->filled('password')) {
+                $chef->password = Hash::make($request->password); // Hash the new password if provided
+                $changes['password'] = 'Updated';
+            }
+
+            if ($request->filled('experience_level') && $request->experience_level !== $chef->experience_level) {
+                $chef->experience_level = $request->experience_level;
+                $changes['experience_level'] = $request->experience_level;
+            }
+
+            if ($request->filled('location') && $request->location !== $chef->location) {
+                $chef->location = $request->location;
+                $changes['location'] = $request->location;
+            }
+
+            if ($request->filled('profile_picture') && $request->profile_picture !== $chef->profile_picture) {
+                $chef->profile_picture = $request->profile_picture;
+                $changes['profile_picture'] = $request->profile_picture;
+            }
+
+            if ($request->filled('cuisine_type') && $request->cuisine_type !== $chef->cuisine_type) {
+                $chef->cuisine_type = $request->cuisine_type;
+                $changes['cuisine_type'] = $request->cuisine_type;
+            }
+
+            if ($request->filled('certification') && $request->certification !== $chef->certification) {
+                $chef->certification = $request->certification;
+                $changes['certification'] = $request->certification;
+            }
+
+            if ($request->filled('bio') && $request->bio !== $chef->bio) {
+                $chef->bio = $request->bio;
+                $changes['bio'] = $request->bio;
+            }
+
+            if ($request->filled('push_notification') && $request->push_notification !== $chef->push_notification) {
+                $chef->push_notification = $request->push_notification;
+                $changes['push_notification'] = $request->push_notification;
+            }
+
+            if ($request->filled('notification_preferences')) {
+                $chef->notification_preferences = json_encode($request->notification_preferences);
+                $changes['notification_preferences'] = $request->notification_preferences;
+            }
+
+            if ($request->filled('payment_status') && $request->payment_status !== $chef->payment_status) {
+                $chef->payment_status = $request->payment_status;
+                $changes['payment_status'] = $request->payment_status;
+            }
+
+            if ($request->filled('social_media_links')) {
+                $chef->social_media_links = json_encode($request->social_media_links);
+                $changes['social_media_links'] = $request->social_media_links;
+            }
 
             // Save the updated chef to the database
             $chef->save();
@@ -272,7 +323,7 @@ class UsersController extends Controller
                 'response'=>"000",
                 'status' => 'success',
                 'response_description' => 'Chef updated successfully!',
-                'chef' => $chef // Return the updated chef data
+                'updated_fields' => $changes // Return only the updated fields
             ], 200);
 
         } catch (\Illuminate\Database\QueryException $ex) {
@@ -293,6 +344,7 @@ class UsersController extends Controller
             ], 500);
         }
     }
+
 
 
 
