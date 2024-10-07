@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
 //rating
 use App\Models\Rating;
+//View
+use App\Models\View;
 
 // Topic
 use App\Models\Topic;
@@ -380,28 +382,53 @@ class RecipesController extends Controller
 }
 
 
-    public function RecordView(Request $request)
-    {
+public function submitView(Request $request)
+{
 
-        $apiKey = $request->input('api_key'); // Use input() to get data from the body
-        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+    $apiKey = $request->input('api_key'); // Use input() to get data from the body
+    $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
-        // Check if the provided API key matches the expected API key
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json([
-                'response' => "999",
-                'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
-          // Increment the view count for the recipe by 1
-    $view = Comment::findOrFail($request->recipe_id);
-    $view->increment('views'); // Increments the view count by 1
+    // Check if the provided API key matches the expected API key
+    if ($apiKey !== $expectedApiKey) {
+        return response()->json([
+            'response' => "401",
+            'response_description' => 'Unauthorized access. Invalid API Key.'
+        ], 401);
+    }
+
+    // Validate the incoming request
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'recipe_id' => 'required|exists:recipes,id',
+    ]);
+
+    // Check if the user has already viewed this recipe
+    $existingView =View::where('user_id', $validated['user_id'])
+                    ->where('recipe_id', $validated['recipe_id'])
+                    ->first();
+
+    if ($existingView) {
+        // If the view already exists, return a message indicating it's already viewed
+        return response()->json([
+            'response' => "001",
+            'response_description' => 'View already recorded.',
+            'view' => $existingView
+        ], 200);
+    } else {
+        // Create a new view record
+        $view = new View;
+        $view->user_id = $validated['user_id'];
+        $view->recipe_id = $validated['recipe_id'];
+        $view->save();
 
         return response()->json([
             'response' => "000",
-            'response_description' => 'View logged successfully',
-            // 'views' => $recipe->views,
-        ], 200);
+            'response_description' => 'View recorded successfully.',
+            'view' => $view
+        ], 201);
     }
+}
+
 
 
     private function incrementRecipeViews($recipe_id)
