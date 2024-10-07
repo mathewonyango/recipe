@@ -358,7 +358,7 @@ class RecipesController extends Controller
         $existingRating->save();
 
         return response()->json([
-            'response' => "000",
+            'response' => "001",
             'response_description' => 'Rating updated successfully.',
             'rating' => $existingRating
         ], 200);
@@ -371,7 +371,7 @@ class RecipesController extends Controller
         $rating->save();
 
         return response()->json([
-            'response' => "001",
+            'response' => "000",
             'response_description' => 'Rating submitted successfully.',
             'rating' => $rating
         ], 201);
