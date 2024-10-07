@@ -411,7 +411,7 @@ public function submitView(Request $request)
         // If the view already exists, return a message indicating it's already viewed
         return response()->json([
             'response' => "001",
-            'response_description' => 'View already recorded.',
+            'response_description' => 'View already recorded',
             'view' => $existingView
         ], 200);
     } else {
