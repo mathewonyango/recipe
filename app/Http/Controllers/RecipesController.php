@@ -154,7 +154,7 @@ class RecipesController extends Controller
                         'views' => $views,
                         'ratings' => $ratings,
                         'comments' => $comments,
-                        'rating_count'=>$ratings->count(),
+                        'rating_count'=>Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'rate')->count(),
                         'views_count' => $views->count(),
                         'comments_count' => $recipe->comments->count(), // Count of comments for the recipe
                         'total_votes' => $recipe->total_votes, // Count of votes for the recipe
@@ -363,6 +363,7 @@ class RecipesController extends Controller
                 'response_description' => 'You have already rated this recipe.',
             ], 409); // Conflict
         }
+
 
         // Increment views for the recipe, if required
         $this->incrementRecipeViews($request->recipe_id);
