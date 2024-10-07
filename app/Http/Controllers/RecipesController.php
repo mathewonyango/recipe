@@ -328,12 +328,21 @@ class RecipesController extends Controller
         $comment->comment = $validated['comment'];
         $comment->save();
 
+        if(!$comment){
+            return response()->json([
+                'response' => "999",
+                'response_description' => 'An error occurred. Please try again.'
+            ], 500);
+        }
+
         // Return a success response
         return response()->json([
             'response' => "000",
             'response_description' => 'Comment submitted successfully.',
             'comment' => $comment
         ], 201);
+
+
     }
 
 
@@ -416,7 +425,7 @@ public function recipeView(Request $request)
     if ($existingView) {
         // If the view already exists, return a message indicating it's already viewed
         return response()->json([
-            'response' => "001",
+            'response' => "999",
             'response_description' => 'View already recorded.',
             'view' => $existingView
         ], 200);
