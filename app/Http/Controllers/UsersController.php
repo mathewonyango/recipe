@@ -316,7 +316,7 @@ class UsersController extends Controller
                     'certification' => $chef->certification ?? '',
                     'bio' => $chef->bio ?? '',
                     'push_notification' => $chef->push_notification ?? '',
-                    'notification_preferences' => json_decode($chef->notification_preferences) ?? [],
+                    'notification_preferences' => json_decode($chef->notification_preferences) ?? '',
                     'event_participated' => $user->event_participated ?? 0, // Set to 0 if null
                 ]
             ], 200);
@@ -865,8 +865,8 @@ class UsersController extends Controller
                     'profile_picture' => $user->profile_picture ?? '',
                     'bio' => $user->bio ?? '',
                     'push_notification' => $user->push_notification ?? '',
-                    'notification_preferences' => $user->notification_preferences ?? [],
-                    'social_media_links' => $user->social_media_links ?? [],
+                    'notification_preferences' => $user->notification_preferences ?? '',
+                    'social_media_links' => $user->social_media_links ?? '',
                     'event_participated' => $user->event_participated ?? 0, // Set to 0 if null
                 ],
             ], 200);
