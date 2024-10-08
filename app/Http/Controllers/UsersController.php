@@ -307,10 +307,13 @@ class UsersController extends Controller
                 'response' => "000",
                 'response_description' => 'Chef updated successfully!',
                 'chef_data' => [
+
                     'full_name' => $chef->name ?? '',
                     'email' => $chef->email ?? '',
                     'username' => $chef->username ?? '',
                     'role'=>$chef->role,
+                    'approval_status'=>$chef->approval_status,
+                    'recipe_count'=>$chef->recipes->count(),
                     'experience_level'=>$chef->experience_level ?? '',
                     'cuisine_type' => $chef->cuisine_type ?? '',
                     'certification' => $chef->certification ?? '',
