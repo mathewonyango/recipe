@@ -113,10 +113,8 @@ class TopicsController extends Controller
                         'description'=>$topic->description,
                         'start_date'=>$topic->start_date,
                         'end_date'=>$topic->end_date,
-                        'total_views' => $topic->recipes->map(function ($recipe) {
-                            return [
-                                'views_count' => $recipe->views()->count(), // Assuming the relation is set up as Recipe hasMany Views
-                            ];
+                        'total_views' => $topic->recipes->sum(function ($recipe) {
+                        return $recipe->views()->count(); // Summing views for each recipe
                         }),
                         'total_votes' => $topic->totalVotes(),
                         'total_chefs' => $topic->totalChefs(),
