@@ -36,6 +36,7 @@ class Topic extends Model
     }
 
 
+
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id'); // Assuming event_id is the foreign key
