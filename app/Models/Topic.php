@@ -93,7 +93,10 @@ class Topic extends Model
 
     public function chefRankings()
     {
-        return $this->topChefs()->map(function ($chef, $index) {
+        return $this->topChefs()->map(function ($chefData, $index) {
+            // Assuming $chefData['chef'] contains the chef's ID or an instance of User
+            $chef = User::find($chefData['chef']->id ?? $chefData['chef']); // Fetch the User (chef) model
+
             // Fetch the chef's highest-voted recipe
             $topRecipe = $chef->recipes()
                 ->withCount('votes') // Count votes for each recipe
@@ -102,9 +105,9 @@ class Topic extends Model
 
             return [
                 'rank' => $index + 1, // Ranking
-                'chef' => $chef['chef'], // Chef details
-                'votes' => $chef['votes'], // Total votes for the chef (from topChefs data)
-                'recipe_title' => $topRecipe ? $topRecipe->title : 'No Recipe', // Title of the top recipe or 'No Recipe'
+                'chef' => $chefData['chef'], // Chef details
+                'votes' => $chefData['votes'], // Total votes for the chef (from topChefs data)
+                'top_recipe_title' => $topRecipe ? $topRecipe->title : 'No Recipe', // Title of the top recipe or 'No Recipe'
             ];
         });
     }
