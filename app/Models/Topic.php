@@ -107,7 +107,7 @@ class Topic extends Model
                 'rank' => $index + 1, // Ranking
                 'chef' => $chefData['chef'], // Chef details
                 'votes' => $chefData['votes'], // Total votes for the chef (from topChefs data)
-                'top_recipe_title' => $topRecipe ? $topRecipe->title : 'No Recipe', // Title of the top recipe or 'No Recipe'
+                'winning_recipe_title' => $topRecipe ? $topRecipe->title : 'No Recipe', // Title of the top recipe or 'No Recipe'
             ];
         });
     }
