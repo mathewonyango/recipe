@@ -310,6 +310,10 @@ class UsersController extends Controller
                     'full_name' => $chef->name ?? '',
                     'email' => $chef->email ?? '',
                     'username' => $chef->username ?? '',
+                    'role'=>$chef->role,
+                    'experience_level'=>$chef->experience_level ?? '',
+                    'cuisine_type' => $chef->cuisine_type ?? '',
+                    'certification' => $chef->certification ?? '',
                     'location' => $chef->location ?? '',
                     'profile_picture' => $chef->profile_picture ?? '',
                     'cuisine_type' => $chef->cuisine_type ?? '',
@@ -318,7 +322,8 @@ class UsersController extends Controller
                     'push_notification' => $chef->push_notification ?? '',
                     'notification_preferences' => json_decode($chef->notification_preferences) ?? '',
                     'social_media_links' =>json_decode($chef->social_media_links) ?? ' ',
-                    'event_participated' => $user->event_participated ?? 0, // Set to 0 if null
+                    'event_participated' => $chef->event_participated ?? 0, // Set to 0 if null
+                    'payment'=>$chef->payment,
                 ]
             ], 200);
 
@@ -861,6 +866,7 @@ class UsersController extends Controller
                     'user_id' => $user->id,
                     'full_name' => $user->name ?? '',
                     'email' => $user->email ?? '',
+                    'role'=>$user->role,
                     'username' => $user->username ?? '',
                     'location' => $user->location ?? '',
                     'profile_picture' => $user->profile_picture ?? '',
@@ -869,6 +875,8 @@ class UsersController extends Controller
                     'notification_preferences' => json_decode($user->notification_preferences) ?? '',
                     'social_media_links' => $user->social_media_links ?? '',
                     'event_participated' => $user->event_participated ?? 0, // Set to 0 if null
+                    'payment'=>$user->payment,
+
                 ],
             ], 200);
 
