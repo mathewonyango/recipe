@@ -107,6 +107,7 @@ class TopicsController extends Controller
                 $status = $topic->end_date > $currentDate ? 'open' : 'closed'; //
                 return [
 
+
                         'topic_id'=>$topic->id,
                         'topic_title'=>$topic->name,
                         'Topic_status'=>$status,

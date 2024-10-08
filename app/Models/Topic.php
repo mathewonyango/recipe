@@ -94,13 +94,21 @@ class Topic extends Model
     public function chefRankings()
     {
         return $this->topChefs()->map(function ($chef, $index) {
+            // Fetch the chef's highest-voted recipe
+            $topRecipe = $chef->recipes()
+                ->withCount('votes') // Count votes for each recipe
+                ->orderBy('votes_count', 'desc') // Order by vote count
+                ->first(); // Get the top recipe
+
             return [
-                'rank' => $index + 1,
-                'chef' => $chef['chef'],
-                'votes' => $chef['votes'],
+                'rank' => $index + 1, // Ranking
+                'chef' => $chef['chef'], // Chef details
+                'votes' => $chef['votes'], // Total votes for the chef (from topChefs data)
+                'recipe_title' => $topRecipe ? $topRecipe->title : 'No Recipe', // Title of the top recipe or 'No Recipe'
             ];
         });
     }
+
 
     public function status($status)
     {
