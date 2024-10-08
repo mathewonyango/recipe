@@ -113,7 +113,7 @@ class TopicsController extends Controller
                         'description'=>$topic->description,
                         'start_date'=>$topic->start_date,
                         'end_date'=>$topic->end_date,
-                        'total_views'=>$topic->recipes->views->count(),
+                        'total_views'=>$topic->recipes,
                         'total_votes' => $topic->totalVotes(),
                         'total_chefs' => $topic->totalChefs(),
                         'total_comments' => $topic->totalComments(),
