@@ -360,27 +360,23 @@ class UsersController extends Controller
 
     // Validate the request data (email or username + password)
     $validator = Validator::make($request->all(), [
-        'email' => 'required|string', // We treat 'email' as either email or username
+        'email' => 'required|string', // The 'name' field is used to hold name, email, or username
         'password' => 'required|string',
-        'name'=>'nullable|string',
-        'username'=>'nullable|string',
     ]);
 
     if ($validator->fails()) {
         return response()->json([
             'response' => "900",
-            'response_description' => 'Validation failed. Email/Username and password are required.',
+            'response_description' => 'Validation failed. Name/Email/username and password are required.',
             'errors' => $validator->errors()
         ], 400);
     }
 
-    // Check if the user exists by email or username
-    $user = User::where(function ($query) use ($request) {
-        $query->where('email', $request->email)
-              ->orWhere('username', $request->email)->with('payment')
-              ->orWhere('name', $request->name)->with('payment');
-
-    })->first();
+    // Check if the user exists by email, username, or name
+    $user = User::where('email', $request->email)
+    ->orWhere('username', $request->email)
+    ->orWhere('name', $request->email)
+    ->first();
 
     // If the user does not exist
     if (!$user) {
@@ -397,20 +393,6 @@ class UsersController extends Controller
             'response_description' => 'Incorrect password. Please try again.'
         ], 401);
     }
-
-    // If login is successful, return user details (excluding sensitive info like password)
-    // return response()->json([
-    //     'response' => "000",
-    //     'response_description' => 'Login successful.',
-    //     'data' => [
-    //         'id' => $user->id,
-    //         'name' => $user->name,
-    //         'email' => $user->email,
-    //         'username' => $user->username,
-    //         // You can add other non-sensitive fields you want to return here
-    //     ],
-    // ], 200);
-
             // Get today's date
             $today = Carbon::now()->toDateString();
 
