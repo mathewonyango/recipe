@@ -382,7 +382,7 @@ class UsersController extends Controller
     if (!$user) {
         return response()->json([
             'response' => "901",
-            'response_description' => 'Invalid email or username. The user was not found.'
+            'response_description' => 'Invalid email, username, or name. The user was not found.'
         ], 404);
     }
 
