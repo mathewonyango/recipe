@@ -395,17 +395,17 @@ class UsersController extends Controller
     }
 
     // If login is successful, return user details (excluding sensitive info like password)
-    return response()->json([
-        'response' => "000",
-        'response_description' => 'Login successful.',
-        'data' => [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'username' => $user->username,
-            // You can add other non-sensitive fields you want to return here
-        ],
-    ], 200);
+    // return response()->json([
+    //     'response' => "000",
+    //     'response_description' => 'Login successful.',
+    //     'data' => [
+    //         'id' => $user->id,
+    //         'name' => $user->name,
+    //         'email' => $user->email,
+    //         'username' => $user->username,
+    //         // You can add other non-sensitive fields you want to return here
+    //     ],
+    // ], 200);
 
             // Get today's date
             $today = Carbon::now()->toDateString();
