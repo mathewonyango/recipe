@@ -344,43 +344,68 @@ class UsersController extends Controller
 
 
     public function login(Request $request)
-    {
-        $apiKey = $request->input('api_key');
-        $expectedApiKey = env('API_KEY');
+{
+    try {
+    // Check if the API key is provided and matches
+    $apiKey = $request->input('api_key');
+    $expectedApiKey = env('API_KEY');
 
-        // Check if API Key matches
-        if ($apiKey !== $expectedApiKey) {
-            return response()->json([
-                'response'=>"999",
-                'status' => 'error',
-                'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
-        }
+    if ($apiKey !== $expectedApiKey) {
+        return response()->json([
+            'response' => "401",
+            'status' => 'error',
+            'response_description' => 'Unauthorized access. Invalid API Key.'
+        ], 401);
+    }
 
-        // Validate the request data
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string',
-            'password' => 'required|string',
-        ]);
+    // Validate the request data (email or username + password)
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|string', // We treat 'email' as either email or username
+        'password' => 'required|string',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'response'=>"999",
-                'response_description' => 'Validation failed,email and password are required.', 'errors' => $validator->errors()], 400);
-        }
+    if ($validator->fails()) {
+        return response()->json([
+            'response' => "900",
+            'response_description' => 'Validation failed. Email/Username and password are required.',
+            'errors' => $validator->errors()
+        ], 400);
+    }
 
-        try {
-            // Check if the user exists
-            $user = User::where('email', $request->email)
-            ->with('payment') // Eager load the payment relationship
-            ->first();
+    // Check if the user exists by email or username
+    $user = User::where(function ($query) use ($request) {
+        $query->where('email', $request->email)
+              ->orWhere('username', $request->email)->with('payment');
+    })->first();
 
-            // Verify user credentials
-            if (!$user || !Hash::check($request->password, $user->password)) {
-                return response()->json([
-                    'response'=>"999",
-                    'status' => 'error',
-                    'response_description' => 'Invalid credentials.'], 401);
-            }
+    // If the user does not exist
+    if (!$user) {
+        return response()->json([
+            'response' => "901",
+            'response_description' => 'Invalid email or username. The user was not found.'
+        ], 404);
+    }
+
+    // If the user exists but the password is incorrect
+    if (!Hash::check($request->password, $user->password)) {
+        return response()->json([
+            'response' => "999",
+            'response_description' => 'Incorrect password. Please try again.'
+        ], 401);
+    }
+
+    // If login is successful, return user details (excluding sensitive info like password)
+    return response()->json([
+        'response' => "000",
+        'response_description' => 'Login successful.',
+        'data' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'username' => $user->username,
+            // You can add other non-sensitive fields you want to return here
+        ],
+    ], 200);
 
             // Get today's date
             $today = Carbon::now()->toDateString();
