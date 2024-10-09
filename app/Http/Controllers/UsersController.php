@@ -362,6 +362,8 @@ class UsersController extends Controller
     $validator = Validator::make($request->all(), [
         'email' => 'required|string', // We treat 'email' as either email or username
         'password' => 'required|string',
+        'name'=>'nullable|string',
+        'username'=>'nullable|string',
     ]);
 
     if ($validator->fails()) {
@@ -375,7 +377,9 @@ class UsersController extends Controller
     // Check if the user exists by email or username
     $user = User::where(function ($query) use ($request) {
         $query->where('email', $request->email)
-              ->orWhere('username', $request->email)->with('payment');
+              ->orWhere('username', $request->email)->with('payment')
+              ->orWhere('name', $request->name)->with('payment');
+
     })->first();
 
     // If the user does not exist
