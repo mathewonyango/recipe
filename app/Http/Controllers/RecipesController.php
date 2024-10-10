@@ -143,6 +143,7 @@ class RecipesController extends Controller
                         $comments = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'comment')->get();
                         return [
                             'recipe_id' => $recipe->id,
+                            'topic_status'=>$recipe->topic->status,
                             'title' => $recipe->title,
                             'description' => $recipe->description,
                             'ingredients' => $recipe->ingredients,
