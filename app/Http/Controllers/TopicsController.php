@@ -120,9 +120,13 @@ class TopicsController extends Controller
                         'total_votes' => $topic->totalVotes(),
                         'total_chefs' => $topic->totalChefs(),
                         'total_comments' => $topic->totalComments(),
-                        'comments' => $topic->comments->map(function ($comment) use ($topic) {
-                            return array_merge($comment->toArray(), ['topic_id' => $topic->id]);
+                       'comments' => $topic->comments->map(function ($comment) {
+                            return array_merge($comment->toArray(), [
+                                'name' => $comment->user->name, // assuming user relationship is defined
+                                'topic_id' => $comment->topic_id,
+                            ]);
                         }),
+
                         'average_rating' => $topic->averageRatings(),
                         'winner' => $topic->winner(),
                         'chef_rankings' => $topic->chefRankings(),
