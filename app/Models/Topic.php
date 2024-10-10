@@ -105,6 +105,7 @@ class Topic extends Model
 
             return [
 
+
                 'topic_id'=>$this->id, // Topic ID
                 'rank' => $index + 1, // Ranking
                 'chef' => $chefData['chef'], // Chef details
