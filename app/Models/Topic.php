@@ -104,9 +104,7 @@ class Topic extends Model
                 ->first(); // Get the top recipe
 
             return [
-
-
-                'topic_id'=>$this->id, // Topic ID
+                'topic_id'=>$topRecipe->topic_id, // Topic ID
                 'rank' => $index + 1, // Ranking
                 'chef' => $chefData['chef'], // Chef details
                 'votes' => $chefData['votes'], // Total votes for the chef (from topChefs data)
