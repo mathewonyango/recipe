@@ -128,12 +128,20 @@ class TopicsController extends Controller
                         ]);
                     }),
 
-                    'average_rating' => $topic->averageRatings(),
-                    'winner' => array_merge($topic->winner() ?? [], ['topic_id' => $topic->id]),'chef_rankings' => collect($topic->chefRankings())->map(function ($ranking) use ($topic) {
-                    return array_merge($ranking, ['topic_id' => $topic->id]);
-                    })->all(),                ];
-                        });
-                    return response()->json([
+                'average_rating' => $topic->averageRatings(),
+                'winner' => $topic->winner() ? array_merge(
+                    $topic->winner()->toArray(),
+                    ['topic_id' => $topic->id]
+                ) : null,
+                'chef_rankings' => collect($topic->chefRankings())->map(function ($ranking) use ($topic) {
+                    return $ranking instanceof \Illuminate\Database\Eloquent\Model
+                        ? array_merge($ranking->toArray(), ['topic_id' => $topic->id])
+                        : array_merge($ranking, ['topic_id' => $topic->id]);
+                })->all(),
+                                ];
+            });
+
+            return response()->json([
                 'response'=>"000",
                 'response_description' => 'Topics fetched successfully!',
                 'topics' => $responseData],
