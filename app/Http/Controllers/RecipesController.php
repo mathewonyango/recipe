@@ -15,6 +15,9 @@ use App\Models\View;
 use App\Models\Topic;
 //comment
 use App\Models\Comment;
+use App\helpers;
+use DateTime;
+
 
 class RecipesController extends Controller
 {
@@ -119,6 +122,30 @@ class RecipesController extends Controller
 }
 
 
+public function getTopicStatus($end_date)
+    {
+        $today = new DateTime();
+        $end_date = new DateTime($end_date);
+        $voting_end_date = (clone $end_date)->modify('+10 days');
+
+        if ($today < $end_date) {
+            return [
+                'status' => 'waiting',
+                'message' => 'Voting will start on ' . $end_date->format('Y-m-d')
+            ];
+        } elseif ($today >= $end_date && $today <= $voting_end_date) {
+            return [
+                'status' => 'open',
+                'message' => 'Voting is open until ' . $voting_end_date->format('Y-m-d')
+            ];
+        } else {
+            return [
+                'status' => 'passed',
+                'message' => 'Voting has ended'
+            ];
+        }
+    }
+
     public function getAllRecipes(Request $request)
     {
         try {
@@ -144,8 +171,8 @@ class RecipesController extends Controller
                         return [
 
                             'recipe_id' => $recipe->id,
-                            'recipe_topic_status' => get_topic_status($recipe->topic->end_date)['status'],
-                            'recipe_topic_message' => get_topic_status($recipe->topic->end_date)['message'],                            'title' => $recipe->title,
+                            'recipe_topic_status' =>$this->getTopicStatus($recipe->topic->end_date)['status'],
+                            'recipe_topic_message' => $this->getTopicStatus($recipe->topic->end_date)['message'],                            'title' => $recipe->title,
                             'description' => $recipe->description,
                             'ingredients' => $recipe->ingredients,
                             'instructions' => $recipe->instructions,

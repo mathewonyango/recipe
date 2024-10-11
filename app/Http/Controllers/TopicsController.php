@@ -133,6 +133,7 @@ class TopicsController extends Controller
                     $topic->winner()->toArray(),
                     ['topic_id' => $topic->id]
                 ) : null,
+
                 'chef_rankings' => collect($topic->chefRankings())->map(function ($ranking) use ($topic) {
                     return $ranking instanceof \Illuminate\Database\Eloquent\Model
                         ? array_merge($ranking->toArray(), ['topic_id' => $topic->id])
@@ -140,7 +141,6 @@ class TopicsController extends Controller
                 })->all(),
                                 ];
             });
-
             return response()->json([
                 'response'=>"000",
                 'response_description' => 'Topics fetched successfully!',
