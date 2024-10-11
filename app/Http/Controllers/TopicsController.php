@@ -44,6 +44,7 @@ class TopicsController extends Controller
                 'end_date' => 'required|date|after_or_equal:start_date',
                 'status' => 'sometimes|string|in:open,closed',
             ]);
+            
 
             // Set the default status to 'open' if not provided
             $request->merge(['status' => $request->input('status', 'open')]);

@@ -142,9 +142,10 @@ class RecipesController extends Controller
                         $ratings = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'rate')->get();
                         $comments = Comment::where('recipe_id', $recipe->id)->where('interaction_type', 'comment')->get();
                         return [
+
                             'recipe_id' => $recipe->id,
-                            'topic_status'=>$recipe->topic->status,
-                            'title' => $recipe->title,
+                            'recipe_topic_status' => get_topic_status($recipe->topic->end_date)['status'],
+                            'recipe_topic_message' => get_topic_status($recipe->topic->end_date)['message'],                            'title' => $recipe->title,
                             'description' => $recipe->description,
                             'ingredients' => $recipe->ingredients,
                             'instructions' => $recipe->instructions,
