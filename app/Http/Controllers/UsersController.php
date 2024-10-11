@@ -606,14 +606,22 @@ class UsersController extends Controller
        $token = Str::random(60);
 
        // Store token in password_resets table
-       DB::table('password_resets')->updateOrInsert(
+      $passwordReset = DB::table('password_resets')->updateOrInsert(
            ['email' => $request->email],
            ['token' => $token, 'created_at' => Carbon::now()]
        );
 
+       if(!$passwordReset) {
+           return response()->json([
+            'response' => "999",
+               'response_description' => 'An error occurred while generating the password reset token. Please try again later.',
+           ], 500);
+       }
+
        // Send token back to the app (this can also be emailed)
        $user=User::where('email', $request->email)->first();
        return response()->json([
+            'response' => "000",
            'response_description' => 'Password reset token generated.',
            'token' => $token,
            'name' => $user->name,
@@ -632,7 +640,9 @@ class UsersController extends Controller
 
         // Check if the provided API key matches the expected API key
         if ($apiKey !== $expectedApiKey) {
-            return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+            return response()->json([
+                'response'=>"401",
+                'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
         }
         // Validate the token, email, and new password
         $validator = Validator::make($request->all(), [
@@ -643,6 +653,7 @@ class UsersController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
+                'response'=>"902",
                 'response_description' => 'Validation failed',
                 'errors' => $validator->errors(),
             ], 422);
@@ -656,6 +667,7 @@ class UsersController extends Controller
 
         if (!$reset) {
             return response()->json([
+                'response' => "999",
                 'response_description' => 'Invalid token or email.'
             ], 400);
         }
@@ -664,6 +676,7 @@ class UsersController extends Controller
         $tokenExpired = Carbon::parse($reset->created_at)->addHour()->isPast();
         if ($tokenExpired) {
             return response()->json([
+                'response' => "901",
                 'response_description' => 'Token has expired.',
             ], 400);
         }
@@ -677,6 +690,7 @@ class UsersController extends Controller
         DB::table('password_resets')->where('email', $request->email)->delete();
 
         return response()->json([
+            'response' => "000",
             'response_description' => 'Password has been reset successfully.',
             'user' => $user,
             'new-password' => $request->password
