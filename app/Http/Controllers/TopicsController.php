@@ -44,7 +44,7 @@ class TopicsController extends Controller
                 'end_date' => 'required|date|after_or_equal:start_date',
                 'status' => 'sometimes|string|in:open,closed',
             ]);
-            
+
 
             // Set the default status to 'open' if not provided
             $request->merge(['status' => $request->input('status', 'open')]);
@@ -128,13 +128,12 @@ class TopicsController extends Controller
                         ]);
                     }),
 
-                        'average_rating' => $topic->averageRatings(),
-                        'winner' => $topic->winner(),
-                        'chef_rankings' => $topic->chefRankings(),
-                ];
-            });
-
-            return response()->json([
+                    'average_rating' => $topic->averageRatings(),
+                    'winner' => array_merge($topic->winner() ?? [], ['topic_id' => $topic->id]),'chef_rankings' => collect($topic->chefRankings())->map(function ($ranking) use ($topic) {
+                    return array_merge($ranking, ['topic_id' => $topic->id]);
+                    })->all(),                ];
+                        });
+                    return response()->json([
                 'response'=>"000",
                 'response_description' => 'Topics fetched successfully!',
                 'topics' => $responseData],
