@@ -588,7 +588,9 @@ class UsersController extends Controller
 
     // Check if the provided API key matches the expected API key
     if ($apiKey !== $expectedApiKey) {
-        return response()->json(['response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+        return response()->json([
+            'response'=>"401",
+            'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
     }
        // Validate the email
        $validator = Validator::make($request->all(), [
@@ -597,6 +599,7 @@ class UsersController extends Controller
 
        if ($validator->fails()) {
            return response()->json([
+            'respose' => "901",
                'response_description' => 'Validation failed',
                'errors' => $validator->errors(),
            ], 422);
@@ -648,7 +651,7 @@ class UsersController extends Controller
         $validator = Validator::make($request->all(), [
             'token' => 'required',
             'email' => 'required|email|exists:users,email',
-            'password' => 'required|string|confirmed|min:8',
+            'password' => 'required|string|confirmed|min:6',
         ]);
 
         if ($validator->fails()) {
