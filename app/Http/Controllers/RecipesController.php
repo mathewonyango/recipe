@@ -428,7 +428,6 @@ public function getTopicStatus($end_date)
 
 public function recipeView(Request $request)
 {
-
     $apiKey = $request->input('api_key'); // Use input() to get data from the body
     $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
 
@@ -441,13 +440,25 @@ public function recipeView(Request $request)
     }
 
     // Validate the incoming request
-    $validated = $request->validate([
+    $validator = Validator::make($request->all(), [
         'user_id' => 'required|exists:users,id',
         'recipe_id' => 'required|exists:recipes,id',
     ]);
 
+    // Check if validation fails
+    if ($validator->fails()) {
+        return response()->json([
+            'response' => "901",
+            'response_description' => 'Please fill all the required fields.',
+            'errors' => $validator->errors(),
+        ], 422);
+    }
+
+    // Use the validated data
+    $validated = $validator->validated();
+
     // Check if the user has already viewed this recipe
-    $existingView =View::where('user_id', $validated['user_id'])
+    $existingView = View::where('user_id', $validated['user_id'])
                     ->where('recipe_id', $validated['recipe_id'])
                     ->first();
 
@@ -460,7 +471,7 @@ public function recipeView(Request $request)
         ], 200);
     } else {
         // Create a new view record
-        $view = new View;
+        $view = new View();
         $view->user_id = $validated['user_id'];
         $view->recipe_id = $validated['recipe_id'];
         $view->save();
@@ -472,6 +483,7 @@ public function recipeView(Request $request)
         ], 201);
     }
 }
+
 
     private function incrementRecipeViews($recipe_id)
 {
