@@ -785,6 +785,7 @@ class UsersController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'role'=>$user->role,
                     'profile_picture' => $user->profile_picture,
                     'notification_preferences' => $user->notification_preferences ?? ['email'],
                     // 'cuisine_type' => $user->cuisine_type,
