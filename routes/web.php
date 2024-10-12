@@ -94,7 +94,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
     // User API Route
-    Route::get('/api/users', [UsersController::class, 'Users']);
+    Route::get('/api/users', [UsersController::class, 'fetchUsers']);
+    Route::get('/api/chefs', [UsersController::class, 'fetchChefs']);
+
 
     // Event API Routes
     Route::get('/api/events/topic/{topicId}', [EventsController::class, 'getEventsByTopic']);

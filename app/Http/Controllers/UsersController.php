@@ -759,7 +759,7 @@ class UsersController extends Controller
             return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
-    public function Users(Request $request)
+    public function fetchUsers(Request $request)
     {
 
         $apiKey = $request->input('api_key'); // Use input() to get data from the body
@@ -775,6 +775,60 @@ class UsersController extends Controller
         try {
             // Fetch all users with the role of 'chef'
             $user = User::where('role', 'user')
+                ->withCount('votes') // Get the total votes for each chef
+                ->get();
+
+
+            // Prepare the response data
+            $responseData = $user->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role'=> $user->role,
+                    'profile_picture' => $user->profile_picture,
+                    'notification_preferences' => $user->notification_preferences ?? ['email'],
+                    // 'cuisine_type' => $user->cuisine_type,
+                    'push_notification'=>$user->push_notification,
+                    'location' => $user->location,
+                    'bio' => $user->bio,
+
+                ];
+
+
+            });
+
+            // Sort chefs by total votes in descending order
+            // $sortedUsers = $responseData->sortByDesc('total_votes')->values()->all();
+
+            // Assign voting positions based on sorted order
+
+            return response()->json([
+                'response'=>"000",
+                'response_description'=>"users fetched succesfully",
+                'users' => $responseData],
+                200);
+        } catch (\Exception $e) {
+            return response()->json(['response_description' => 'An error occurred: ' . $e->getMessage()],
+             500);
+        }
+    }
+    public function fetchChefs(Request $request)
+    {
+
+        $apiKey = $request->input('api_key'); // Use input() to get data from the body
+        $expectedApiKey = env('API_KEY'); // Fetch the expected API key from the environment
+
+        // Check if the provided API key matches the expected API key
+        if ($apiKey !== $expectedApiKey) {
+            return response()->json([
+                'response'=>"401",
+                'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
+        }
+
+        try {
+            // Fetch all users with the role of 'chef'
+            $user = User::where('role', 'chef')
                 ->withCount('votes') // Get the total votes for each chef
                 ->get();
 
