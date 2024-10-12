@@ -785,18 +785,14 @@ class UsersController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
-                    'role'=>$user->role,
+                    'role'=> $user->role,
                     'profile_picture' => $user->profile_picture,
                     'notification_preferences' => $user->notification_preferences ?? ['email'],
                     // 'cuisine_type' => $user->cuisine_type,
                     'push_notification'=>$user->push_notification,
                     'location' => $user->location,
-                    // 'experience_level' => $user->experience_level,
-                    // 'certification' => $user->certification,
                     'bio' => $user->bio,
-                    // 'recipe_count' => $user->recipes()->count(),
-                    // 'recipe_submitted' => $user->recipes,
-                    // 'total_votes' => $user->totalVotes(), // The total votes retrieved by withCount
+
                 ];
 
 
