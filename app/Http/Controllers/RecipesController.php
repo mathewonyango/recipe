@@ -179,6 +179,7 @@ public function getTopicStatus($end_date)
                             'cooking_time' => $recipe->cooking_time,
                             'serving_number' => $recipe->servings,
                             'difficulty_level' => $recipe->difficulty_level,
+                            'images'=>$recipe->image,
                             'chef' => [
                                 'id' => $recipe->user->id,
                                 'name' => $recipe->user->name,
@@ -299,6 +300,7 @@ public function getTopicStatus($end_date)
             'title' => 'required|string|max:255',
             'ingredients' => 'required|string',
             'instructions' => 'required|string',
+            'image'=>'nullable',
             'topic_id' => 'required', // Ensures topic_id exists in the topics table
         ]);
 
