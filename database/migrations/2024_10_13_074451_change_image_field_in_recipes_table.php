@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('recipes', function (Blueprint $table) {
-            $table->longText('image')->change();
+            // $table->longText('image')->change();
+            $table->longText('image')->nullable()->after('id');
+
         });
     }
 
