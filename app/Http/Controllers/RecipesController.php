@@ -293,6 +293,7 @@ public function getTopicStatus($end_date)
                     'response' => "401",
                     'response_description' => 'Unauthorized access. Invalid API Key.'], 401);
             }
+
         // Validate the incoming request
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
