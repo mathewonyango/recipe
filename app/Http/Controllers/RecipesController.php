@@ -176,14 +176,14 @@ public function getTopicStatus($end_date)
                             'description' => $recipe->description,
                             'ingredients' => $recipe->ingredients,
                             'instructions' => $recipe->instructions,
-                            'cooking_time' => $recipe->cooking_time,
+                            'cooking_time' => $recipe->cooking_time ?? '',
                             'serving_number' => $recipe->servings,
-                            'difficulty_level' => $recipe->difficulty_level,
-                            'images'=>$recipe->image,
+                            'difficulty_level' => $recipe->difficulty_level ?? '',
+                            'images'=>$recipe->image ?? '',
                             'chef' => [
                                 'id' => $recipe->user->id,
                                 'name' => $recipe->user->name,
-                                'profile_picture' => $recipe->user->profile_picture,
+                                'profile_picture' => $recipe->user->profile_picture ?? '',
                             ],
 
                             'ratings' => $ratings,
