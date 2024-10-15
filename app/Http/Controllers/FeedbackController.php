@@ -20,7 +20,11 @@ class FeedbackController extends Controller
 
         $feedback = Feedback::create($validatedData);
 
-        return response()->json(['message' => 'Feedback submitted successfully', 'feedback' => $feedback], 201);
+        if ($feedback) {
+            return response()->json(['response' => '000', 'message' => 'Feedback submitted successfully', 'feedback' => $feedback], 201);
+        } else {
+            return response()->json(['response' => '999', 'message' => 'An error occurred. Please try again.'], 422);
+        }
     }
 
     public function getUserFeedback($userId)
@@ -32,6 +36,10 @@ class FeedbackController extends Controller
     public function getAllFeedback()
     {
         $feedback = Feedback::with('user')->get();
-        return response()->json(['feedback' => $feedback]);
+        if ($feedback) {
+            return response()->json(['response' => '000', 'feedback' => $feedback], 200);
+        } else {
+            return response()->json(['response' => '999', 'message' => 'An error occurred. Please try again.'], 422);
+        }
     }
 }
