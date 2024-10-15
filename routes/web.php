@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\{
     UsersController, DashboardController, TopicsController, RecipesController, EventsController,
     ReportsController, ChefsController, VotesController, AuthController, LogViewerController,
-    DeploymentController, BackupController,PaymentController
+    DeploymentController, BackupController,PaymentController,FeedbackController
 };
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\VerifyCsrfToken;
@@ -130,3 +130,8 @@ Route::get('/events/{event}', [EventsController::class, 'show'])->name('events.s
 Route::get('/events/{event}/edit', [EventsController::class, 'edit'])->name('events.edit');
 Route::post('/events/{event}', [EventsController::class, 'update'])->name('events.update');
 Route::delete('/events/{event}', [EventsController::class, 'destroy'])->name('events.destroy');
+
+
+Route::post('/api/feedback', [FeedbackController::class, 'store']);
+Route::get('/api/feedback/user/{userId}', [FeedbackController::class, 'getUserFeedback']);
+Route::get('/api/feedback', [FeedbackController::class, 'getAllFeedback']);
