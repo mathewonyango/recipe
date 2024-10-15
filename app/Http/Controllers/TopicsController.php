@@ -129,10 +129,7 @@ class TopicsController extends Controller
                     }),
 
                 'average_rating' => $topic->averageRatings(),
-                'winner' => $topic->winner() ? array_merge(
-                    $topic->winner()->toArray(),
-                    ['topic_id' => $topic->id]
-                ) : null,
+                'winner' => $topic->winner(),
 
                 'chef_rankings' => collect($topic->chefRankings())->map(function ($ranking) use ($topic) {
                     return $ranking instanceof \Illuminate\Database\Eloquent\Model
