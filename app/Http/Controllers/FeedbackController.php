@@ -21,9 +21,13 @@ class FeedbackController extends Controller
         $feedback = Feedback::create($validatedData);
 
         if ($feedback) {
-            return response()->json(['response' => '000', 'message' => 'Feedback submitted successfully', 'feedback' => $feedback], 201);
+            return response()->json([
+                'response_description' => 'feedback submitted successfully',
+                'response' => '000', 'message' => 'Feedback submitted successfully', 'feedback' => $feedback], 201);
         } else {
-            return response()->json(['response' => '999', 'message' => 'An error occurred. Please try again.'], 422);
+            return response()->json([
+                'response_description' => 'feedback submission failed',
+                'response' => '999', 'message' => 'An error occurred. Please try again.'], 422);
         }
     }
 
@@ -37,9 +41,13 @@ class FeedbackController extends Controller
     {
         $feedback = Feedback::with('user')->get();
         if ($feedback) {
-            return response()->json(['response' => '000', 'feedback' => $feedback], 200);
+            return response()->json([
+                'response_description' => 'feedback fetched successfully',
+                'response' => '000', 'feedback' => $feedback], 200);
         } else {
-            return response()->json(['response' => '999', 'message' => 'An error occurred. Please try again.'], 422);
+            return response()->json([
+                'response_description' => 'feedback not found',
+                'response' => '999', 'message' => 'An error occurred. Please try again.'], 422);
         }
     }
 }
