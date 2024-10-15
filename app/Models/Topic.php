@@ -73,7 +73,21 @@ class Topic extends Model
 
     public function winner()
     {
-        return $this->recipes()->withCount('votes')->orderBy('votes_count', 'desc')->first();
+        $winningRecipe = $this->recipes()
+            ->withCount('votes')
+            ->with('chef') // Eager load the chef relationship
+            ->orderBy('votes_count', 'desc')
+            ->first();
+
+        if ($winningRecipe) {
+            return [
+                'recipe' => $winningRecipe,
+                'chef_name' => $winningRecipe->chef->name, // Assuming the chef model has a 'name' attribute
+                'votes' => $winningRecipe->votes_count
+            ];
+        }
+
+        return null; // Return null if there are no recipes
     }
 
     public function topChefs()
@@ -118,5 +132,6 @@ class Topic extends Model
     {
         return $this->recipes()->where('status', $status)->count();
     }
+
 
 }

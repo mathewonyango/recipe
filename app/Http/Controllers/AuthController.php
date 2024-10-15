@@ -99,6 +99,7 @@ class AuthController extends Controller
                         'name' => $user->name,
                         'profile_picture' => $user->profile_picture ?? '',
 
+
                         // 'username' => $user->username,
                         'email' => $user->email,
                         'role' => $user->role,
