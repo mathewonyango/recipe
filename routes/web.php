@@ -70,7 +70,7 @@ Route::middleware('auth')->group(function () {
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'portalLogin']);
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -78,11 +78,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // API Routes
     Route::post('/api/register-chef', [UsersController::class, 'registerChef']);
     Route::post('/api/register', [UsersController::class, 'register']);
-    Route::post('/api/login', [UsersController::class, 'login']);
+    Route::post('/api/login', [AuthController::class, 'appLogin']);
     Route::post('/api/users/password/reset/request', [UsersController::class, 'requestPasswordReset']);
     Route::post('/api/users/password/reset', [UsersController::class, 'resetPassword']);
-    Route::post('/api/forgot-password-token', [UsersController::class, 'forgotPassword']);
-    Route::post('/api/reset-password', [UsersController::class, 'resetPassword']);
+    Route::post('/api/forgot-password-token', [AuthController::class, 'forgotPassword']);
+    Route::post('/api/reset-password', [AuthController::class, 'resetPassword']);
 
     // Chef API Routes
     Route::get('/api/chefs', [UsersController::class, 'getChefs']);
