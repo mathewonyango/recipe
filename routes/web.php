@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\{
     UsersController, DashboardController, TopicsController, RecipesController, EventsController,
     ReportsController, ChefsController, VotesController, AuthController, LogViewerController,
-    DeploymentController, BackupController,PaymentController,FeedbackController
+    DeploymentController, BackupController,PaymentController,FeedbackController,PesapalController
 };
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\VerifyCsrfToken;
@@ -135,3 +135,9 @@ Route::delete('/events/{event}', [EventsController::class, 'destroy'])->name('ev
 Route::post('/api/feedback', [FeedbackController::class, 'store']);
 Route::get('/api/feedback/user/{userId}', [FeedbackController::class, 'getUserFeedback']);
 Route::get('/api/feedback', [FeedbackController::class, 'getAllFeedback']);
+
+
+    Route::post('/api/stk-push', [PesapalController::class, 'initiateSTKPush']);
+    Route::post('/api/callback', [PesapalController::class, 'callback'])->name('api.pesapal.callback');
+
+    Route::post('/api/pesapal/access-token', [PesapalController::class, 'getAccessToken']);

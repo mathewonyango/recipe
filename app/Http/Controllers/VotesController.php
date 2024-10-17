@@ -44,11 +44,11 @@ class VotesController extends Controller
     }
 
     // Check if the recipe is approved
-    if ($recipe->status !== 'approved') {
-        return response()->json([
-            'response'=>"400",
-            'response_description' => 'You cannot vote for a recipe that is not approved.'], 400);
-    }
+    // if ($recipe->status !== 'approved') {
+    //     return response()->json([
+    //         'response'=>"400",
+    //         'response_description' => 'You cannot vote for a recipe that is not approved.'], 400);
+    // }
 
     // Get the topic associated with the recipe
     $topic = $recipe->topic;
