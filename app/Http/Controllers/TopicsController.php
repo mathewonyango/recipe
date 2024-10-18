@@ -116,11 +116,11 @@ class TopicsController extends Controller
                         'start_date'=>$topic->start_date,
                         'end_date'=>$topic->end_date,
                         'total_views' => $topic->recipes->sum(function ($recipe) {
-                        return $recipe->views()->count(); // Summing views for each recipe
+                        return $recipe->views()->count() ; // Summing views for each recipe
                         }),
-                        'total_votes' => $topic->totalVotes(),
-                        'total_chefs' => $topic->totalChefs(),
-                        'total_comments' => $topic->totalComments(),
+                        'total_votes' => $topic->totalVotes() ?? 0,
+                        'total_chefs' => $topic->totalChefs() ?? 0,
+                        'total_comments' => $topic->totalComments() ?? 0,
                        'comments' => $topic->comments->map(function ($comment) use ($topic) {
                         return array_merge($comment->toArray(), [
                             'name' => $comment->user->name, // assuming user relationship is defined
@@ -128,7 +128,7 @@ class TopicsController extends Controller
                         ]);
                     }),
 
-                'average_rating' => $topic->averageRatings(),
+                'average_rating' => $topic->averageRatings() ?? 'No ratings yet',
                 'winner' => $topic->winner()?? 'No winner yet',
 
                 'chef_rankings' => collect($topic->chefRankings())->map(function ($ranking) use ($topic) {
@@ -136,8 +136,8 @@ class TopicsController extends Controller
                         ? array_merge($ranking->toArray(), ['topic_id' => $topic->id])
                         : array_merge($ranking, ['topic_id' => $topic->id]);
                 })->all(),
-                                ];
-            });
+                                ] ;
+            })  ;
             return response()->json([
                 'response'=>"000",
                 'response_description' => 'Topics fetched successfully!',
