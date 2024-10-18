@@ -137,7 +137,12 @@ Route::get('/api/feedback/user/{userId}', [FeedbackController::class, 'getUserFe
 Route::get('/api/feedback', [FeedbackController::class, 'getAllFeedback']);
 
 
-    Route::post('/api/stk-push', [PesapalController::class, 'initiateSTKPush']);
+    Route::post('/api/stk-push', [PesapalController::class, 'submitOrder']);
     Route::post('/api/callback', [PesapalController::class, 'callback'])->name('api.pesapal.callback');
 
     Route::post('/api/pesapal/access-token', [PesapalController::class, 'getAccessToken']);
+//
+Route::post('/api/pesapal/register-url', [PesapalController::class, 'registerIpnUrl']);
+Route::get('/success', [PesapalController::class, 'checkPaymentStatus']);
+
+Route::get('/payment/callback', [PesapalController::class, 'handleCallback'])->name('payment.callback');

@@ -129,7 +129,7 @@ class TopicsController extends Controller
                     }),
 
                 'average_rating' => $topic->averageRatings(),
-                'winner' => $topic->winner(),
+                'winner' => $topic->winner()?? 'No winner yet',
 
                 'chef_rankings' => collect($topic->chefRankings())->map(function ($ranking) use ($topic) {
                     return $ranking instanceof \Illuminate\Database\Eloquent\Model
