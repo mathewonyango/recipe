@@ -147,4 +147,4 @@ Route::get('/success', [PesapalController::class, 'checkPaymentStatus']);
 
 Route::get('/payment/callback', [PesapalController::class, 'handleCallback'])->name('payment.callback');
 
-Route::get('/api/get-all-comments', [PesapalController::class, 'fetchAllComments']);
+Route::get('/api/get-all-comments', [RecipesController::class, 'fetchAllComments']);
