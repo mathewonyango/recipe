@@ -107,8 +107,6 @@ class TopicsController extends Controller
                 $currentDate = Carbon::now();
                 $status = $topic->end_date > $currentDate ? 'open' : 'closed'; //
                 return [
-
-
                         'topic_id'=>$topic->id,
                         'topic_title'=>$topic->name,
                         'Topic_status'=>$status,
@@ -127,6 +125,7 @@ class TopicsController extends Controller
                             'topic_id' => $topic->id, // Adding topic_id to each comment
                         ]);
                     }),
+
 
                 'average_rating' => $topic->averageRatings() ?? 'No ratings yet',
                 'winner' => $topic->winner()?? 'No winner yet',

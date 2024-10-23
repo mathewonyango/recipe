@@ -82,7 +82,7 @@ class Topic extends Model
         if ($winningRecipe) {
             return [
 
-                'recipe' => $winningRecipe ?? '',
+                 $winningRecipe ?? '',
                 'chef_name' => $winningRecipe->chef->name ?? '',  // Assuming the chef model has a 'name' attribute
                 'votes' => $winningRecipe->votes_count ?? ''
             ];
