@@ -44,6 +44,7 @@ class UsersController extends Controller
             'username' => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:6', // Minimum length can be adjusted
             'notification_preferences' => 'nullable|array', // Expecting an array for notification preferences
+            'profile_picture'=>'nullable|string'
         ]);
 
         // If validation fails, return error messages
@@ -65,6 +66,7 @@ class UsersController extends Controller
                 'password' => Hash::make($request->password), // Hash the password
                 'notification_preferences' => json_encode($request->notification_preferences), // Optional, store as JSON
                 'role' => 'user', // Default role for general users
+                'profile_picture',
             ]);
             return response()->json([
                 'response' => "000",

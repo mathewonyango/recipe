@@ -72,24 +72,43 @@ class Topic extends Model
     }
 
     public function winner()
-    {
-        $winningRecipe = $this->recipes()
-            ->withCount('votes')
-            ->with('chef') // Eager load the chef relationship
-            ->orderBy('votes_count', 'desc')
-            ->first();
+{
+    $winningRecipe = $this->recipes()
+        ->withCount('votes')  // Include the votes count
+        ->with('chef')        // Eager load the chef relationship
+        ->orderBy('votes_count', 'desc')
+        ->first();
 
-        if ($winningRecipe) {
-            return [
-
-                 $winningRecipe ?? '',
-                'chef_name' => $winningRecipe->chef->name ?? '',  // Assuming the chef model has a 'name' attribute
-                'votes' => $winningRecipe->votes_count ?? ''
-            ];
-        }
-
-        return null; // Return null if there are no recipes
+    if ($winningRecipe) {
+        return [
+            'id' => $winningRecipe->id ?? '',
+            'user_id' => $winningRecipe->user_id ?? '',
+            'title' => $winningRecipe->title ?? '',
+            'topic_id' => $winningRecipe->topic_id ?? '',
+            'servings' => $winningRecipe->servings ?? '',
+            'prep_time' => $winningRecipe->prep_time ?? '',
+            'cook_time' => $winningRecipe->cook_time ?? '',
+            'total_time' => $winningRecipe->total_time ?? '',
+            'ingredients' => $winningRecipe->ingredients ?? '',
+            'instructions' => $winningRecipe->instructions ?? '',
+            'created_at' => $winningRecipe->created_at ?? '',
+            'updated_at' => $winningRecipe->updated_at ?? '',
+            'chef_id' => $winningRecipe->chef_id ?? '',
+            'status' => $winningRecipe->status ?? '',
+            'image' => $winningRecipe->image ?? '',
+            'tags' => $winningRecipe->tags ?? '',
+            'difficulty_level' => $winningRecipe->difficulty_level ?? '',
+            'nutritional_information' => $winningRecipe->nutritional_information ?? '',
+            'vote' => $winningRecipe->vote ?? '',
+            'voter' => $winningRecipe->voter ?? '',
+            'votes_count' => $winningRecipe->votes_count ?? 0,
+            'chef_name' => $winningRecipe->chef->name ?? 'Unknown',  // Include chef's name if available
+        ];
     }
+
+    return null;  // Return null if there's no winning recipe
+}
+
 
     public function topChefs()
     {
