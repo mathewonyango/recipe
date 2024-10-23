@@ -146,3 +146,5 @@ Route::post('/api/pesapal/register-url', [PesapalController::class, 'registerIpn
 Route::get('/success', [PesapalController::class, 'checkPaymentStatus']);
 
 Route::get('/payment/callback', [PesapalController::class, 'handleCallback'])->name('payment.callback');
+
+Route::get('/get-all-comments', [PesapalController::class, 'fetchAllComments']);

@@ -495,5 +495,13 @@ public function recipeView(Request $request)
     $recipe->increment('views'); // Increments the view count by 1
 }
 
+public function fetchAllComments(){
+    $comments=Comment::all();
+
+    return response()->json([
+        'response' => "000",
+        'response_description' => 'comment fetched successfully.',
+        'comments' => $comments
+    ], 201);}
 
 }
