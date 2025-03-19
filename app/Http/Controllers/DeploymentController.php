@@ -9,7 +9,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class DeploymentController extends Controller
 {
-    private $deploymentPath = 'C:\web\recipe';
+    private $deploymentPath = 'C:\Projects\recipe';
 
     public function index()
     {

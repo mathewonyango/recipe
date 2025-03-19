@@ -102,6 +102,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/api/events/topic/{topicId}', [EventsController::class, 'getEventsByTopic']);
     Route::get('/api/events', [EventsController::class, 'getAllEvents']);
     Route::get('/api/event/', [EventsController::class, 'getEventById']);
+    Route::post('/api/events', [EventsController::class, 'store']);
 
     // Topic API Route
     Route::get('/api/topics', [TopicsController::class, 'getAllTopics']);
@@ -148,3 +149,9 @@ Route::get('/success', [PesapalController::class, 'checkPaymentStatus']);
 Route::get('/payment/callback', [PesapalController::class, 'handleCallback'])->name('payment.callback');
 
 Route::get('/api/get-all-comments', [RecipesController::class, 'fetchAllComments']);
+
+
+//swageger
+Route::get('/docs', function () {
+    return view('swagger.index');
+});

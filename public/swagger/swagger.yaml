@@ -1,0 +1,194 @@
+swagger: '2.0'
+info:
+  description: Mathews Onyango API Laboratory- RECIPE API PROJECT
+  version: 1.0.0
+  title: Mathews Onyango API Laboratory - RECIPE API PROJECT
+
+basePath: /api/
+tags:
+  - name: Events
+    description: Manage Events
+
+paths:
+  /events:
+    get:
+      tags:
+        - Events
+      summary: Get all events
+      description: Retrieve a list of all events.
+      operationId: getEvents
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Bad request
+
+    post:
+      tags:
+        - Events
+      summary: Create a new event
+      description: Create a new event by providing necessary details.
+      operationId: createEvent
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: event
+          title: Event name
+          location: Event location
+          event_time: Event time
+          topic: Event topic
+          event_date: Event date
+          charges: Event charges
+          contact_number: Event contact number
+
+          description: Event details
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              location:
+                type: string
+              event_time:
+                type: datetime
+              topic:
+                type: string
+              event_date:
+                type: datetime
+              charges:
+                type: integer
+              contact_number:
+                type: string
+              title:
+                type: string
+              description:
+                type: string
+              date:
+                type: datetime
+                format: date
+      responses:
+        '201':
+          description: Event created successfully
+        '400':
+          description: Bad request
+
+  /events/{event}:
+    get:
+      tags:
+        - Events
+      summary: Get a single event
+      description: Retrieve details of a specific event by its ID.
+      operationId: getEventById
+      produces:
+        - application/json
+      parameters:
+        - name: event
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Event not found
+
+    post:
+      tags:
+        - Events
+      summary: Update an event
+      description: Update an existing event by providing new details.
+      operationId: updateEvent
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: event
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: event
+          description: Updated event details
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              date:
+                type: string
+                format: date
+      responses:
+        '200':
+          description: Event updated successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Event not found
+
+    delete:
+      tags:
+        - Events
+      summary: Delete an event
+      description: Remove an event by its ID.
+      operationId: deleteEvent
+      produces:
+        - application/json
+      parameters:
+        - name: event
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Event deleted successfully
+        '404':
+          description: Event not found
+
+  /events/create:
+    get:
+      tags:
+        - Events
+      summary: Get event creation form
+      description: Retrieve the form to create an event.
+      operationId: getEventForm
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful operation
+
+  /events/{event}/edit:
+    get:
+      tags:
+        - Events
+      summary: Get event edit form
+      description: Retrieve the form to edit an existing event.
+      operationId: getEditEventForm
+      produces:
+        - application/json
+      parameters:
+        - name: event
+          in: path
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Event not found
+
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: Authorization
+    in: header

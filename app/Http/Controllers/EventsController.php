@@ -46,9 +46,9 @@ class EventsController extends Controller
        $request->validate([
         'name'=>'required',
         'location' => 'required|string|max:255',
-        'event_time' => 'required|date_format:H:i',
+        'event_time' => 'required',
         'topic' => 'required',
-        'event_date' => 'required|date',
+        'event_date' => 'required',
         'charges' => 'required|numeric',
         'contact_number' => 'required|string|max:15', // Adjust the max length as needed
     ]);
