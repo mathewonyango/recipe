@@ -155,3 +155,8 @@ Route::get('/api/get-all-comments', [RecipesController::class, 'fetchAllComments
 Route::get('/docs', function () {
     return view('swagger.index');
 });
+Route::get('/speed-test', function () {
+    return view('speedtest.speedtest');
+});
+
+
